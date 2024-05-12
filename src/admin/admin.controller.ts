@@ -5,7 +5,7 @@ export class AdminController {
     constructor(private readonly adminService: AdminService) {}
 
     @Get('dashboard')
-    renderDashboard(): any {
-        return this.adminService.getAdminDashboard();
+    async renderDashboard(): Promise<any> {
+        return await this.adminService.getAllAdmins();
     }
 }
