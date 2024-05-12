@@ -1,24 +1,31 @@
-import { Administrators } from './../models/entities/Administrators';
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 
+import { Injectable } from '@nestjs/common';
+import { CreateAdminDto } from './dto/create-admin.dto';
+import { UpdateAdminDto } from './dto/update-admin.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaPromise } from '@prisma/client';
+import Admin from '../types/db/admin'
 @Injectable()
 export class AdminService {
-  constructor(
-    @InjectRepository(Administrators)
-    private readonly adminRepository: Repository<Administrators>,
-  ) {}
-  public getAdminDashboard(): string {
-    return '';
+  constructor(private Prisma: PrismaService) {}
+
+  create(createAdminDto: CreateAdminDto) {
+    return 'This action adds a new admin';
   }
-  public createAdmin(): string {
-    return ' admin created';
+
+  findAdministrator(): PrismaPromise<Admin[]> {
+    return this.Prisma.administrators.findMany();
   }
-  public getAdminInfo(): string {
-    return ' admin info';
+
+  findOne(id: number) {
+    return `This action returns a #${id} admin`;
   }
-  public getAllAdmins(): Promise<Administrators[]> {
-    return this.adminRepository.createQueryBuilder('administrators').getMany();
+
+  update(id: number, updateAdminDto: UpdateAdminDto) {
+    return `This action updates a #${id} admin`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} admin`;
   }
 }

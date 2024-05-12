@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model administrators {
+  id                 Int                  @id @default(autoincrement())
+  personal_id        String               @db.VarChar(10)
+  password           String               @db.VarChar(256)
+  name               String               @db.VarChar(70)
+  phone_number       String               @db.VarChar(17)
+  email              String               @db.VarChar(120)
+  residence_location String               @db.VarChar(50)
+  entries            entries[]
+  reports            reports[]
+  sent_notifications sent_notifications[]
+
+  @@unique([phone_number, email, personal_id], map: "unique")
+}
+
+model cashier {
+  id                 Int     @id(map: "cashiers_pkey") @default(autoincrement())
+  personal_id        String  @db.VarChar(10)
+  name               String  @db.VarChar(70)
+  password           String  @db.VarChar(256)
+  phone_number       String  @db.VarChar(17)
+  email              String  @db.VarChar(120)
+  residence_location String  @db.VarChar(50)
+  sales              sales[]
+
+  @@unique([phone_number, email, personal_id], map: "unique2")
+}
+
+model customers {
+  id                 Int     @id @default(autoincrement())
+  name               String  @db.VarChar(70)
+  personal_id        String  @unique(map: "unique_personal_id") @db.VarChar(10)
+  phone_number       String  @unique(map: "phone_number_unique") @db.VarChar(17)
+  residence_location String  @db.VarChar(50)
+  sales              sales[]
+}
+
+model entries {
+  id             Int             @id @default(autoincrement())
+  admin_id       Int
+  description    String
+  date           DateTime        @db.Timestamp(6)
+  administrators administrators  @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "admin_id_entries_fk")
+  entries_items  entries_items[]
+
+  @@index([admin_id], map: "fki_admin_id_entries_fk")
+}
+
+model entries_items {
+  id       Int     @id @default(autoincrement())
+  entry_id Int
+  item_id  Int
+  quantity Int
+  entries  entries @relation(fields: [entry_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "entry_id_entries_items_fk")
+  items    items   @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_id_entries_items_fk")
+
+  @@index([item_id], map: "fki_e")
+  @@index([entry_id], map: "fki_entry_id_entries_items_fk")
+}
+
+model items {
+  id            Int             @id(map: "articles_pk") @default(autoincrement())
+  barcode_id    String?         @db.VarChar(12)
+  name          String          @db.VarChar(70)
+  price         Decimal         @db.Decimal(4, 2)
+  category_     String          @map("category ") @db.VarChar(25)
+  manufacturer  String          @db.VarChar(70)
+  quantity      Int
+  entries_items entries_items[]
+  sales_items   sales_items[]
+}
+
+model notifications {
+  id                 Int                  @id @default(autoincrement())
+  date               DateTime             @db.Timestamp(6)
+  body_message       String               @db.VarChar
+  priority_status    String               @db.VarChar
+  sent_notifications sent_notifications[]
+}
+
+model reports {
+  id             Int            @id @default(autoincrement())
+  admin_id       Int
+  type           String         @db.VarChar(25)
+  report_url     String         @db.VarChar
+  date           DateTime       @db.Timestamp(6)
+  administrators administrators @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "admin_id_reports_fk")
+
+  @@index([admin_id], map: "fki_admin_id_reports_fk")
+}
+
+model sales {
+  id          Int           @id @default(autoincrement())
+  cashier_id  Int
+  customer_id Int
+  date        DateTime      @db.Timestamp(6)
+  cashier     cashier       @relation(fields: [cashier_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cashier_id_sales_fk")
+  customers   customers     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_id_sales_fk")
+  sales_items sales_items[]
+
+  @@index([cashier_id], map: "fki_cashier_id_sales_fk")
+  @@index([customer_id], map: "fki_customer_id_sales_fk")
+}
+
+model sales_items {
+  id       Int   @id @default(autoincrement())
+  item_id  Int
+  sale_id  Int
+  quantity Int
+  items    items @relation(fields: [item_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "item_id_sales_items_fk")
+  sales    sales @relation(fields: [sale_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sale_id_sales_items_fk")
+
+  @@index([item_id], map: "fki_item_id_sales_items_fk")
+  @@index([sale_id], map: "fki_sale_id_sales_items_fk")
+}
+
+model sent_notifications {
+  id              Int            @id @default(autoincrement())
+  notification_id Int
+  admin_id        Int
+  is_read         Boolean
+  is_ignored      Boolean
+  administrators  administrators @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "admin_id_sent_notifications_fk")
+  notifications   notifications  @relation(fields: [notification_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "notification_id_sent_notifications_fk")
+
+  @@index([admin_id], map: "fki_admin_id_sent_notifications_fk")
+  @@index([notification_id], map: "fki_notification_id_sent_notifications_fk")
+}
