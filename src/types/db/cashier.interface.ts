@@ -1,9 +1,9 @@
 export default interface Cashier {
   id: number;
-  personalId: string;
+  personal_id: string;
   name: string;
   password: string;
-  phoneNumber: string;
+  phone_number: string;
   email: string;
-  residenceLocation: string;
+  residence_location: string;
 }
