@@ -4,13 +4,13 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaPromise } from '@prisma/client';
-import Admin from '../types/db/admin'
+import Admin from './entities/admin.entity';
 @Injectable()
 export class AdminService {
   constructor(private Prisma: PrismaService) {}
 
-  create(createAdminDto: CreateAdminDto) {
-    return 'This action adds a new admin';
+  createAdmin(createAdminDto: CreateAdminDto) {
+    return 'asdasdasd'
   }
 
   findAdministrator(): PrismaPromise<Admin[]> {
