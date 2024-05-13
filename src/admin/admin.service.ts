@@ -1,19 +1,23 @@
-
 import { Injectable } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PrismaPromise } from '@prisma/client';
 import Admin from './entities/admin.entity';
+
 @Injectable()
 export class AdminService {
   constructor(private Prisma: PrismaService) {}
 
-  createAdmin(createAdminDto: CreateAdminDto) {
-    return 'asdasdasd'
+  async create(createAdminDto: CreateAdminDto) {
+    try {
+      await this.Prisma.administrators.create({ data: createAdminDto });
+      return { success: true, message: 'Administrator created successfully' };
+    } catch (error) {
+      return { success: false, message: 'Error creating administrator', error };
+    }
   }
 
-  findAdministrator(): PrismaPromise<Admin[]> {
+  findAll(): PrismaPromise<Admin[]> {
     return this.Prisma.administrators.findMany();
   }
 
@@ -21,11 +25,4 @@ export class AdminService {
     return this.Prisma.administrators.findUnique({where: {id:id}});
   }
 
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
-  }
 }

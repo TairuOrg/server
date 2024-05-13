@@ -1,9 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
 import Admin from './entities/admin.entity'
-import { sales } from '@prisma/client';
+import { CreateAdminDto } from './dto/create-admin.dto';
 // BASE_URL/admin?id=233
 @Controller('admin')
 export class AdminController {
@@ -16,7 +14,7 @@ export class AdminController {
 
   @Get()
   findAllAdmins(): Promise<Admin[]> {
-    return this.adminService.findAdministrator();
+    return this.adminService.findAll();
   }
 
   @Get(':id')
