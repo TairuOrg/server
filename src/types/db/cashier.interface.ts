@@ -1,4 +1,6 @@
-export default interface Cashier {
+import { Sale } from "./sales.interface";
+
+export interface Cashier {
   id: number;
   personalId: string;
   name: string;
@@ -6,4 +8,5 @@ export default interface Cashier {
   phoneNumber: string;
   email: string;
   residenceLocation: string;
+  sales?: Sale[]; // Array of related sales
 }

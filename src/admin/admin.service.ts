@@ -17,8 +17,8 @@ export class AdminService {
     return this.Prisma.administrators.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} admin`;
+  findOne(id: number): PrismaPromise<Admin> {
+    return this.Prisma.administrators.findUnique({where: {id:id}});
   }
 
   update(id: number, updateAdminDto: UpdateAdminDto) {

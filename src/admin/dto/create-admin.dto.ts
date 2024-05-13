@@ -1,6 +1,6 @@
-import { Entry } from '@/types/db/entry.interface';
-import { Report } from '@/types/db/report.interface';
-import { SentNotification } from '@/types/db/sentNotifications.interface';
+import { Entry } from '@/types/db/entries.interface';
+import { Report } from '@/types/db/reports.interface';
+import { SentNotification } from '@/types/db/sent_notifications.interface';
 
 interface AdministratorDTO {
   id: number;
