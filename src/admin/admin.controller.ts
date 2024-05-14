@@ -9,7 +9,7 @@ export class AdminController {
   
   @Post()
   create(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminService.create(createAdminDto);
+
   }
 
   @Get()
@@ -21,4 +21,10 @@ export class AdminController {
   findOne(@Param('id') id: string) {
     return this.adminService.findOne(+id);
   }
+
+  @Get('reports')
+  findReports(): Promise<sales[]> {
+    return;
+  }
+  
 }
