@@ -16,7 +16,6 @@ export class AuthService {
     });
   }
   async verifyCashier(cred: AuthCredentials): Promise<Cashier> {
-    console.log('cashier creds en verifier', cred);
     const result = await this.prisma.cashier.findFirst({
       where: {
         email: cred.email, // Use the email from cred
@@ -25,8 +24,7 @@ export class AuthService {
     });
 
     return result;
-}
-
+  }
 
   async logoutAdmin(id: string): Promise<any> {
     return 'unimplemented';

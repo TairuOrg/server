@@ -1,7 +1,11 @@
 import { Controller, Post, Body, Param, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/login';
-import { AuthResponse } from '@/types/api/Responses';
+import {
+  AuthResponse,
+  NotificationStatus,
+  NotificationStatus as TYPE,
+} from '@/types/api/Responses';
 import Admin from '@/admin/entities/admin.entity';
 import Cashier from '@/types/db/cashier.interface';
 
@@ -21,17 +25,25 @@ export class AuthController {
   async loginAdmin(
     @Query() { role }: RolesQueryParams,
     @Body() cred: AuthCredentials,
-  ): Promise<any> {
+  ): Promise<AuthResponse> {
     let user: Admin | Cashier | null = null;
     let message: {
       title: string;
       description: string;
-      notificationStatus: string;
+      notificationStatus: TYPE;
     } = {
       title: 'Login Failed',
       description: 'Invalid credentials',
-      notificationStatus: 'error',
+      notificationStatus: NotificationStatus.ERROR,
     };
+    if (!cred.email || !cred.password) {
+      return {
+        error: true,
+        body: {
+          message,
+        },
+      };
+    }
     switch (role) {
       case RoleOptions.ADMIN: {
         user = await this.authService.verifyAdmin(cred);
@@ -39,7 +51,7 @@ export class AuthController {
           message = {
             title: 'Admin login Successful',
             description: 'Welcome back',
-            notificationStatus: 'success',
+            notificationStatus: NotificationStatus.SUCCESS,
           };
         }
         break;
@@ -51,7 +63,7 @@ export class AuthController {
           message = {
             title: 'Cashier login Successful',
             description: 'Welcome back',
-            notificationStatus: 'success',
+            notificationStatus: NotificationStatus.SUCCESS,
           };
         }
         break;
@@ -60,7 +72,7 @@ export class AuthController {
         message = {
           title: 'Login Failed',
           description: 'Invalid role',
-          notificationStatus: 'error',
+          notificationStatus: NotificationStatus.ERROR,
         };
     }
     return {
@@ -84,7 +96,7 @@ export class AuthController {
           ? {
               error: false,
               body: {
-                userId: 'something here, probably coming off from logoutAdmin',
+                userId: 'something here, probably coming off from logout Admin',
                 message: {
                   title: 'Logged out',
                   description: 'Successfully logged out',
