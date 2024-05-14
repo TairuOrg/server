@@ -7,7 +7,7 @@ import {
   NotificationStatus as TYPE,
 } from '@/types/api/Responses';
 import Admin from '@/admin/entities/admin.entity';
-import Cashier from '@/types/db/cashier.interface';
+import {Cashier} from '@/types/db/cashier.interface';
 
 enum RoleOptions {
   ADMIN = 'admin',
