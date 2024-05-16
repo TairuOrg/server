@@ -1,14 +1,15 @@
-import { Controller, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Post, Body, Query, Res, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/login';
+import { encryptSessionCookie } from './lib';
 import {
   AuthResponse,
   NotificationStatus,
   NotificationStatus as TYPE,
 } from '@/types/api/Responses';
 import Admin from '@/admin/entities/admin.entity';
-import {Cashier} from '@/types/db/cashier.interface';
-
+import { Cashier } from '@/types/db/cashier.interface';
+import { Response } from 'express';
 enum RoleOptions {
   ADMIN = 'admin',
   CASHIER = 'cashier',
@@ -25,7 +26,8 @@ export class AuthController {
   async loginAdmin(
     @Query() { role }: RolesQueryParams,
     @Body() cred: AuthCredentials,
-  ): Promise<AuthResponse> {
+    @Res() res: Response,
+  ) {
     let user: Admin | Cashier | null = null;
     let message: {
       title: string;
@@ -36,13 +38,14 @@ export class AuthController {
       description: 'Invalid credentials',
       notificationStatus: NotificationStatus.ERROR,
     };
+
     if (!cred.email || !cred.password) {
-      return {
+      return res.status(HttpStatus.BAD_REQUEST).json({
         error: true,
         body: {
           message,
         },
-      };
+      });
     }
     switch (role) {
       case RoleOptions.ADMIN: {
@@ -75,75 +78,21 @@ export class AuthController {
           notificationStatus: NotificationStatus.ERROR,
         };
     }
-    return {
+    const sessionToken = await encryptSessionCookie({
+      id: user?.id,
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 2),
+    });
+
+    user && res.cookie('SESSION_TOKEN', sessionToken, { httpOnly: true });
+    const response: AuthResponse = {
       error: !user,
       body: {
         userId: user?.id.toString(),
         message,
       },
     };
-  }
 
-  @Post('logout')
-  async logoutAdmin(
-    @Query() { role }: RolesQueryParams,
-    @Body() userId: any,
-  ): Promise<AuthResponse> {
-    switch (role) {
-      case RoleOptions.ADMIN: {
-        const userToLogOut = await this.authService.logoutAdmin(userId);
-        return userToLogOut
-          ? {
-              error: false,
-              body: {
-                userId: 'something here, probably coming off from logout Admin',
-                message: {
-                  title: 'Logged out',
-                  description: 'Successfully logged out',
-                  notificationStatus: 'success',
-                },
-              },
-            }
-          : {
-              error: true,
-              body: {
-                message: {
-                  title: "Couldn't log out",
-                  description:
-                    "Can't use the auth service at the moment, contact the system administrator",
-                  notificationStatus: 'error',
-                },
-              },
-            };
-      }
-      case RoleOptions.CASHIER: {
-        const userToLogOut = await this.authService.logoutAdmin(userId);
-        return userToLogOut
-          ? {
-              error: false,
-              body: {
-                userId: 'something here, probably coming off from logoutAdmin',
-                message: {
-                  title: 'Logged out',
-                  description: 'Successfully logged out',
-                  notificationStatus: 'success',
-                },
-              },
-            }
-          : {
-              error: true,
-              body: {
-                message: {
-                  title: "Couldn't log out",
-                  description:
-                    "Can't use the auth service at the moment, contact the system administrator",
-                  notificationStatus: 'error',
-                },
-              },
-            };
-      }
-      default:
-        return;
-    }
+    const statusCode = user ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
+    return res.status(statusCode).json(response);
   }
 }

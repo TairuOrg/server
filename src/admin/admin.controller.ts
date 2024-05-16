@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import Admin from './entities/admin.entity'
 import { CreateAdminDto } from './dto/create-admin.dto';
+import { Sale } from '@/types/db/sales.interface';
 // BASE_URL/admin?id=233
 @Controller('admin')
 export class AdminController {
@@ -13,17 +14,17 @@ export class AdminController {
   }
 
   @Get()
-  findAllAdmins(): Promise<Admin[]> {
-    return this.adminService.findAll();
+  findAllAdmins() {
+    return 'si'
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.adminService.findOne(+id);
+    return 'so'
   }
 
   @Get('reports')
-  findReports(): Promise<sales[]> {
+  findReports(): Promise<Sale[]> {
     return;
   }
   

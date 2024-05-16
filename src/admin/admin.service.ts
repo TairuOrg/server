@@ -8,21 +8,5 @@ import Admin from './entities/admin.entity';
 export class AdminService {
   constructor(private Prisma: PrismaService) {}
 
-  async create(createAdminDto: CreateAdminDto) {
-    try {
-      await this.Prisma.administrators.create({ data: createAdminDto });
-      return { success: true, message: 'Administrator created successfully' };
-    } catch (error) {
-      return { success: false, message: 'Error creating administrator', error };
-    }
-  }
-
-  findAll(): PrismaPromise<Admin[]> {
-    return this.Prisma.administrators.findMany();
-  }
-
-  findOne(id: number): PrismaPromise<Admin> {
-    return this.Prisma.administrators.findUnique({where: {id:id}});
-  }
 
 }

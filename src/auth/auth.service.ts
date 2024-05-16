@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthCredentials } from './dto/login';
 import { PrismaService } from '@/prisma/prisma.service';
+import { administrators } from '@prisma/client';
 import Admin from '@/admin/entities/admin.entity';
 import {Cashier} from '@/types/db/cashier.interface';
 
@@ -8,22 +9,26 @@ import {Cashier} from '@/types/db/cashier.interface';
 export class AuthService {
   constructor(private prisma: PrismaService) {}
   async verifyAdmin(cred: AuthCredentials): Promise<Admin> {
-    return await this.prisma.administrators.findFirst({
+    const user = await this.prisma.user.findUnique({
       where: {
         email: cred.email,
         password: cred.password,
       },
     });
-  }
-  async verifyCashier(cred: AuthCredentials): Promise<Cashier> {
-    const result = await this.prisma.cashier.findFirst({
+
+    if (!user) {
+      return null;
+    }
+    const admin = await this.prisma.administrators.findUnique({
       where: {
-        email: cred.email, // Use the email from cred
-        password: cred.password, // Use the password from cred
+        id: user.id,
       },
     });
-
-    return result;
+    return admin ? user : null;
+    }
+  
+  async verifyCashier(cred: AuthCredentials){
+    return null
   }
 
   async logoutAdmin(id: string): Promise<any> {

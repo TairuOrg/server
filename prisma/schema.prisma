@@ -7,32 +7,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model administrators {
-  id                 Int                  @id @default(autoincrement())
-  personal_id        String               @db.VarChar(10)
-  password           String               @db.VarChar(256)
-  name               String               @db.VarChar(70)
-  phone_number       String               @db.VarChar(17)
-  email              String               @db.VarChar(120)
-  residence_location String               @db.VarChar(50)
-  entries            entries[]
-  reports            reports[]
-  sent_notifications sent_notifications[]
+model User {
+  id                 Int             @id @default(autoincrement())
+  personal_id        String          @unique(map: "unique_personal_id_constraint") @db.VarChar(10)
+  password           String          @db.VarChar(255)
+  name               String          @db.VarChar(70)
+  phone_number       String          @unique(map: "user_phone_number_unique") @db.VarChar(17)
+  email              String          @unique(map: "email_unique_user") @db.VarChar(70)
+  residence_location String          @db.VarChar(50)
+  administrators     administrators?
+  cashier            cashier?
+}
 
-  @@unique([phone_number, email, personal_id], map: "unique")
+model administrators {
+  id   Int  @unique(map: "id_admin_unique_constraint")
+  User User @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "administrator_id_fk")
+
+  @@index([id], map: "fki_administrator_id_fk")
 }
 
 model cashier {
-  id                 Int     @id(map: "cashiers_pkey") @default(autoincrement())
-  personal_id        String  @db.VarChar(10)
-  name               String  @db.VarChar(70)
-  password           String  @db.VarChar(256)
-  phone_number       String  @db.VarChar(17)
-  email              String  @db.VarChar(120)
-  residence_location String  @db.VarChar(50)
-  sales              sales[]
+  id   Int  @unique(map: "id_cashier_unique_constraint")
+  User User @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cashier_fk")
 
-  @@unique([phone_number, email, personal_id], map: "unique2")
+  @@index([id], map: "fki_cashier_fk")
 }
 
 model customers {
@@ -45,12 +43,11 @@ model customers {
 }
 
 model entries {
-  id             Int             @id @default(autoincrement())
-  admin_id       Int
-  description    String
-  date           DateTime        @db.Timestamp(6)
-  administrators administrators  @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "admin_id_entries_fk")
-  entries_items  entries_items[]
+  id            Int             @id @default(autoincrement())
+  admin_id      Int
+  description   String
+  date          DateTime        @db.Timestamp(6)
+  entries_items entries_items[]
 
   @@index([admin_id], map: "fki_admin_id_entries_fk")
 }
@@ -88,12 +85,11 @@ model notifications {
 }
 
 model reports {
-  id             Int            @id @default(autoincrement())
-  admin_id       Int
-  type           String         @db.VarChar(25)
-  report_url     String         @db.VarChar
-  date           DateTime       @db.Timestamp(6)
-  administrators administrators @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "admin_id_reports_fk")
+  id         Int      @id @default(autoincrement())
+  admin_id   Int
+  type       String   @db.VarChar(25)
+  report_url String   @db.VarChar
+  date       DateTime @db.Timestamp(6)
 
   @@index([admin_id], map: "fki_admin_id_reports_fk")
 }
@@ -103,7 +99,6 @@ model sales {
   cashier_id  Int
   customer_id Int
   date        DateTime      @db.Timestamp(6)
-  cashier     cashier       @relation(fields: [cashier_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "cashier_id_sales_fk")
   customers   customers     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_id_sales_fk")
   sales_items sales_items[]
 
@@ -124,13 +119,12 @@ model sales_items {
 }
 
 model sent_notifications {
-  id              Int            @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   notification_id Int
   admin_id        Int
   is_read         Boolean
   is_ignored      Boolean
-  administrators  administrators @relation(fields: [admin_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "admin_id_sent_notifications_fk")
-  notifications   notifications  @relation(fields: [notification_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "notification_id_sent_notifications_fk")
+  notifications   notifications @relation(fields: [notification_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "notification_id_sent_notifications_fk")
 
   @@index([admin_id], map: "fki_admin_id_sent_notifications_fk")
   @@index([notification_id], map: "fki_notification_id_sent_notifications_fk")

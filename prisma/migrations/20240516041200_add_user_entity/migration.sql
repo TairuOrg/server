@@ -1,27 +1,24 @@
 -- CreateTable
-CREATE TABLE "administrators" (
+CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "personal_id" VARCHAR(10) NOT NULL,
-    "password" VARCHAR(256) NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
     "name" VARCHAR(70) NOT NULL,
     "phone_number" VARCHAR(17) NOT NULL,
-    "email" VARCHAR(120) NOT NULL,
+    "email" VARCHAR(70) NOT NULL,
     "residence_location" VARCHAR(50) NOT NULL,
 
-    CONSTRAINT "administrators_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "administrators" (
+    "id" INTEGER NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "cashier" (
-    "id" SERIAL NOT NULL,
-    "personal_id" VARCHAR(10) NOT NULL,
-    "name" VARCHAR(70) NOT NULL,
-    "password" VARCHAR(256) NOT NULL,
-    "phone_number" VARCHAR(17) NOT NULL,
-    "email" VARCHAR(120) NOT NULL,
-    "residence_location" VARCHAR(50) NOT NULL,
-
-    CONSTRAINT "cashiers_pkey" PRIMARY KEY ("id")
+    "id" INTEGER NOT NULL
 );
 
 -- CreateTable
@@ -121,10 +118,25 @@ CREATE TABLE "sent_notifications" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "unique" ON "administrators"("phone_number", "email", "personal_id");
+CREATE UNIQUE INDEX "unique_personal_id_constraint" ON "User"("personal_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "unique2" ON "cashier"("phone_number", "email", "personal_id");
+CREATE UNIQUE INDEX "user_phone_number_unique" ON "User"("phone_number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "email_unique_user" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "id_admin_unique_constraint" ON "administrators"("id");
+
+-- CreateIndex
+CREATE INDEX "fki_administrator_id_fk" ON "administrators"("id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "id_cashier_unique_constraint" ON "cashier"("id");
+
+-- CreateIndex
+CREATE INDEX "fki_cashier_fk" ON "cashier"("id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "unique_personal_id" ON "customers"("personal_id");
@@ -163,19 +175,16 @@ CREATE INDEX "fki_admin_id_sent_notifications_fk" ON "sent_notifications"("admin
 CREATE INDEX "fki_notification_id_sent_notifications_fk" ON "sent_notifications"("notification_id");
 
 -- AddForeignKey
-ALTER TABLE "entries" ADD CONSTRAINT "admin_id_entries_fk" FOREIGN KEY ("admin_id") REFERENCES "administrators"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "administrators" ADD CONSTRAINT "administrator_id_fk" FOREIGN KEY ("id") REFERENCES "User"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE "cashier" ADD CONSTRAINT "cashier_fk" FOREIGN KEY ("id") REFERENCES "User"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "entries_items" ADD CONSTRAINT "entry_id_entries_items_fk" FOREIGN KEY ("entry_id") REFERENCES "entries"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "entries_items" ADD CONSTRAINT "item_id_entries_items_fk" FOREIGN KEY ("item_id") REFERENCES "items"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "reports" ADD CONSTRAINT "admin_id_reports_fk" FOREIGN KEY ("admin_id") REFERENCES "administrators"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "sales" ADD CONSTRAINT "cashier_id_sales_fk" FOREIGN KEY ("cashier_id") REFERENCES "cashier"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "sales" ADD CONSTRAINT "customer_id_sales_fk" FOREIGN KEY ("customer_id") REFERENCES "customers"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -185,9 +194,6 @@ ALTER TABLE "sales_items" ADD CONSTRAINT "item_id_sales_items_fk" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "sales_items" ADD CONSTRAINT "sale_id_sales_items_fk" FOREIGN KEY ("sale_id") REFERENCES "sales"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- AddForeignKey
-ALTER TABLE "sent_notifications" ADD CONSTRAINT "admin_id_sent_notifications_fk" FOREIGN KEY ("admin_id") REFERENCES "administrators"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "sent_notifications" ADD CONSTRAINT "notification_id_sent_notifications_fk" FOREIGN KEY ("notification_id") REFERENCES "notifications"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
