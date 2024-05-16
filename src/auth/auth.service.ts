@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthCredentials } from './dto/login';
 import { PrismaService } from '@/prisma/prisma.service';
 import Admin from '@/admin/entities/admin.entity';
-import Cashier from '@/types/db/cashier.interface';
+import {Cashier} from '@/types/db/cashier.interface';
 
 @Injectable()
 export class AuthService {

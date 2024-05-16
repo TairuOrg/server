@@ -7,6 +7,6 @@ export interface Cashier {
   password: string;
   phone_number: string;
   email: string;
-  residenceLocation: string;
+  residence_location: string;
   sales?: Sale[]; // Array of related sales
 }
