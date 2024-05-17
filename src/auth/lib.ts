@@ -1,5 +1,5 @@
 import { JWTPayload, SignJWT, jwtVerify } from 'jose';
-
+//                    Error              Value
 type Result<T> = [Error, undefined] | [undefined, T];
 
 const secret = new TextEncoder().encode(process.env.SESSION_TOKEN);

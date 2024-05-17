@@ -3,14 +3,16 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { UserService } from '@/user/user.service';
 import { PrismaService } from '@/prisma/prisma.service';
+import User from '@/user/dto/user';
 
 @Injectable()
 export class AdminService {
   constructor(private readonly user: UserService, private readonly prisma: PrismaService) {}
-  create(createAdminDto: CreateAdminDto) {
-    return this.user.create();
-  }
+  async getDashboardData(id: number): Promise<User> {
+    return await this.user.getUser(id);
 
+  }
+  
   findAll() {
     return `This action returns all admin`;
   }

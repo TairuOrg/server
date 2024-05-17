@@ -1,15 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Req } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { CreateAdminDto } from './dto/create-admin.dto';
-import { UpdateAdminDto } from './dto/update-admin.dto';
+import { Request } from 'express';
+import { decryptSessionCookie } from '@/auth/lib';
+
 
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get()
-  create(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminService.create(createAdminDto);
+  @Get('dashboard')
+  async dashboardData(@Req() req: Request) {
+    const session_token = req.headers.cookie?.split(';')[1].split('=')[1];
+    const [e, sessionParsed] = await decryptSessionCookie(session_token)
+    if(e) return e
+
+
+    return await this.adminService.getDashboardData(sessionParsed.id as number);
+
   }
 
 }
