@@ -1,4 +1,4 @@
-export default interface Admin {
+export default interface User {
     id: number;
     personal_id: string;
     password: string;

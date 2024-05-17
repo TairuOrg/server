@@ -7,8 +7,8 @@ import {
   NotificationStatus,
   NotificationStatus as TYPE,
 } from '@/types/api/Responses';
-import Admin from '@/admin/entities/admin.entity';
-import { Cashier } from '@/types/db/cashier.interface';
+import User from '@/user/dto/user';
+
 import { Response } from 'express';
 enum RoleOptions {
   ADMIN = 'admin',
@@ -28,7 +28,7 @@ export class AuthController {
     @Body() cred: AuthCredentials,
     @Res() res: Response,
   ) {
-    let user: Admin | Cashier | null = null;
+    let user: User |  null = null;
     let message: {
       title: string;
       description: string;
@@ -80,6 +80,7 @@ export class AuthController {
     }
     const sessionToken = await encryptSessionCookie({
       id: user?.id,
+      role: 'admin',
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 2),
     });
 

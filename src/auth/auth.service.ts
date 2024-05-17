@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { AuthCredentials } from './dto/login';
 import { PrismaService } from '@/prisma/prisma.service';
-import { administrators } from '@prisma/client';
-import Admin from '@/admin/entities/admin.entity';
-import {Cashier} from '@/types/db/cashier.interface';
+
+import User from '@/user/dto/user'; 
+
+
 
 @Injectable()
 export class AuthService {
   constructor(private prisma: PrismaService) {}
-  async verifyAdmin(cred: AuthCredentials): Promise<Admin> {
+  async verifyAdmin(cred: AuthCredentials): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: {
         email: cred.email,

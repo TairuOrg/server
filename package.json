@@ -27,6 +27,8 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/typeorm": "^10.0.2",
     "@prisma/client": "^5.13.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "jose": "^5.3.0",
     "pg": "^8.11.5",
