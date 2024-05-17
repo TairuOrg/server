@@ -1,17 +1,11 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module,  } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserController } from './user.controller';
 import { PrismaModule } from '@/prisma/prisma.module';
-import { SessionMiddleware } from '@/middleware/session.middleware';
+
 
 @Module({
-  controllers: [UserController],
   providers: [UserService],
-  imports: [PrismaModule]
+  imports: [PrismaModule],
+  exports: [UserService],
 })
-export class UserModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionMiddleware)
-      .forRoutes(UserController);
-  }
-}
+export class UserModule {}

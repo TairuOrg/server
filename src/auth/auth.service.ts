@@ -3,20 +3,16 @@ import { AuthCredentials } from './dto/login';
 import { PrismaService } from '@/prisma/prisma.service';
 
 import User from '@/user/dto/user'; 
+import { UserService } from '@/user/user.service';
 
 
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private user: UserService) {}
   async verifyAdmin(cred: AuthCredentials): Promise<User> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: cred.email,
-        password: cred.password,
-      },
-    });
-
+    const user = await this.user.findUser(cred.email, cred.password);
+    
     if (!user) {
       return null;
     }

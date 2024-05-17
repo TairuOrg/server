@@ -6,7 +6,6 @@ export class AuthCredentials {
     readonly email: string
 
     @IsNotEmpty()
-    @Length(8, 50)
     readonly password: string
 
 }

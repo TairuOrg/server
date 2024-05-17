@@ -1,8 +1,7 @@
 import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 
-type E = Error | undefined;
-type V = JWTPayload | undefined;
-type VerificationResult = [E, V];
+type Result<T> = [Error, undefined] | [undefined, T];
+
 const secret = new TextEncoder().encode(process.env.SESSION_TOKEN);
 
 export async function encryptSessionCookie(
@@ -11,11 +10,13 @@ export async function encryptSessionCookie(
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
-    .setExpirationTime('5 seconds')
+    .setExpirationTime('2 hours')
     .sign(secret);
 }
-
-export async function decryptSessionCookie(token: string): Promise<VerificationResult> {
+// [E, T] -> Error or undefined, T or undefined
+export async function decryptSessionCookie(
+  token: string,
+): Promise<Result<JWTPayload>> {
   try {
     return [
       undefined,
@@ -23,7 +24,7 @@ export async function decryptSessionCookie(token: string): Promise<VerificationR
     ];
   } catch (e) {
     if (e.name === 'JWTExpired') {
-      return [new Error('SESSION expired'), undefined];
+      return [new Error('Session expired'), undefined];
     }
     return [
       new Error('An unexpected error ocurred while verifying the session'),
@@ -32,12 +33,15 @@ export async function decryptSessionCookie(token: string): Promise<VerificationR
   }
 }
 
-export async function updateSessionCookie(token: string) {
+export async function updateSessionCookie(
+  token: string,
+): Promise<Result<string>> {
   if (!token) return;
 
   const [e, parsedPayload] = await decryptSessionCookie(token);
-  console.log(parsedPayload);
+
+  if (e) return [e, undefined];
   parsedPayload.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 2);
 
-  return encryptSessionCookie(parsedPayload);
+  return [undefined, await encryptSessionCookie(parsedPayload)];
 }

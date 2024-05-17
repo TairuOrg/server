@@ -22,6 +22,7 @@ async function bootstrap() {
         }));
         return new BadRequestException(errorMessageDispatch);
       },
+      whitelist: true
     }),
   );
   
