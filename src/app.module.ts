@@ -7,11 +7,12 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { ExchangeModule } from './exchange/exchange.module';
+import { SalesModule } from './sales/sales.module';
 
 
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, AdminModule, ExchangeModule],
+  imports: [PrismaModule, AuthModule, UserModule, AdminModule, ExchangeModule, SalesModule],
   controllers: [AppController],
   providers: [AppService ],
 })

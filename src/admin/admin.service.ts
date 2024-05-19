@@ -18,6 +18,37 @@ export class AdminService {
     console.log(income)
     return await this.user.getUser(id);
   }
+  async getTodaysRevenue(): Promise<number> {
+  // Fetch all sales data, including related sales_items and items data
+  const sales = await this.prisma.sales.findMany({
+    include: { // Include the related sales_items data
+      sales_items: {
+        include: { // Further include the related items data
+          items: true,
+        },
+      },
+    },
+  });
+
+
+const today = new Date().getDate();
+const todayRevenue = sales.reduce((acc, sale) => {
+  if (sale.date.getDate() === today) {
+    return acc + sale.sales_items.reduce((itemAcc, saleItem) => {
+      // Cast price to number for type safety (lmao, as if there was type safety in JS)
+      const itemPrice = Number(saleItem.items.price);
+      return itemAcc + (saleItem.quantity * itemPrice);
+    }, 0);
+  } else {
+    return acc;
+  }
+}, 0);
+  
+  return todayRevenue;
+
+}
+
+  
 
   findAll() {
     return `This action returns all admin`;

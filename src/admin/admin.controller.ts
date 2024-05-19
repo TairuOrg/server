@@ -19,4 +19,10 @@ export class AdminController {
 
   }
 
+  @Get('test')
+  async getTodaysRevenue(@Req() req: Request) {
+    return await this.adminService.getTodaysRevenue()
+  }
+
+
 }
