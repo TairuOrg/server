@@ -5,11 +5,12 @@ import { SessionMiddleware } from '@/middleware/session.middleware';
 import { UserModule } from '@/user/user.module';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ExchangeModule } from '@/exchange/exchange.module';
+import { CashierModule } from '@/cashier/cashier.module';
 
 @Module({
   controllers: [AdminController],
   providers: [AdminService],
-  imports: [UserModule, PrismaModule, ExchangeModule],
+  imports: [UserModule, PrismaModule, ExchangeModule, CashierModule],
 })
 export class AdminModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

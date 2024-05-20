@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { UserService } from '@/user/user.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import User from '@/user/dto/user';
 import { ExchangeService } from '@/exchange/exchange.service';
 import { checkSameDate } from '@/utils/date-manager';
+import { CashierService } from '@/cashier/cashier.service';
 
 @Injectable()
 export class AdminService {
@@ -13,10 +13,13 @@ export class AdminService {
     private readonly user: UserService,
     private readonly prisma: PrismaService,
     private readonly currency: ExchangeService,
+    private readonly cashier: CashierService,
   ) {}
 
   async getDashboardData(id: number): Promise<User> {
     const income = await this.currency.convertCurrency(1);
+    const cashierSummary = await this.cashier.getActiveCashiersCount();
+    console.log(cashierSummary);
     console.log(income);
     return await this.user.getUser(id);
   }
@@ -35,13 +38,10 @@ export class AdminService {
       },
     });
 
-    //get today constants
-
     const todayRevenue = sales.reduce((acc, sale) => {
       //Check if the current sale dates from today
 
       if (checkSameDate(new Date(), sale.date)) {
-        console.log('yeehaw');
         return (
           acc +
           sale.sales_items.reduce((itemAcc, saleItem) => {
@@ -55,26 +55,6 @@ export class AdminService {
       }
     }, 0);
     return todayRevenue;
-  }
-
-  async getActiveCashiersCount(): Promise<string> {
-    // Count active and inactive cashiers using Prisma queries
-    const [activeCashiers, inactiveCashiers] = await Promise.all([
-      this.prisma.cashier.count({
-        where: { is_online: true },
-      }),
-      this.prisma.cashier.count({
-        where: { is_online: false },
-      }),
-    ]);
-
-    // Prepare the data object
-    const cashierData = {
-      active: activeCashiers,
-      inactive: inactiveCashiers,
-    };
-    // Return the JSON representation of the data object
-    return JSON.stringify(cashierData);
   }
 
   async getItemsAndCategoriesCount(): Promise<string> {
