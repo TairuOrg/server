@@ -2,10 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { decryptSessionCookie, updateSessionCookie } from '@/auth/lib';
 
+
 @Injectable()
 export class SessionMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const session = req.cookies['SESSION_TOKEN'];
+
     const [e, parsedPayload] = await decryptSessionCookie(session);
 
     if (e) {

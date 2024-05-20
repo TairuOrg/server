@@ -16,14 +16,12 @@ export class AdminService {
     private readonly cashier: CashierService,
   ) {}
 
-  async getDashboardData(id: number): Promise<User> {
-    const income = await this.currency.convertCurrency(1);
-    const cashierSummary = await this.cashier.getActiveCashiersCount();
-    console.log(cashierSummary);
-    console.log(income);
+  async getAdminInfo(id: number): Promise<User> {
     return await this.user.getUser(id);
   }
-
+  async getCashierStatus() {
+    return await this.cashier.getCashierStatus();
+  }
   async getTodaysRevenue(): Promise<number> {
     // Fetch all sales data, including related sales_items and items data
     const sales = await this.prisma.sales.findMany({

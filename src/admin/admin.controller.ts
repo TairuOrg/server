@@ -7,22 +7,18 @@ import { decryptSessionCookie } from '@/auth/lib';
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
-  @Get('dashboard')
-  async dashboardData(@Req() req: Request) {
-    const session_token = req.headers.cookie?.split(';')[1].split('=')[1];
+  @Get('me')
+  async getAdminInfo(@Req() req: Request) {
+    const session_token = req.headers.cookie?.split('=')[1];
+
     const [e, sessionParsed] = await decryptSessionCookie(session_token);
     if (e) return e;
 
-    return await this.adminService.getDashboardData(sessionParsed.id as number);
+    return await this.adminService.getAdminInfo(sessionParsed.id as number);
   }
 
-  // @Get('test')
-  // async getTodaysRevenue(@Req() req: Request) {
-  //   return await this.adminService.getTodaysRevenue()
-  // }
-
-  @Get('test')
+  @Get('cashier-status')
   async Test(@Req() req: Request) {
-    return this.adminService.getItemsAndCategoriesCount();
+    return this.adminService.getCashierStatus()
   }
 }

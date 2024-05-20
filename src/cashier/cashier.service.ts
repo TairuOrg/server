@@ -5,7 +5,7 @@ import { CashierSummary } from '@/types/api/types';
 @Injectable()
 export class CashierService {
   constructor(private readonly prisma: PrismaService) {}
-  async getActiveCashiersCount(): Promise<CashierSummary> {
+  async getCashierStatus(): Promise<CashierSummary> {
     // Count active and inactive cashiers using Prisma queries
     const [activeCashiers, inactiveCashiers] = await Promise.all([
       this.prisma.cashier.count({
