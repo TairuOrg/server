@@ -24,5 +24,9 @@ export class AdminController {
     return await this.adminService.getTodaysRevenue()
   }
 
+  // @Get('test')
+  // async Test(@Req() req: Request) {
+  //   return this.adminService.test()
+  // }
 
 }

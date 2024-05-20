@@ -5,7 +5,9 @@ import { UserService } from '@/user/user.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import User from '@/user/dto/user';
 import { ExchangeService } from '@/exchange/exchange.service';
+import { checkSameDate } from '@/utils/date-manager';
 
+ 
 @Injectable()
 export class AdminService {
   constructor(
@@ -30,10 +32,14 @@ export class AdminService {
     },
   });
 
+//get today constants
 
-const today = new Date().getDate();
+
 const todayRevenue = sales.reduce((acc, sale) => {
-  if (sale.date.getDate() === today) {
+  //Check if the current sale dates from today
+  
+  if (checkSameDate(new Date(), sale.date)) {
+    console.log("yeehaw");
     return acc + sale.sales_items.reduce((itemAcc, saleItem) => {
       // Cast price to number for type safety (lmao, as if there was type safety in JS)
       const itemPrice = Number(saleItem.items.price);
@@ -43,9 +49,7 @@ const todayRevenue = sales.reduce((acc, sale) => {
     return acc;
   }
 }, 0);
-  
   return todayRevenue;
-
 }
 
   
@@ -64,5 +68,10 @@ const todayRevenue = sales.reduce((acc, sale) => {
 
   remove(id: number) {
     return `This action removes a #${id} admin`;
+  }
+
+  test() {
+    checkSameDate(new Date(), new Date());
+    return true;
   }
 }
