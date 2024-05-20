@@ -85,7 +85,7 @@ export class AdminService {
     const categoriesCount = categoriesGroup.length;
     const inventoryData = {
       item_count: itemsCount,
-      categoryCount: categoriesCount,
+      category_count: categoriesCount,
     };
 
     console.log(inventoryData);
