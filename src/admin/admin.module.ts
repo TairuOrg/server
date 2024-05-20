@@ -9,11 +9,10 @@ import { ExchangeModule } from '@/exchange/exchange.module';
 @Module({
   controllers: [AdminController],
   providers: [AdminService],
-  imports: [UserModule, PrismaModule, ExchangeModule]
+  imports: [UserModule, PrismaModule, ExchangeModule],
 })
-export class AdminModule  implements NestModule {
+export class AdminModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionMiddleware)
-      .forRoutes(AdminController);
+    consumer.apply(SessionMiddleware).forRoutes(AdminController);
   }
 }
