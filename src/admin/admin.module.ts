@@ -6,11 +6,13 @@ import { UserModule } from '@/user/user.module';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ExchangeModule } from '@/exchange/exchange.module';
 import { CashierModule } from '@/cashier/cashier.module';
+import { ItemsModule } from '@/items/items.module';
+import { SalesModule } from '@/sales/sales.module';
 
 @Module({
   controllers: [AdminController],
   providers: [AdminService],
-  imports: [UserModule, PrismaModule, ExchangeModule, CashierModule],
+  imports: [UserModule, PrismaModule, ExchangeModule, CashierModule, ItemsModule, CashierModule, SalesModule],
 })
 export class AdminModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

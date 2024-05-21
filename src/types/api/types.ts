@@ -4,3 +4,4 @@ export type CashierSummary = {
     active_cashiers: number;
     inactive_cashiers: number;
 }
+

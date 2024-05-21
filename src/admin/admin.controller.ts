@@ -18,7 +18,17 @@ export class AdminController {
   }
 
   @Get('cashier-status')
-  async Test(@Req() req: Request) {
+  async cashierStatus(@Req() req: Request) {
     return this.adminService.getCashierStatus()
+  }
+
+  @Get('items-and-categories')
+  async itemsAndCategories(@Req() req: Request) {
+    return this.adminService.getItemsAndCategoriesCount()
+  }
+
+  @Get('todays-revenue')
+  async todaysRevenue(@Req() req: Request) {
+    return this.adminService.getTodaysRevenue()
   }
 }

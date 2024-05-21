@@ -9,11 +9,12 @@ import { AdminModule } from './admin/admin.module';
 import { ExchangeModule } from './exchange/exchange.module';
 import { SalesModule } from './sales/sales.module';
 import { CashierModule } from './cashier/cashier.module';
+import { ItemsModule } from './items/items.module';
 
 
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, AdminModule, ExchangeModule, SalesModule, CashierModule],
+  imports: [PrismaModule, AuthModule, UserModule, AdminModule, ExchangeModule, SalesModule, CashierModule, ItemsModule],
   controllers: [AppController],
   providers: [AppService ],
 })
