@@ -5,3 +5,8 @@ export type CashierSummary = {
     inactive_cashiers: number;
 }
 
+export type ExchangeRate = {
+    dolar: number;
+    euro: number;
+}
+

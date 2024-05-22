@@ -8,3 +8,4 @@ export class SalesController {
   constructor(private readonly salesService: SalesService) {}
 
 }
+ 

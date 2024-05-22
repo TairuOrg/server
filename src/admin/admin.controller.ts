@@ -31,4 +31,15 @@ export class AdminController {
   async todaysRevenue(@Req() req: Request) {
     return this.adminService.getTodaysRevenue()
   }
+
+
+  @Get('get-exchange')
+  async getExchange(@Req() req : Request) {
+    return this.adminService.getExchangeRate()
+  }
+
+  @Get('convert-amount')
+  async convertExchange(@Req() req:Request) {
+    return this.adminService.convertExchange(2);
+  }
 }

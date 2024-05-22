@@ -38,4 +38,12 @@ export class AdminService {
     checkSameDate(new Date(), new Date());
     return true;
   }
+
+  async getExchangeRate() {
+    return await this.currency.fetchExchangeRate();
+  }
+
+  async convertExchange(amount : number) {
+    return await this.currency.convertCurrency(amount);
+  }
 }
