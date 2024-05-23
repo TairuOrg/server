@@ -13,7 +13,7 @@ export class ExchangeService {
     };
   }
 
-  async fetchExchangeRate(): Promise<ExchangeRate> {
+  private async fetchExchangeRate(): Promise<ExchangeRate> {
     const result = await fetch('https://www.bcv.org.ve/');
     const staticHTML = await result.text();
     const $ = cheerio.load(staticHTML);

@@ -22,7 +22,7 @@ export class SalesService {
     },
   },
 });
-
+console.log('sales', sales);
 const todayRevenue = sales.reduce((acc, sale) => {
   //Check if the current sale dates from today
 

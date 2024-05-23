@@ -7,7 +7,8 @@ import { decryptSessionCookie, updateSessionCookie } from '@/auth/lib';
 export class SessionMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const session = req.cookies['SESSION_TOKEN'];
-
+    console.log('session', session)
+    
     const [e, parsedPayload] = await decryptSessionCookie(session);
 
     if (e) {

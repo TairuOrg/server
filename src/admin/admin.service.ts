@@ -8,6 +8,7 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
+import { ExchangeRate, Revenue, ServerResponse } from '@/types/api/types';
 
 @Injectable()
 export class AdminService {
@@ -17,7 +18,7 @@ export class AdminService {
     private readonly currency: ExchangeService,
     private readonly cashier: CashierService,
     private readonly item: ItemsService,
-    private readonly sale: SalesService
+    private readonly sale: SalesService,
   ) {}
 
   async getAdminInfo(id: number): Promise<User> {
@@ -26,8 +27,20 @@ export class AdminService {
   async getCashierStatus() {
     return await this.cashier.getCashierStatus();
   }
-  async getTodaysRevenue() {
-   return await this.sale.getTodaysRevenue();
+  async getTodaysRevenue(): Promise<ServerResponse<Revenue>> {
+    const todaysRevenue = await this.sale.getTodaysRevenue();
+    const foreignRevenue = await this.currency.convertCurrency(todaysRevenue);
+    return {
+      error: false,
+      body: {
+        message: 'Revenue for today',
+        payload: {
+          VE: { amount: todaysRevenue },
+          US: { amount: foreignRevenue.dolar },
+          EU: { amount: foreignRevenue.euro },
+        },
+      },
+    };
   }
 
   async getItemsAndCategoriesCount() {
@@ -39,11 +52,7 @@ export class AdminService {
     return true;
   }
 
-  async getExchangeRate() {
-    return await this.currency.fetchExchangeRate();
-  }
-
-  async convertExchange(amount : number) {
+  async convertExchange(amount: number) {
     return await this.currency.convertCurrency(amount);
   }
 }
