@@ -35,9 +35,9 @@ export class AdminService {
       body: {
         message: 'Revenue for today',
         payload: {
-          VE: { amount: todaysRevenue },
-          US: { amount: foreignRevenue.dolar },
-          EU: { amount: foreignRevenue.euro },
+          VE: { amount: foreignRevenue.body.payload.bs},
+          US: { amount: todaysRevenue },
+          EU: { amount: foreignRevenue.body.payload.euro },
         },
       },
     };

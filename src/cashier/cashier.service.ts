@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { CashierSummary } from '@/types/api/types';
+import { CashierSummary, ServerResponse } from '@/types/api/types';
 
 @Injectable()
 export class CashierService {
   constructor(private readonly prisma: PrismaService) {}
-  async getCashierStatus(): Promise<CashierSummary> {
+  async getCashierStatus(): Promise<ServerResponse<CashierSummary>> {
     // Count active and inactive cashiers using Prisma queries
     const [activeCashiers, inactiveCashiers] = await Promise.all([
       this.prisma.cashier.count({
@@ -17,8 +17,14 @@ export class CashierService {
     ]);
     // Return the JSON representation of the data object
     return {
-      active_cashiers: activeCashiers,
-      inactive_cashiers: inactiveCashiers,
+      error: false,
+      body: {
+        message: 'Count of active and inactive cashiers',
+        payload: {
+          active_cashiers: activeCashiers,
+          inactive_cashiers: inactiveCashiers,
+        },
+      },
     };
   }
 }

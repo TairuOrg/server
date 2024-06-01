@@ -2,26 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { PrismaService } from '@/prisma/prisma.service';
+import { ServerResponse, ItemsAndCategoriesCount } from '@/types/api/types';
+import { Item } from './entities/item.entity';
 
 @Injectable()
 export class ItemsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getItemsAndCategoriesCount(): Promise<string> {
+  async getItemsAndCategoriesCount(): Promise<
+    ServerResponse<ItemsAndCategoriesCount>
+  > {
     const itemsCount = await this.prisma.items.count();
     const categoriesGroup = await this.prisma.items.groupBy({
       by: ['category_'],
     });
     const categoriesCount = categoriesGroup.length;
-    const inventoryData = {
-      item_count: itemsCount,
-      category_count: categoriesCount,
+
+    return {
+      error: false, 
+      body: {
+        message: 'Items and categories count',
+        payload: {
+          items: itemsCount,
+          categories: categoriesCount,
+        },
+      },
     };
-
-    console.log(inventoryData);
-    return JSON.stringify(inventoryData);
   }
-
 
   create(createItemDto: CreateItemDto) {
     return 'This action adds a new item';
