@@ -24,6 +24,12 @@ export type ItemsAndCategoriesCount = {
   items: number;
   categories: number;
 };
+
+export type SignUpCode = {
+  code: string;
+}
+
+
 export type ServerResponse<T> = {
   error: boolean;
   body: {

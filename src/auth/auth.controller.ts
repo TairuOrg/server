@@ -7,9 +7,11 @@ import {
   NotificationStatus,
   NotificationStatus as TYPE,
 } from '@/types/api/Responses';
+import { SignUpCode, ServerResponse } from '@/types/api/types';
 import User from '@/user/dto/user';
 
 import { Response } from 'express';
+import { env } from 'node:process';
 enum RoleOptions {
   ADMIN = 'admin',
   CASHIER = 'cashier',
@@ -28,8 +30,7 @@ export class AuthController {
     @Body() cred: AuthCredentials,
     @Res() res: Response,
   ) {
-
-    let user: User |  null = null;
+    let user: User | null = null;
     let message: {
       title: string;
       description: string;
@@ -96,5 +97,37 @@ export class AuthController {
 
     const statusCode = user ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
     return res.status(statusCode).json(response);
+  }
+
+  @Post('signup-access') async signupAccess(
+    @Body() code: SignUpCode,
+    @Res() res: Response,
+  ) {
+    let response: AuthResponse;
+    if (code.code === process.env.SU_TOKEN) {
+      response = {
+        error: false,
+        body: {
+          message: {
+            title: 'Signup Code Accepted',
+            description: 'The provided signup code was valid',
+            notificationStatus: NotificationStatus.SUCCESS,
+          },
+        },
+      };
+      return res.status(HttpStatus.OK).json(response);
+    } else {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Signup Code Invalid',
+            description: 'The provided signup code was not valid',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
   }
 }
