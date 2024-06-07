@@ -37,3 +37,12 @@ export type ServerResponse<T> = {
     payload: T;
   };
 };
+
+export type SignUpData = {
+  personal_id: string;
+  password: string;
+  name: string;
+  phone_number: string;
+  email: string;
+  residence_location: string;
+}

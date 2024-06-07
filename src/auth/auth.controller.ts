@@ -7,7 +7,7 @@ import {
   NotificationStatus,
   NotificationStatus as TYPE,
 } from '@/types/api/Responses';
-import { SignUpCode, ServerResponse } from '@/types/api/types';
+import { SignUpCode, ServerResponse, SignUpData } from '@/types/api/types';
 import User from '@/user/dto/user';
 
 import { Response } from 'express';
@@ -130,4 +130,40 @@ export class AuthController {
       return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
   }
+
+
+// type SignUpData = {
+//   personal_id: string;
+//   password: string;
+//   name: string;
+//   phone_number: string;
+//   email: string;
+//   residence_location: string;
+// }
+
+  @Post('signup') async signup(
+    @Body() data: SignUpData,
+    @Res() res: Response,
+  ) {
+    let response: AuthResponse;
+    const user = await this.authService.signup(data);
+    if (user) {
+      return res.status(HttpStatus.OK).json(response);
+    } else {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Signup Failed',
+            description: 'An error occurred while signing up',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
+    }
+  }
+
+
+
 }

@@ -4,7 +4,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 import User from '@/user/dto/user'; 
 import { UserService } from '@/user/user.service';
-
+import { SignUpData } from '@/types/api/types';
+import { notificationStatus } from '@/types/api/types';
 
 
 @Injectable()
@@ -34,5 +35,9 @@ export class AuthService {
 
   async logoutCashier(id: string): Promise<any> {
     return 'unimplemented';
+  }
+
+  async signup(data: SignupData): Promise<Response>{
+
   }
 }
