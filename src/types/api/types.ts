@@ -1,4 +1,8 @@
 // This file name could change over time
+export enum RoleOptions {
+  ADMIN = 'admin',
+  CASHIER = 'cashier',
+}
 
 export type CashierSummary = {
   active_cashiers: number;

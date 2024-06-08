@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 import User from '@/user/dto/user';
 import { UserService } from '@/user/user.service';
-import { SignUpData } from '@/types/api/types';
+import { SignUpData, RoleOptions } from '@/types/api/types';
 import { NotificationStatus, AuthResponse } from '@/types/api/Responses';
 import { Response } from 'express';
 
@@ -137,7 +137,7 @@ export class AuthService {
       });
 
       //se verifica el rol del usuario, para insertarlo como un administrador de ser necesario
-      if (role === 'admin') {
+      if (role === RoleOptions.ADMIN) {
         const insert_admin = await this.prisma.administrators.create({
           data: {
             User: {
@@ -149,7 +149,7 @@ export class AuthService {
         });
       }
       //se verifica el rol del usuario, para insertarlo como un cajero de ser necesario
-      if (role === 'cashier') {
+      if (role === RoleOptions.CASHIER) {
         const insert_cashier = await this.prisma.cashier.create({
           data: {
             User: {

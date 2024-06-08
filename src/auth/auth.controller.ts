@@ -7,15 +7,12 @@ import {
   NotificationStatus,
   NotificationStatus as TYPE,
 } from '@/types/api/Responses';
-import { SignUpCode, ServerResponse, SignUpData } from '@/types/api/types';
+import { SignUpCode, ServerResponse, SignUpData, RoleOptions } from '@/types/api/types';
 import User from '@/user/dto/user';
 
 import { Response } from 'express';
 import { env } from 'node:process';
-enum RoleOptions {
-  ADMIN = 'admin',
-  CASHIER = 'cashier',
-}
+
 interface RolesQueryParams {
   role: RoleOptions;
 }
