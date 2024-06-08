@@ -36,8 +36,8 @@ export class AuthController {
       description: string;
       notificationStatus: TYPE;
     } = {
-      title: 'Login Failed',
-      description: 'Invalid credentials',
+      title: 'Inicio de sesión fallido',
+      description: 'Credenciales inválidas',
       notificationStatus: NotificationStatus.ERROR,
     };
 
@@ -54,8 +54,8 @@ export class AuthController {
         user = await this.authService.verifyAdmin(cred);
         if (user) {
           message = {
-            title: 'Admin login Successful',
-            description: 'Welcome back',
+            title: 'Inicio de sesión del administrador satisfactorio',
+            description: 'Te damos la bienvenida de vuelta',
             notificationStatus: NotificationStatus.SUCCESS,
           };
         }
@@ -66,8 +66,8 @@ export class AuthController {
         user = await this.authService.verifyCashier(cred);
         if (user) {
           message = {
-            title: 'Cashier login Successful',
-            description: 'Welcome back',
+            title: 'Inicio de sesión del cajero satisfactorio',
+            description: 'Te damos la bienvenida de vuelta',
             notificationStatus: NotificationStatus.SUCCESS,
           };
         }
@@ -75,8 +75,8 @@ export class AuthController {
       }
       default:
         message = {
-          title: 'Login Failed',
-          description: 'Invalid role',
+          title: 'Inicio de sesión fallido',
+          description: 'Rol inválido',
           notificationStatus: NotificationStatus.ERROR,
         };
     }
@@ -109,8 +109,8 @@ export class AuthController {
         error: false,
         body: {
           message: {
-            title: 'Signup Code Accepted',
-            description: 'The provided signup code was valid',
+            title: 'Código de registro válido',
+            description: 'El código de registro suministrado es válido',
             notificationStatus: NotificationStatus.SUCCESS,
           },
         },
@@ -121,8 +121,8 @@ export class AuthController {
         error: true,
         body: {
           message: {
-            title: 'Signup Code Invalid',
-            description: 'The provided signup code was not valid',
+            title: 'Código de registro inválido',
+            description: 'El código de registro suministrado es inválido',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
@@ -131,39 +131,17 @@ export class AuthController {
     }
   }
 
+  // type SignUpData = {
+  //   personal_id: string;
+  //   password: string;
+  //   name: string;
+  //   phone_number: string;
+  //   email: string;
+  //   residence_location: string;
+  // }
 
-// type SignUpData = {
-//   personal_id: string;
-//   password: string;
-//   name: string;
-//   phone_number: string;
-//   email: string;
-//   residence_location: string;
-// }
-
-  @Post('signup') async signup(
-    @Body() data: SignUpData,
-    @Res() res: Response,
-  ) {
-    let response: AuthResponse;
-    const user = await this.authService.signup(data);
-    if (user) {
-      return res.status(HttpStatus.OK).json(response);
-    } else {
-      response = {
-        error: true,
-        body: {
-          message: {
-            title: 'Signup Failed',
-            description: 'An error occurred while signing up',
-            notificationStatus: NotificationStatus.ERROR,
-          },
-        },
-      };
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
-    }
+  @Post('signup') async signup(@Body() data: SignUpData, @Res() res: Response) {
+    const response = await this.authService.signup(data, res);
+    return response;
   }
-
-
-
 }

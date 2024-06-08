@@ -19,7 +19,7 @@ async function bootstrap() {
           error: true,
           body: {
             message: {
-              title: 'Bad request',
+              title: 'Solicitud inválida',
               message: Object.values(err.constraints).join(','),
               notificationStatus: 'error',
             },

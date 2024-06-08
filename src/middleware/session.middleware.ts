@@ -16,7 +16,7 @@ export class SessionMiddleware implements NestMiddleware {
         error: true,
         body: {
           message: {
-            title: 'Unauthorized',
+            title: 'No autorizado',
             description: e.message,
             notificationStatus: 'error',
           },
@@ -34,7 +34,7 @@ export class SessionMiddleware implements NestMiddleware {
           error: true,
           body: {
             message: {
-              title: 'Unauthorized',
+              title: 'No autorizado',
               description: e.message,
               notificationStatus: 'error',
             },
