@@ -140,8 +140,13 @@ export class AuthController {
   //   residence_location: string;
   // }
 
-  @Post('signup') async signup(@Body() data: SignUpData, @Res() res: Response) {
-    const response = await this.authService.signup(data, res);
+  @Post('signup-validation') async signupValidation(@Body() data: SignUpData, @Res() res: Response) {
+    const response = await this.authService.signupValidation(data, res);
+    return response;
+  }
+
+  @Post('signup-insertion') async signupInsertion(@Body() data: SignUpData, @Res() res: Response) {
+    const response = await this.authService.signupInsertion(data, res, RoleOptions.ADMIN);
     return response;
   }
 }

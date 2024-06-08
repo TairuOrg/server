@@ -8,6 +8,7 @@ import { SignUpData } from '@/types/api/types';
 import { NotificationStatus, AuthResponse } from '@/types/api/Responses';
 import { Response } from 'express';
 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -40,7 +41,7 @@ export class AuthService {
     return 'unimplemented';
   }
 
-  async signup(data: SignUpData, res: Response): Promise<Response> {
+  async signupValidation(data: SignUpData, res: Response): Promise<Response> {
     const personal_id = data.personal_id;
     const email = data.email;
     const phone_number = data.phone_number;
@@ -53,13 +54,11 @@ export class AuthService {
       },
     });
 
-
     const db_personal_id = await this.prisma.user.findUnique({
       where: {
         personal_id: personal_id,
       },
     });
-
 
     const db_phone_number = await this.prisma.user.findUnique({
       where: {
@@ -67,15 +66,13 @@ export class AuthService {
       },
     });
 
-
     if (db_personal_id) {
       response = {
         error: true,
         body: {
           message: {
             title: 'Cédula inválida',
-            description:
-              'Ya existe un usuario con esta cédula',
+            description: 'Ya existe un usuario con esta cédula',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
@@ -99,8 +96,7 @@ export class AuthService {
         body: {
           message: {
             title: 'Número de teléfono inválido',
-            description:
-              'Ya existe un usuario con este número de teléfono',
+            description: 'Ya existe un usuario con este número de teléfono',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
@@ -118,6 +114,78 @@ export class AuthService {
         },
       };
       return res.status(HttpStatus.OK).json(response);
+    }
+  }
+
+  async signupInsertion(
+    data: SignUpData,
+    res: Response,
+    role: string,
+  ): Promise<Response> {
+    try {
+      //se inserta el usuario en la base de datos
+      const insert_user = await this.prisma.user.create({
+        data: {
+          ...data,
+        },
+      });
+      //se busca el usuario recien insertado, con el fin de poder obtener el id autoincremental de la base de datos
+      const user_data = await this.prisma.user.findUnique({
+        where: {
+          personal_id: data.personal_id,
+        },
+      });
+
+      //se verifica el rol del usuario, para insertarlo como un administrador de ser necesario
+      if (role === 'admin') {
+        const insert_admin = await this.prisma.administrators.create({
+          data: {
+            User: {
+              connect: {
+                id: user_data.id,
+              },
+            },
+          },
+        });
+      }
+      //se verifica el rol del usuario, para insertarlo como un cajero de ser necesario
+      if (role === 'cashier') {
+        const insert_cashier = await this.prisma.cashier.create({
+          data: {
+            User: {
+              connect: {
+                id: user_data.id,
+              },
+            },
+          },
+        });
+      }
+      //se retorna la respuesta de exito
+      return res.status(HttpStatus.OK).json({
+        error: false,
+        body: {
+          message: {
+            title: 'Usuario insertado correctamente',
+            description:
+              'Se insertó el usuario correctamente en la base de datos',
+            notificationStatus: NotificationStatus.SUCCESS,
+          },
+        },
+      });
+      //en caso de error, se retorna la respuesta de error
+    } catch (error) {
+      console.log(error);
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        error: true,
+        body: {
+          message: {
+            title: 'Error al insertar usuario',
+            description:
+              'Ocurrió un error al insertar el usuario en la base de datos',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      });
     }
   }
 }
