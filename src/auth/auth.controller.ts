@@ -7,7 +7,12 @@ import {
   NotificationStatus,
   NotificationStatus as TYPE,
 } from '@/types/api/Responses';
-import { SignUpCode, ServerResponse, SignUpData, RoleOptions } from '@/types/api/types';
+import {
+  SignUpCode,
+  ServerResponse,
+  SignUpData,
+  RoleOptions,
+} from '@/types/api/types';
 import User from '@/user/dto/user';
 
 import { Response } from 'express';
@@ -17,10 +22,15 @@ interface RolesQueryParams {
   role: RoleOptions;
 }
 
+//auth controller, inside of this controller, all the auth endpoints are defined and handled by
+//the auth service
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  //receives authcredentials (email and password) and a role as a query param,
+  // then it checks if the given credentials
+  //are valid, if they are, it returns a success message and a session token
   @Post('login')
   async loginAdmin(
     @Query() { role }: RolesQueryParams,
@@ -96,53 +106,33 @@ export class AuthController {
     return res.status(statusCode).json(response);
   }
 
+  //receives the signup code and checks if it is valid, if it is, it returns a success message
+  //the signup code is a confidential code that is given to a specific person, and allows them
+  //to register new administrators
   @Post('signup-access') async signupAccess(
     @Body() code: SignUpCode,
     @Res() res: Response,
   ) {
-    let response: AuthResponse;
-    if (code.code === process.env.SU_TOKEN) {
-      response = {
-        error: false,
-        body: {
-          message: {
-            title: 'Código de registro válido',
-            description: 'El código de registro suministrado es válido',
-            notificationStatus: NotificationStatus.SUCCESS,
-          },
-        },
-      };
-      return res.status(HttpStatus.OK).json(response);
-    } else {
-      response = {
-        error: true,
-        body: {
-          message: {
-            title: 'Código de registro inválido',
-            description: 'El código de registro suministrado es inválido',
-            notificationStatus: NotificationStatus.ERROR,
-          },
-        },
-      };
-      return res.status(HttpStatus.UNAUTHORIZED).json(response);
-    }
+    let response = await this.authService.signupCodeValidation(code, res);
+    return response;
   }
 
-  // type SignUpData = {
-  //   personal_id: string;
-  //   password: string;
-  //   name: string;
-  //   phone_number: string;
-  //   email: string;
-  //   residence_location: string;
-  // }
-
-  @Post('signup-validation') async signupValidation(@Body() data: SignUpData, @Res() res: Response) {
+  //Receives the data from the user and validates it, to check if the unique fields given are not used
+  //by any other user in the database (email, personal_id, phone_number)
+  @Post('signup-validation') async signupValidation(
+    @Body() data: SignUpData,
+    @Res() res: Response,
+  ) {
     const response = await this.authService.signupValidation(data, res);
     return response;
   }
 
-  @Post('signup-insertion') async signupInsertion(@Body() data: SignUpData, @Res() res: Response) {
+  //Receives the data from the user and inserts it into the database, creating a new admin
+  // or cashier, depending on the given role
+  @Post('signup-insertion') async signupInsertion(
+    @Body() data: SignUpData,
+    @Res() res: Response,
+  ) {
     const response = await this.authService.signupInsertion(data, res, RoleOptions.ADMIN);
     return response;
   }

@@ -4,10 +4,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 import User from '@/user/dto/user';
 import { UserService } from '@/user/user.service';
-import { SignUpData, RoleOptions } from '@/types/api/types';
+import { SignUpData, RoleOptions, SignUpCode } from '@/types/api/types';
 import { NotificationStatus, AuthResponse } from '@/types/api/Responses';
 import { Response } from 'express';
-
 
 @Injectable()
 export class AuthService {
@@ -186,6 +185,37 @@ export class AuthService {
           },
         },
       });
+    }
+  }
+  async signupCodeValidation(
+    code: SignUpCode,
+    res: Response,
+  ): Promise<Response> {
+    let response: AuthResponse;
+    if (code.code === process.env.SU_TOKEN) {
+      response = {
+        error: false,
+        body: {
+          message: {
+            title: 'Código de registro válido',
+            description: 'El código de registro suministrado es válido',
+            notificationStatus: NotificationStatus.SUCCESS,
+          },
+        },
+      };
+      return res.status(HttpStatus.OK).json(response);
+    } else {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Código de registro inválido',
+            description: 'El código de registro suministrado es inválido',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
   }
 }
