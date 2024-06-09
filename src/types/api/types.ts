@@ -1,3 +1,5 @@
+import { Decimal } from "@prisma/client/runtime/library";
+
 // This file name could change over time
 export enum RoleOptions {
   ADMIN = 'admin',
@@ -25,9 +27,9 @@ export type Revenue = {
 };
 
 export type Item = {
-    barcode_id: number,
+    barcode_id: string,
     name: string,
-    price: number,
+    price: Decimal,
     category: string,
     manufacturer: string,
     quantity: number

@@ -2,8 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { ServerResponse, Item, ItemsAndCategoriesCount } from '@/types/api/types';
-
+import {
+  ServerResponse,
+  Item,
+  ItemsAndCategoriesCount,
+} from '@/types/api/types';
 
 @Injectable()
 export class ItemsService {
@@ -19,7 +22,7 @@ export class ItemsService {
     const categoriesCount = categoriesGroup.length;
 
     return {
-      error: false, 
+      error: false,
       body: {
         message: 'Items and categories count',
         payload: {
@@ -34,10 +37,9 @@ export class ItemsService {
     return 'This action adds a new item';
   }
 
-  async findAll(): Promise<
-  ServerResponse<{}[]>>{
-    // fix typing here
-    const items = await this.prisma.items.findMany({
+  async findAll(): Promise<ServerResponse<Item[]>> {
+    // WTF
+    const items: Item[] = await this.prisma.items.findMany({
       select: {
         barcode_id: true,
         name: true,
@@ -45,17 +47,16 @@ export class ItemsService {
         category: true,
         manufacturer: true,
         quantity: true,
-      }
+      },
     });
-    
+
     return {
-      error: false, 
+      error: false,
       body: {
         message: 'Lista de los productos en el inventario',
-        payload: items
+        payload: items,
       },
     };
-    
   }
 
   findOne(id: number) {
