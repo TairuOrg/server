@@ -70,7 +70,7 @@ model items {
   barcode_id    String?         @db.VarChar(12)
   name          String          @db.VarChar(70)
   price         Decimal         @db.Decimal(4, 2)
-  category_     String          @map("category ") @db.VarChar(25)
+  category      String          @db.VarChar(25)
   manufacturer  String          @db.VarChar(70)
   quantity      Int
   entries_items entries_items[]

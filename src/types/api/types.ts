@@ -24,6 +24,15 @@ export type Revenue = {
   EU: { amount: number };
 };
 
+export type Item = {
+    barcode_id: number,
+    name: string,
+    price: number,
+    category: string,
+    manufacturer: string,
+    quantity: number
+}
+
 export type ItemsAndCategoriesCount = {
   items: number;
   categories: number;

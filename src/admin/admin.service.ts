@@ -55,4 +55,8 @@ export class AdminService {
   async convertExchange(amount: number) {
     return await this.currency.convertCurrency(amount);
   }
+
+  async getItems() {
+    return await this.item.findAll();
+  }
 }

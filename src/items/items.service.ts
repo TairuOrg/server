@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { ServerResponse, ItemsAndCategoriesCount } from '@/types/api/types';
-import { Item } from './entities/item.entity';
+import { ServerResponse, Item, ItemsAndCategoriesCount } from '@/types/api/types';
+
 
 @Injectable()
 export class ItemsService {
@@ -14,7 +14,7 @@ export class ItemsService {
   > {
     const itemsCount = await this.prisma.items.count();
     const categoriesGroup = await this.prisma.items.groupBy({
-      by: ['category_'],
+      by: ['category'],
     });
     const categoriesCount = categoriesGroup.length;
 
@@ -34,8 +34,28 @@ export class ItemsService {
     return 'This action adds a new item';
   }
 
-  findAll() {
-    return `This action returns all items`;
+  async findAll(): Promise<
+  ServerResponse<{}[]>>{
+    // fix typing here
+    const items = await this.prisma.items.findMany({
+      select: {
+        barcode_id: true,
+        name: true,
+        price: true,
+        category: true,
+        manufacturer: true,
+        quantity: true,
+      }
+    });
+    
+    return {
+      error: false, 
+      body: {
+        message: 'Lista de los productos en el inventario',
+        payload: items
+      },
+    };
+    
   }
 
   findOne(id: number) {

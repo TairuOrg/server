@@ -6,7 +6,7 @@ export interface Item {
   barcodeId?: string;
   name: string;
   price: number;
-  category: string; // Mapped from "category_"
+  category: string; // Mapped from "category"
   manufacturer: string;
   quantity: number;
   entriesItems?: EntryItem[]; // Array of related entryItems

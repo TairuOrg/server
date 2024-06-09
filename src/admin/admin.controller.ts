@@ -37,4 +37,9 @@ export class AdminController {
   async convertExchange(@Req() req:Request) {
     return this.adminService.convertExchange(2);
   }
+
+  @Get('items')
+  async getItems(@Req() req:Request) {
+    return this.adminService.getItems();
+  }
 }
