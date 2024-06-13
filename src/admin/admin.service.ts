@@ -59,4 +59,12 @@ export class AdminService {
   async getItems() {
     return await this.item.findAll();
   }
+
+  async getReports() {
+    //return list of all reports
+  }
+
+  async getCashiers() {
+    return await this.cashier.findAll();
+  }
 }

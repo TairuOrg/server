@@ -35,6 +35,17 @@ export type Item = {
     quantity: number
 }
 
+export type CashierView = {
+  is_online: boolean,
+  User: {
+    personal_id: string,
+    name: string,
+    phone_number: string,
+    email: string,
+    residence_location: string
+  }
+}
+
 export type ItemsAndCategoriesCount = {
   items: number;
   categories: number;

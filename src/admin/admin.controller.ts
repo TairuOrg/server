@@ -42,4 +42,14 @@ export class AdminController {
   async getItems(@Req() req:Request) {
     return this.adminService.getItems();
   }
+
+  @Get('reports')
+  async getReports(@Req() req:Request) {
+    return this.adminService.getReports();
+  }
+
+  @Get('cashiers')
+  async getCashiers(@Req() req:Request) {
+    return this.adminService.getCashiers();
+  }
 }
