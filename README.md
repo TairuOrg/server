@@ -31,15 +31,15 @@
 <h2>CASHIER</h2>
 
 <ul>
-  <li>[] me GET (returns cashierSessionId)</li>
-  <li>[] items GET (returns a list of items in stock)</li>
-  <li>[] client-verification POST (validates whether is already registered or not)</li>
-  <li>[] client validation POST (validates a new client insertion data)</li>
-  <li>[] client-insertion POST (inserts a new client)</li>
-  <li>[] new-sale POST (registers a new sale)</li>
-  <li>[] add-article POST (adds articles to a sale)</li>
-  <li>[] remove-article POST (removes articles from a sale)</li>
-  <li>[] cancel-sale POST (cancels a sale)</li>
+  <li>[ ] me GET (returns cashierSessionId)</li>
+  <li>[ ] items GET (returns a list of items in stock)</li>
+  <li>[ ] client-verification POST (validates whether is already registered or not)</li>
+  <li>[ ] client validation POST (validates a new client insertion data)</li>
+  <li>[ ] client-insertion POST (inserts a new client)</li>
+  <li>[ ] new-sale POST (registers a new sale)</li>
+  <li>[ ] add-article POST (adds articles to a sale)</li>
+  <li>[ ] remove-article POST (removes articles from a sale)</li>
+  <li>[ ] cancel-sale POST (cancels a sale)</li>
 </ul>
 <h2>AUTH</h2>
 <ul>
