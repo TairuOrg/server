@@ -116,16 +116,18 @@ export class AuthService {
     }
   }
 
-  async signupInsertion(
-    data: SignUpData,
-    res: Response,
-    role: string,
-  ): Promise<Response> {
+  async signupInsertion(data: SignUpData, res: Response): Promise<Response> {
     try {
       //se inserta el usuario en la base de datos
+      console.log('ghrui', data.role);
       const insert_user = await this.prisma.user.create({
         data: {
-          ...data,
+          personal_id: data.personal_id,
+          password: data.password,
+          name: data.name,
+          phone_number: data.phone_number,
+          email: data.email,
+          residence_location: data.residence_location,
         },
       });
       //se busca el usuario recien insertado, con el fin de poder obtener el id autoincremental de la base de datos
@@ -136,7 +138,7 @@ export class AuthService {
       });
 
       //se verifica el rol del usuario, para insertarlo como un administrador de ser necesario
-      if (role === RoleOptions.ADMIN) {
+      if (data.role === RoleOptions.ADMIN) {
         const insert_admin = await this.prisma.administrators.create({
           data: {
             User: {
@@ -148,7 +150,7 @@ export class AuthService {
         });
       }
       //se verifica el rol del usuario, para insertarlo como un cajero de ser necesario
-      if (role === RoleOptions.CASHIER) {
+      if (data.role === RoleOptions.CASHIER) {
         const insert_cashier = await this.prisma.cashier.create({
           data: {
             User: {

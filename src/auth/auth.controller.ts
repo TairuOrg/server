@@ -131,9 +131,9 @@ export class AuthController {
   // or cashier, depending on the given role
   @Post('signup-insertion') async signupInsertion(
     @Body() data: SignUpData,
-    @Res() res: Response,
+    @Res() res: Response, 
   ) {
-    const response = await this.authService.signupInsertion(data, res, RoleOptions.ADMIN);
+    const response = await this.authService.signupInsertion(data, res);
     return response;
   }
 }

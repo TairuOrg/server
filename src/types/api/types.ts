@@ -71,4 +71,5 @@ export type SignUpData = {
   phone_number: string;
   email: string;
   residence_location: string;
+  role: RoleOptions;
 }
