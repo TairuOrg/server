@@ -9,10 +9,13 @@ import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
 import { ExchangeRate, Revenue, ServerResponse } from '@/types/api/types';
+import { ReportService } from '@/report/report.service';
 
 @Injectable()
 export class AdminService {
+  
   constructor(
+    private readonly report: ReportService,
     private readonly user: UserService,
     private readonly prisma: PrismaService,
     private readonly currency: ExchangeService,
@@ -61,7 +64,7 @@ export class AdminService {
   }
 
   async getReports() {
-    //return list of all reports
+    return await this.report.findAll();
   }
 
   async getCashiers() {

@@ -35,6 +35,14 @@ export type Item = {
     quantity: number
 }
 
+export type Report = {
+    id: number,
+    admin_id: number,
+    type: string,
+    report_url: string,
+    date: Date
+}
+
 export type CashierView = {
   is_online: boolean,
   User: {
