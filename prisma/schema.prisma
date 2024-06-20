@@ -96,12 +96,13 @@ model reports {
 }
 
 model sales {
-  id          Int           @id @default(autoincrement())
-  cashier_id  Int
-  customer_id Int
-  date        DateTime?     @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(0)
-  customers   customers     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_id_sales_fk")
-  sales_items sales_items[]
+  id           Int           @id @default(autoincrement())
+  cashier_id   Int
+  customer_id  Int
+  date         DateTime?     @default(dbgenerated("(CURRENT_TIMESTAMP AT TIME ZONE 'UTC'::text)")) @db.Timestamp(0)
+  is_completed Boolean       @default(true)
+  customers    customers     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "customer_id_sales_fk")
+  sales_items  sales_items[]
 
   @@index([cashier_id], map: "fki_cashier_id_sales_fk")
   @@index([customer_id], map: "fki_customer_id_sales_fk")
