@@ -7,6 +7,7 @@ import { UserService } from '@/user/user.service';
 import { SignUpData, RoleOptions, SignUpCode } from '@/types/api/types';
 import { NotificationStatus, AuthResponse } from '@/types/api/Responses';
 import { Response } from 'express';
+import { idRegExp, nameRegExp, phoneRegExp } from '@/types/api/regex';
 
 @Injectable()
 export class AuthService {
@@ -39,6 +40,15 @@ export class AuthService {
   async logoutCashier(id: string): Promise<any> {
     return 'unimplemented';
   }
+  /*
+    personal_id: string;
+    password: string;
+    name: string;
+    phone_number: string;
+    email: string;
+    residence_location: string;
+    role: RoleOptions;
+*/
 
   async signupValidation(data: SignUpData, res: Response): Promise<Response> {
     const personal_id = data.personal_id;
@@ -65,6 +75,79 @@ export class AuthService {
       },
     });
 
+    if (
+      !idRegExp.test(data.personal_id) ||
+      data.personal_id.length > 10 ||
+      data.personal_id.length <= 6
+    ) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Cédula inválida',
+            description:
+              'La cédula debe contener solo números y no puede ser mayor a 10 caracteres, ni menor a 6',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+
+    if (data.password.length > 255) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Contraseña inválida',
+            description: 'la contraseña no puede ser mayor a 255 caracteres',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+    if (
+      data.name.length < 3 ||
+      !nameRegExp.test(data.name) ||
+      data.name.length > 70
+    ) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Nombre inválido',
+            description:
+              'El nombre no puede ser menor a 3 caracteres, ni contener caracteres especiales o números',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+    if (
+      data.phone_number.length != 10 ||
+      !phoneRegExp.test(data.phone_number)
+    ) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Número de teléfono inválido',
+            description:
+              'El número de teléfono debe contener solo números y tener 10 caracteres',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+    if (data.email.length < 10) {
+    }
+    if (data.residence_location.length < 3) {
+    }
+    if (data.role != RoleOptions.ADMIN && data.role != RoleOptions.CASHIER) {
+    }
     if (db_personal_id) {
       response = {
         error: true,

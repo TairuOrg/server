@@ -17,6 +17,7 @@ import User from '@/user/dto/user';
 
 import { Response } from 'express';
 import { env } from 'node:process';
+import { idRegExp, nameRegExp, phoneRegExp } from '@/types/api/regex';
 
 interface RolesQueryParams {
   role: RoleOptions;
