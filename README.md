@@ -47,5 +47,6 @@
   <li>[x] signup-access POST (validates signup code)</li>
   <li>[x] signup-validation POST (validates signup insertion data)</li>
   <li>[x] signup-insertion POST (inserts validated signup data)</li>
+  <li>[ ] logout POST (logs out the current user, updates cashier session if the user is a cashier)</li>
 </ul>
 
