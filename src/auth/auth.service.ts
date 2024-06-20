@@ -7,7 +7,12 @@ import { UserService } from '@/user/user.service';
 import { SignUpData, RoleOptions, SignUpCode } from '@/types/api/types';
 import { NotificationStatus, AuthResponse } from '@/types/api/Responses';
 import { Response } from 'express';
-import { idRegExp, nameRegExp, phoneRegExp } from '@/types/api/regex';
+import {
+  emailRegExp,
+  idRegExp,
+  nameRegExp,
+  phoneRegExp,
+} from '@/types/api/regex';
 
 @Injectable()
 export class AuthService {
@@ -118,7 +123,7 @@ export class AuthService {
           message: {
             title: 'Nombre inválido',
             description:
-              'El nombre no puede ser menor a 3 caracteres, ni contener caracteres especiales o números',
+              'El nombre no puede ser menor a 3 caracteres, mayor a 70, ni contener caracteres especiales o números',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
@@ -142,11 +147,54 @@ export class AuthService {
       };
       return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
-    if (data.email.length < 10) {
+    if (
+      data.email.length < 5 ||
+      data.email.length > 70 ||
+      !emailRegExp.test(data.email)
+    ) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Correo electrónico inválido',
+            description:
+              'El correo electrónico debe tener una estructura válida, y contener entre 5 y 70 caracteres',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
-    if (data.residence_location.length < 3) {
+
+    if (
+      data.residence_location.length < 3 ||
+      data.residence_location.length > 70
+    ) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Ubicación de residencia inválida',
+            description:
+              'La ubicación de residencia no puede ser menor a 3 caracteres, ni mayor a 70',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
     if (data.role != RoleOptions.ADMIN && data.role != RoleOptions.CASHIER) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Rol inválido',
+            description: 'El rol del usuario debe ser administrador o cajero',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
     if (db_personal_id) {
       response = {
