@@ -43,6 +43,14 @@ export type Report = {
     date: Date
 }
 
+export type Sale = {
+    id: number,
+    cashier_id: number,
+    customer_id: number,
+    date: Date,
+    is_completed: boolean
+}
+
 export type CashierView = {
   is_online: boolean,
   User: {

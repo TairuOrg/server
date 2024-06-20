@@ -52,4 +52,9 @@ export class AdminController {
   async getCashiers(@Req() req:Request) {
     return this.adminService.getCashiers();
   }
+
+  @Get('sales') 
+  async getSales(@Req() req:Request) {
+    return this.adminService.getSales();
+  }
 }

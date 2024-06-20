@@ -70,4 +70,8 @@ export class AdminService {
   async getCashiers() {
     return await this.cashier.findAll();
   }
-}
+
+  async getSales(){
+    return await this.sale.findAll();
+  }
+ }

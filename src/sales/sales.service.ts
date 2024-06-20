@@ -3,11 +3,30 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { checkSameDate } from '@/utils/date-manager';
+import { ServerResponse, Sale } from '@/types/api/types';
 
-@Injectable()
+@Injectable()   
 export class SalesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async findAll(): Promise<ServerResponse<Sale[]>> {
+    const sales : Sale[] = await this.prisma.sales.findMany({
+      select: {
+        id: true,
+        cashier_id: true,
+        customer_id: true,
+        date: true,
+        is_completed: true
+      },
+    });
+    return {
+      error: false,
+      body: {
+        message: 'Lista de todas las ventas',
+        payload: sales,
+      }
+    }
+  }
   
   async getTodaysRevenue(): Promise<number> {
  // Fetch all sales data, including related sales_items and items data
