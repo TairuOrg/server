@@ -57,7 +57,13 @@ export type Customer = {
     personal_id: string,
     phone_number: string,
     residence_location: string
+}
 
+export type CustomerData = {
+  name: string, //70
+  personal_id: string, //9
+  phone_number: string, //10
+  residence_location: string //50
 }
 
 export type CashierView = {

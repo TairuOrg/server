@@ -8,9 +8,10 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
-import { ExchangeRate, Revenue, ServerResponse } from '@/types/api/types';
+import { Customer, CustomerData, ExchangeRate, Revenue, ServerResponse } from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
+import { Response } from 'express';
 
 @Injectable()
 export class AdminService {
@@ -80,4 +81,8 @@ export class AdminService {
   async getCustomers() {
     return await this.customer.findAll();
     }
+
+  async clientDataValidation(data:CustomerData, res: Response): Promise<Response> {
+    return this.customer.clientDataValidation(data, res);
+  }
   }

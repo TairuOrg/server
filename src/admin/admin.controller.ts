@@ -1,7 +1,9 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Request } from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
+import { CustomerData } from '@/types/api/types';
+import { Response } from 'express';
 
 @Controller('admin')
 export class AdminController {
@@ -19,47 +21,52 @@ export class AdminController {
 
   @Get('cashier-status')
   async cashierStatus(@Req() req: Request) {
-    return this.adminService.getCashierStatus()
+    return this.adminService.getCashierStatus();
   }
 
   @Get('items-and-categories')
   async itemsAndCategories(@Req() req: Request) {
-    return this.adminService.getItemsAndCategoriesCount()
+    return this.adminService.getItemsAndCategoriesCount();
   }
 
   @Get('todays-revenue')
   async todaysRevenue(@Req() req: Request) {
-    return this.adminService.getTodaysRevenue()
+    return this.adminService.getTodaysRevenue();
   }
 
-
   @Get('convert-amount')
-  async convertExchange(@Req() req:Request) {
+  async convertExchange(@Req() req: Request) {
     return this.adminService.convertExchange(2);
   }
 
-  @Get('items')
-  async getItems(@Req() req:Request) {
+  @Get('get-items')
+  async getItems(@Req() req: Request) {
     return this.adminService.getItems();
   }
 
-  @Get('reports')
-  async getReports(@Req() req:Request) {
+  @Get('get-reports')
+  async getReports(@Req() req: Request) {
     return this.adminService.getReports();
   }
 
-  @Get('cashiers')
-  async getCashiers(@Req() req:Request) {
+  @Get('get-cashiers')
+  async getCashiers(@Req() req: Request) {
     return this.adminService.getCashiers();
   }
 
-  @Get('sales') 
-  async getSales(@Req() req:Request) {
+  @Get('get-sales')
+  async getSales(@Req() req: Request) {
     return this.adminService.getSales();
   }
-  
-  @Get('customers')
-  async getCustomers(@Req() req:Request) {
+
+  @Get('get-customers')
+  async getCustomers(@Req() req: Request) {
     return this.adminService.getCustomers();
+  }
+
+  @Post('client-data-validation')
+  async clientDataValidation(@Body() data: CustomerData, @Res() res: Response) {
+    const response = await this.adminService.clientDataValidation(data, res);
+    return response;
   }
 }

@@ -83,7 +83,7 @@ export class AuthService {
     if (
       !idRegExp.test(data.personal_id) ||
       data.personal_id.length > 10 ||
-      data.personal_id.length <= 6
+      data.personal_id.length < 8
     ) {
       response = {
         error: true,
@@ -91,7 +91,7 @@ export class AuthService {
           message: {
             title: 'Cédula inválida',
             description:
-              'La cédula debe contener solo números y no puede ser mayor a 10 caracteres, ni menor a 6',
+              'La cédula debe contener solo números y no puede ser mayor a 10 caracteres, ni menor a 8',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
