@@ -15,7 +15,7 @@
   <li>[x] cashiers GET (returns a list of cashiers) </li>
   <li>[x] sales GET (returns a list of sales)</li>
   <li>[x] clients GET (returns a list of clients)</li>
-  <li>[ ] client-validation POST (validates a client's data)</li>
+  <li>[x] client-validation POST (validates a client's data)</li>
   <li>[ ] client-update POST (updates a client)</li>
   <li>[ ] cliente-delete POST (deletes a specific client)</li>
   <li>[ ] new-cashier-validation POST (validates cashier insertion data) </li>
