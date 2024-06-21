@@ -51,6 +51,15 @@ export type Sale = {
     is_completed: boolean
 }
 
+export type Customer = {
+    id: number,
+    name: string,
+    personal_id: string,
+    phone_number: string,
+    residence_location: string
+
+}
+
 export type CashierView = {
   is_online: boolean,
   User: {

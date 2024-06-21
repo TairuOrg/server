@@ -57,4 +57,9 @@ export class AdminController {
   async getSales(@Req() req:Request) {
     return this.adminService.getSales();
   }
+  
+  @Get('customers')
+  async getCustomers(@Req() req:Request) {
+    return this.adminService.getCustomers();
+  }
 }

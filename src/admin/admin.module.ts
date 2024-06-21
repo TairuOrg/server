@@ -10,11 +10,12 @@ import { ItemsModule } from '@/items/items.module';
 import { SalesModule } from '@/sales/sales.module';
 import { ReportService } from '@/report/report.service';
 import { ReportModule } from '@/report/report.module';
+import { CustomerModule } from '@/customer/customer.module';
 
 @Module({
   controllers: [AdminController],
   providers: [AdminService],
-  imports: [UserModule, PrismaModule, ExchangeModule, CashierModule, ItemsModule, CashierModule, SalesModule, ReportModule],
+  imports: [UserModule, PrismaModule, ExchangeModule, CashierModule, ItemsModule, CashierModule, SalesModule, ReportModule, CustomerModule],
 })
 export class AdminModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

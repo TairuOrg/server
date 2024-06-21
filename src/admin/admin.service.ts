@@ -10,6 +10,7 @@ import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
 import { ExchangeRate, Revenue, ServerResponse } from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
+import { CustomerService } from '@/customer/customer.service';
 
 @Injectable()
 export class AdminService {
@@ -22,6 +23,7 @@ export class AdminService {
     private readonly cashier: CashierService,
     private readonly item: ItemsService,
     private readonly sale: SalesService,
+    private readonly customer: CustomerService,
   ) {}
 
   async getAdminInfo(id: number): Promise<User> {
@@ -74,4 +76,8 @@ export class AdminService {
   async getSales(){
     return await this.sale.findAll();
   }
- }
+
+  async getCustomers() {
+    return await this.customer.findAll();
+    }
+  }
