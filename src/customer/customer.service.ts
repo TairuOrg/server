@@ -42,8 +42,28 @@ export class CustomerService {
   async clientDataValidation(data:UpdateCustomerData, res:Response) : Promise<Response> {
     const name = data.name;
     const personal_id = data.personal_id;
+    const old_personal_id = data.old_personal_id;
     const phone_number = data.phone_number;
     const residence_location = data.residence_location;
+
+
+    const id_validation = await this.prisma.customers.findUnique({
+      where: { personal_id: personal_id },});
+
+    if(old_personal_id == null) {
+      const response: AuthResponse = {
+        error: true,
+        body: {
+          message: {
+            title: 'Cédula inválida',
+            description:
+              'Debe ingresar la cédula del cliente a modificar',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
 
     if(!nameRegExp.test(name) || name.length > 70 || name.length < 3) {
       const response: AuthResponse = {
@@ -98,6 +118,21 @@ export class CustomerService {
             title: 'Dirección de residencia inválida',
             description:
               'La dirección de residencia no puede ser menor a 3 caracteres, mayor a 50',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+
+    if(id_validation && id_validation.personal_id != old_personal_id) {
+      const response: AuthResponse = {
+        error: true,
+        body: {
+          message: {
+            title: 'Cédula ya registrada',
+            description:
+              'La cédula ya se encuentra registrada en el sistema',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
