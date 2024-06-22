@@ -67,6 +67,10 @@ export type UpdateCustomerData = {
   residence_location: string //50
 }
 
+export type CustomerId = {
+  personal_id: string;
+}
+
 export type CashierView = {
   is_online: boolean,
   User: {

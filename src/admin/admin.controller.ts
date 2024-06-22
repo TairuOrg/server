@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Request } from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
-import { UpdateCustomerData } from '@/types/api/types';
+import { CustomerId, UpdateCustomerData } from '@/types/api/types';
 import { Response } from 'express';
 
 @Controller('admin')
@@ -73,6 +73,12 @@ export class AdminController {
   @Post('client-update')
   async clientUpdate(@Body() data: UpdateCustomerData, @Res() res: Response) {
     const response = await this.adminService.clientUpdate(data, res);
+    return response;
+  }
+
+  @Post('client-delete')
+  async deleteCustomer(@Body() personal_id: CustomerId, @Res() res: Response) {
+    const response = await this.adminService.deleteCustomer(personal_id, res);
     return response;
   }
 }

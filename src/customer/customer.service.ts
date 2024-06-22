@@ -2,29 +2,37 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Customer, UpdateCustomerData, ServerResponse } from '@/types/api/types';
-import { nameRegExp, emailRegExp, phoneRegExp, idRegExp } from '@/types/api/regex';
+import {
+  Customer,
+  UpdateCustomerData,
+  ServerResponse,
+  CustomerId,
+} from '@/types/api/types';
+import {
+  nameRegExp,
+  emailRegExp,
+  phoneRegExp,
+  idRegExp,
+} from '@/types/api/regex';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
 
 @Injectable()
 export class CustomerService {
-  constructor(private prisma: PrismaService
-  ) { }
-
+  constructor(private prisma: PrismaService) {}
 
   create(createCustomerDto: CreateCustomerDto) {
     return 'This action adds a new customer';
   }
 
-  async findAll() : Promise<ServerResponse<Customer[]>>{
+  async findAll(): Promise<ServerResponse<Customer[]>> {
     let customers: Customer[] = await this.prisma.customers.findMany({
       select: {
         id: true,
         name: true,
         personal_id: true,
         phone_number: true,
-        residence_location: true
+        residence_location: true,
       },
     });
 
@@ -35,29 +43,29 @@ export class CustomerService {
         payload: customers,
       },
     };
-    
   }
 
-
-  async clientDataValidation(data:UpdateCustomerData, res:Response) : Promise<Response> {
+  async clientDataValidation(
+    data: UpdateCustomerData,
+    res: Response,
+  ): Promise<Response> {
     const name = data.name;
     const personal_id = data.personal_id;
     const old_personal_id = data.old_personal_id;
     const phone_number = data.phone_number;
     const residence_location = data.residence_location;
 
-
     const id_validation = await this.prisma.customers.findUnique({
-      where: { personal_id: personal_id },});
+      where: { personal_id: personal_id },
+    });
 
-    if(old_personal_id == null) {
+    if (old_personal_id == null) {
       const response: AuthResponse = {
         error: true,
         body: {
           message: {
             title: 'Cédula inválida',
-            description:
-              'Debe ingresar la cédula del cliente a modificar',
+            description: 'Debe ingresar la cédula del cliente a modificar',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
@@ -65,7 +73,7 @@ export class CustomerService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    if(!nameRegExp.test(name) || name.length > 70 || name.length < 3) {
+    if (!nameRegExp.test(name) || name.length > 70 || name.length < 3) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -78,9 +86,11 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    }
-
-    else if(!idRegExp.test(personal_id) || personal_id.length > 10 || personal_id.length < 8) {
+    } else if (
+      !idRegExp.test(personal_id) ||
+      personal_id.length > 10 ||
+      personal_id.length < 8
+    ) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -93,9 +103,7 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    }
-
-    else if(!phoneRegExp.test(phone_number) || phone_number.length != 10) {
+    } else if (!phoneRegExp.test(phone_number) || phone_number.length != 10) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -108,9 +116,10 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    }
-
-    else if(residence_location.length > 50 || residence_location.length < 3) {
+    } else if (
+      residence_location.length > 50 ||
+      residence_location.length < 3
+    ) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -125,22 +134,19 @@ export class CustomerService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    if(id_validation && id_validation.personal_id != old_personal_id) {
+    if (id_validation && id_validation.personal_id != old_personal_id) {
       const response: AuthResponse = {
         error: true,
         body: {
           message: {
             title: 'Cédula ya registrada',
-            description:
-              'La cédula ya se encuentra registrada en el sistema',
+            description: 'La cédula ya se encuentra registrada en el sistema',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    }
-
-    else{
+    } else {
       return res.status(HttpStatus.OK).json({
         error: false,
         body: {
@@ -150,9 +156,12 @@ export class CustomerService {
     }
   }
 
-  async updateCustomer(data:UpdateCustomerData, res:Response) : Promise<Response> {
+  async updateCustomer(
+    data: UpdateCustomerData,
+    res: Response,
+  ): Promise<Response> {
     try {
-      console.log("yapping",data)
+      console.log('yapping', data);
       const update_customer = await this.prisma.customers.update({
         where: { personal_id: data.old_personal_id },
         data: {
@@ -162,7 +171,7 @@ export class CustomerService {
           residence_location: data.residence_location,
         },
       });
-      console.log("yippie", update_customer)
+      console.log('yippie', update_customer);
       const response: AuthResponse = {
         error: false,
         body: {
@@ -174,9 +183,6 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.OK).json(response);
-
-
-
     } catch (error) {
       const response: AuthResponse = {
         error: true,
@@ -190,9 +196,64 @@ export class CustomerService {
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
+  }
 
+  async deleteCustomer(
+    personal_id: CustomerId,
+    res: Response,
+  ): Promise<Response> {
+    console.log('1', personal_id.personal_id);
+
+    try {
+      const customer = await this.prisma.customers.findUnique({
+        where: { personal_id: personal_id.personal_id },
+      });
+      if (!customer) {
+        const response: AuthResponse = {
+          error: true,
+          body: {
+            message: {
+              title: 'Cliente no encontrado',
+              description:
+                'El cliente no se encuentra registrado en el sistema',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else {
+        const deletion = await this.prisma.customers.update({
+          where: { personal_id: personal_id.personal_id },
+          data: {
+            is_deleted: true,
+          },
+        });
+        const response: AuthResponse = {
+          error: false,
+          body: {
+            message: {
+              title: 'Cliente eliminado',
+              description: 'Cliente eliminado satisfactoriamente',
+              notificationStatus: NotificationStatus.SUCCESS,
+            },
+          },
+        };
+        return res.status(HttpStatus.OK).json(response);
+      }
+    } catch (error) {
+      const response: AuthResponse = {
+        error: true,
+        body: {
+          message: {
+            title: 'Error al eliminar el cliente',
+            description: 'Ha ocurrido un error al eliminar el cliente',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
-  
+  }
 
   findOne(id: number) {
     return `This action returns a #${id} customer`;

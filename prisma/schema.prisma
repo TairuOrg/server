@@ -15,6 +15,7 @@ model User {
   phone_number       String          @unique(map: "user_phone_number_unique") @db.VarChar(17)
   email              String          @unique(map: "email_unique_user") @db.VarChar(70)
   residence_location String          @db.VarChar(50)
+  is_deleted         Boolean         @default(false)
   administrators     administrators?
   cashier            cashier?
 }
@@ -40,6 +41,7 @@ model customers {
   personal_id        String  @unique(map: "unique_personal_id") @db.VarChar(10)
   phone_number       String  @unique(map: "phone_number_unique") @db.VarChar(17)
   residence_location String  @db.VarChar(50)
+  is_deleted         Boolean @default(false)
   sales              sales[]
 }
 
