@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Customer, CustomerData, ServerResponse } from '@/types/api/types';
+import { Customer, UpdateCustomerData, ServerResponse } from '@/types/api/types';
 import { nameRegExp, emailRegExp, phoneRegExp, idRegExp } from '@/types/api/regex';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
@@ -39,7 +39,7 @@ export class CustomerService {
   }
 
 
-  async clientDataValidation(data:CustomerData, res:Response) : Promise<Response> {
+  async clientDataValidation(data:UpdateCustomerData, res:Response) : Promise<Response> {
     const name = data.name;
     const personal_id = data.personal_id;
     const phone_number = data.phone_number;
@@ -114,6 +114,50 @@ export class CustomerService {
       });
     }
   }
+
+  async updateCustomer(data:UpdateCustomerData, res:Response) : Promise<Response> {
+    try {
+      console.log("yapping",data)
+      const update_customer = await this.prisma.customers.update({
+        where: { personal_id: data.old_personal_id },
+        data: {
+          name: data.name,
+          personal_id: data.personal_id,
+          phone_number: data.phone_number,
+          residence_location: data.residence_location,
+        },
+      });
+      console.log("yippie", update_customer)
+      const response: AuthResponse = {
+        error: false,
+        body: {
+          message: {
+            title: 'Cliente Actualizado',
+            description: 'El cliente ha sido actualizado satisfactoriamente',
+            notificationStatus: NotificationStatus.SUCCESS,
+          },
+        },
+      };
+      return res.status(HttpStatus.OK).json(response);
+
+
+
+    } catch (error) {
+      const response: AuthResponse = {
+        error: true,
+        body: {
+          message: {
+            title: 'Error al actualizar el cliente',
+            description: 'Ha ocurrido un error al actualizar el cliente',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+
+    }
+  
 
   findOne(id: number) {
     return `This action returns a #${id} customer`;

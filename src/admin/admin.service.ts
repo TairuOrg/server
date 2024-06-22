@@ -8,7 +8,7 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
-import { Customer, CustomerData, ExchangeRate, Revenue, ServerResponse } from '@/types/api/types';
+import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse } from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
@@ -82,7 +82,11 @@ export class AdminService {
     return await this.customer.findAll();
     }
 
-  async clientDataValidation(data:CustomerData, res: Response): Promise<Response> {
+  async clientDataValidation(data:UpdateCustomerData, res: Response): Promise<Response> {
     return this.customer.clientDataValidation(data, res);
   }
+
+  async clientUpdate(data:UpdateCustomerData, res: Response): Promise<Response> {
+    return this.customer.updateCustomer(data, res);
   }
+}

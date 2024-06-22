@@ -59,8 +59,9 @@ export type Customer = {
     residence_location: string
 }
 
-export type CustomerData = {
+export type UpdateCustomerData = {
   name: string, //70
+  old_personal_id: string, //9
   personal_id: string, //9
   phone_number: string, //10
   residence_location: string //50
