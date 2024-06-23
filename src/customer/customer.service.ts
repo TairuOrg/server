@@ -27,6 +27,7 @@ export class CustomerService {
 
   async findAll(): Promise<ServerResponse<Customer[]>> {
     let customers: Customer[] = await this.prisma.customers.findMany({
+      where: { is_deleted: false },
       select: {
         id: true,
         name: true,
