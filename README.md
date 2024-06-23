@@ -26,6 +26,7 @@
   <li>[ ] item-update POST (updates an item's data) </li>
   <br>
   <li>TBD: Reports generation</li>
+  <li>TBD: Notifications Endpoints</li>
 </ul>
 
 <h2>CASHIER</h2>
