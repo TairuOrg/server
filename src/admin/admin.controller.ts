@@ -54,6 +54,11 @@ export class AdminController {
     return this.adminService.getCashiers();
   }
 
+  @Post('delete-cashier')
+  async deleteCashier(@Body() personal_id: CustomerId, @Res() res: Response) {
+    return this.adminService.deleteCashier(personal_id, res);
+  }
+  
   @Get('get-sales')
   async getSales(@Req() req: Request) {
     return this.adminService.getSales();
@@ -63,6 +68,7 @@ export class AdminController {
   async getCustomers(@Req() req: Request) {
     return this.adminService.getCustomers();
   }
+  
 
   @Post('client-data-validation')
   async clientDataValidation(@Body() data: UpdateCustomerData, @Res() res: Response) {

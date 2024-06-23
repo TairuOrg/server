@@ -8,7 +8,7 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
-import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse, CustomerId, Item } from '@/types/api/types';
+import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse, CustomerId, Item, UserId } from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
@@ -72,6 +72,10 @@ export class AdminService {
 
   async getCashiers() {
     return await this.cashier.findAll();
+  }
+
+  async deleteCashier(personal_id: UserId, res: Response) {
+    return this.cashier.deleteCashier(personal_id, res);
   }
 
   async getSales(){

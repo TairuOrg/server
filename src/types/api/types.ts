@@ -71,6 +71,10 @@ export type CustomerId = {
   personal_id: string;
 }
 
+export type UserId = {
+  personal_id: string;
+}
+
 export type CashierView = {
   is_online: boolean,
   User: {
