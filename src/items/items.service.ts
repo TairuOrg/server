@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { PrismaService } from '@/prisma/prisma.service';
+import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import {
   ServerResponse,
   Item,
@@ -33,8 +34,49 @@ export class ItemsService {
     };
   }
 
-  create(createItemDto: CreateItemDto) {
-    return 'This action adds a new item';
+  async create(insertData: Item, res ): Promise<Response> {
+    try {
+      console.log(insertData)
+      const hola = await this.prisma.items.create({
+        data: {
+          barcode_id: insertData.barcode_id,
+          name: insertData.name,
+          price: insertData.price,
+          category: insertData.category,
+          manufacturer: insertData.manufacturer,
+          quantity: insertData.quantity
+        },
+      });
+
+      console.log("bueno", hola);
+
+      const response = {
+        error: false,
+        body: {
+          message: {
+            title: 'Artículo agregado',
+            description: 'El artículo ha sido agregado satisfactoriamente',
+            notificationStatus: NotificationStatus.SUCCESS,
+          },
+        },
+      };
+      return res.status(HttpStatus.OK).json(response);
+
+    } catch (error) {
+      console.log("malo")
+      const response =  {
+        error: false,
+        body: {
+          message: {
+            title: 'Artículo no agregado',
+            description: 'Ha ocurrido un error al agregar el artículo',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+    
   }
 
   async findAll(): Promise<ServerResponse<Item[]>> {

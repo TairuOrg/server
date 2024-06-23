@@ -42,7 +42,7 @@ export class CashierService {
           }
         }
       }
-    })
+    });
     
     return {
       error: false,
