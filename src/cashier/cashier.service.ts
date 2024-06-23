@@ -38,6 +38,12 @@ export class CashierService {
 
   async findAll(): Promise<ServerResponse<CashierView[]>> {
     const cashiers: CashierView[] = await this.prisma.cashier.findMany({
+      where: {
+        User: {
+          is_deleted: false, 
+        },
+
+      },
       select: {
         is_online: true,
         User: {

@@ -82,7 +82,7 @@ export type CashierView = {
     name: string,
     phone_number: string,
     email: string,
-    residence_location: string
+    residence_location: string,
   }
 }
 
