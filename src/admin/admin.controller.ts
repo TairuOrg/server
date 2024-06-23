@@ -83,7 +83,7 @@ export class AdminController {
   }
 
   @Post('insert-item')
-  async insertClient(@Body() data: Item, @Res() res: Response) {
+  async insertItem(@Body() data: Item, @Res() res: Response) {
     const response = await this.adminService.insertItem(data, res);
     return response;
   }

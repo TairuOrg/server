@@ -35,6 +35,7 @@ export class ItemsService {
   }
 
   async create(insertData: Item, res ): Promise<Response> {
+
     try {
       console.log(insertData)
       const hola = await this.prisma.items.create({
@@ -63,18 +64,7 @@ export class ItemsService {
       return res.status(HttpStatus.OK).json(response);
 
     } catch (error) {
-      console.log("malo")
-      const response =  {
-        error: false,
-        body: {
-          message: {
-            title: 'Artículo no agregado',
-            description: 'Ha ocurrido un error al agregar el artículo',
-            notificationStatus: NotificationStatus.ERROR,
-          },
-        },
-      };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
+     
     }
     
   }
