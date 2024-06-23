@@ -1,5 +1,5 @@
 ## Tairu server
-> To know more about the API **documentation**, **standard**, **usage** and **samples**, refer to each README located inside of each of our API resource folders. The current state of the API is **NOT producion-ready** until stated the otherwise.
+> To know more about the API **documentation**, **standard**, **usage** and **samples**, refer to each README located inside of each of our API resource folders. The current state of the API is **NOT production-ready** until stated the otherwise.
 
 <h1>Server's Endpoint Summary</h1>
 
@@ -17,11 +17,11 @@
   <li>[x] clients GET (returns a list of clients)</li>
   <li>[x] client-validation POST (validates a client's data)</li>
   <li>[x] client-update POST (updates a client)</li>
-  <li>[ ] cliente-delete POST (deletes a specific client)</li>
+  <li>[x] cliente-delete POST (deletes a specific client)</li>
   <li>[ ] new-cashier-validation POST (validates cashier insertion data) </li>
   <li>[ ] new-cashier-insertion POST (inserts a new cashier) </li>
   <li>[ ] item-validation POST (validates item insertion, or update data) </li>
-  <li>[ ] new-item-insertion POST (inserts a new item) </li>
+  <li>[x] new-item-insertion POST (inserts a new item) </li>
   <li>[ ] item-update POST (updates an item's data) </li>
   <li>[ ] item-delete POST (deletes a specific item) </li>
   <br>
