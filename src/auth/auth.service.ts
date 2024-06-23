@@ -34,8 +34,18 @@ export class AuthService {
     return admin ? user : null;
   }
 
-  async verifyCashier(cred: AuthCredentials) {
-    return null;
+  async verifyCashier(cred: AuthCredentials): Promise<User> {
+    const user = await this.user.findUser(cred.email, cred.password);
+
+    if (!user || user.is_deleted) {
+      return null;
+    }
+    const cashier = await this.prisma.cashier.findUnique({
+      where: {
+        id: user.id,
+      },
+    });
+    return cashier ? user : null;
   }
 
   async logoutAdmin(id: string): Promise<any> {
