@@ -34,11 +34,9 @@ export class ItemsService {
     };
   }
 
-  async create(insertData: Item, res ): Promise<Response> {
-
+  async create(insertData: Item, res): Promise<Response> {
     try {
-      console.log(insertData)
-      const hola = await this.prisma.items.create({
+      await this.prisma.items.create({
         data: {
           barcode_id: insertData.barcode_id,
           name: insertData.name,
@@ -48,25 +46,32 @@ export class ItemsService {
           quantity: insertData.quantity
         },
       });
-
-      console.log("bueno", hola);
-
-      const response = {
+    } catch (error) {
+      const response: AuthResponse =  {
         error: false,
         body: {
           message: {
-            title: 'Artículo agregado',
-            description: 'El artículo ha sido agregado satisfactoriamente',
-            notificationStatus: NotificationStatus.SUCCESS,
+            title: 'Artículo no agregado',
+            description: 'Ha ocurrido un error al agregar el artículo',
+            notificationStatus: NotificationStatus.ERROR,
           },
         },
       };
-      return res.status(HttpStatus.OK).json(response);
-
-    } catch (error) {
-     
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
+
+    const response: AuthResponse = {
+      error: false,
+      body: {
+        message: {
+          title: 'Artículo agregado',
+          description: 'El artículo ha sido agregado satisfactoriamente',
+          notificationStatus: NotificationStatus.SUCCESS,
+        },
+      },
+    };
     
+    return res.status(HttpStatus.OK).json(response);
   }
 
   async findAll(): Promise<ServerResponse<Item[]>> {
