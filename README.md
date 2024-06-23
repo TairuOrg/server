@@ -17,15 +17,16 @@
   <li>[x] clients GET (returns a list of clients)</li>
   <li>[x] client-validation POST (validates a client's data)</li>
   <li>[x] client-update POST (updates a client)</li>
-  <li>[x] cliente-delete POST (deletes a specific client)</li>
-  <li>[ ] new-cashier-validation POST (validates cashier insertion data) </li>
-  <li>[ ] new-cashier-insertion POST (inserts a new cashier) </li>
+  <li>[x] client-delete POST (deletes a specific client)</li>
+  <li>[x] new-cashier-validation POST (validates cashier insertion data) </li>
+  <li>[x] new-cashier-insertion POST (inserts a new cashier) </li>
+  <li>[x] cashier-delete POST (deletes a specific cashier)</li>
   <li>[ ] item-validation POST (validates item insertion, or update data) </li>
   <li>[x] new-item-insertion POST (inserts a new item) </li>
   <li>[ ] item-update POST (updates an item's data) </li>
-  <li>[ ] item-delete POST (deletes a specific item) </li>
   <br>
   <li>TBD: Reports generation</li>
+  <li>TBD: Notifications Endpoints</li>
 </ul>
 
 <h2>CASHIER</h2>
