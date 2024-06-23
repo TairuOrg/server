@@ -206,7 +206,7 @@ export class AuthService {
       };
       return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
-    if (db_personal_id) {
+    if (db_personal_id && !db_personal_id.is_deleted) {
       response = {
         error: true,
         body: {
@@ -261,22 +261,46 @@ export class AuthService {
     try {
       //se inserta el usuario en la base de datos
       console.log('ghrui', data.role);
-      const insert_user = await this.prisma.user.create({
-        data: {
-          personal_id: data.personal_id,
-          password: data.password,
-          name: data.name,
-          phone_number: data.phone_number,
-          email: data.email,
-          residence_location: data.residence_location,
-        },
-      });
-      //se busca el usuario recien insertado, con el fin de poder obtener el id autoincremental de la base de datos
-      const user_data = await this.prisma.user.findUnique({
+
+
+      let user_data = await this.prisma.user.findUnique({
         where: {
           personal_id: data.personal_id,
         },
       });
+      
+      if(user_data) {
+        const update_user = await this.prisma.user.update({
+          where: {
+            personal_id: data.personal_id,
+          },
+          data: {
+            personal_id: data.personal_id,
+            password: data.password,
+            name: data.name,
+            phone_number: data.phone_number,
+            email: data.email,
+            residence_location: data.residence_location,
+          },
+        });
+      }
+      else{
+        const insert_user = await this.prisma.user.create({
+          data: {
+            personal_id: data.personal_id,
+            password: data.password,
+            name: data.name,
+            phone_number: data.phone_number,
+            email: data.email,
+            residence_location: data.residence_location,
+          },
+        });
+
+        user_data = await this.prisma.user.findUnique({ where: { personal_id: data.personal_id } });
+      }
+
+      //se busca el usuario recien insertado, con el fin de poder obtener el id autoincremental de la base de datos
+
 
       //se verifica el rol del usuario, para insertarlo como un administrador de ser necesario
       if (data.role === RoleOptions.ADMIN) {
