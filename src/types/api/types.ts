@@ -1,4 +1,4 @@
-import { Decimal } from "@prisma/client/runtime/library";
+import { Decimal } from '@prisma/client/runtime/library';
 
 // This file name could change over time
 export enum RoleOptions {
@@ -19,7 +19,7 @@ export type ExchangeRate = {
 export type ConvertExchange = {
   bs: number;
   euro: number;
-}
+};
 export type Revenue = {
   VE: { amount: number };
   US: { amount: number };
@@ -27,74 +27,74 @@ export type Revenue = {
 };
 
 export type Item = {
-    barcode_id: string,
-    name: string,
-    price: Decimal,
-    category: string,
-    manufacturer: string,
-    quantity: number
-}
+  barcode_id: string;
+  name: string;
+  price: Decimal;
+  category: string;
+  manufacturer: string;
+  quantity: number;
+};
 
 export type UpdateItem = {
-    old_barcode_id: string,
-    new_barcode_id: string,
-    name: string,
-    price: Decimal,
-    category: string,
-    manufacturer: string,
-    quantity: number
-}
+  old_barcode_id: string;
+  new_barcode_id: string;
+  name: string;
+  price: Decimal;
+  category: string;
+  manufacturer: string;
+  quantity: number;
+};
 
 export type Report = {
-    id: number,
-    admin_id: number,
-    type: string,
-    report_url: string,
-    date: Date
-}
+  id: number;
+  admin_id: number;
+  type: string;
+  report_url: string;
+  date: Date;
+};
 
 export type Sale = {
-    id: number,
-    cashier_id: number,
-    customer_id: number,
-    date: Date,
-    is_completed: boolean
-}
+  id: number;
+  cashier_id: number;
+  customer_id: number;
+  date: Date;
+  is_completed: boolean;
+};
 
 export type Customer = {
-    id: number,
-    name: string,
-    personal_id: string,
-    phone_number: string,
-    residence_location: string
-}
+  id: number;
+  name: string;
+  personal_id: string;
+  phone_number: string;
+  residence_location: string;
+};
 
 export type UpdateCustomerData = {
-  name: string, //70
-  old_personal_id: string, //9
-  personal_id: string, //9
-  phone_number: string, //10
-  residence_location: string //50
-}
+  name: string; //70
+  old_personal_id: string; //9
+  personal_id: string; //9
+  phone_number: string; //10
+  residence_location: string; //50
+};
 
 export type CustomerId = {
   personal_id: string;
-}
+};
 
 export type UserId = {
   personal_id: string;
-}
+};
 
 export type CashierView = {
-  is_online: boolean,
+  is_online: boolean;
   User: {
-    personal_id: string,
-    name: string,
-    phone_number: string,
-    email: string,
-    residence_location: string,
-  }
-}
+    personal_id: string;
+    name: string;
+    phone_number: string;
+    email: string;
+    residence_location: string;
+  };
+};
 
 export type ItemsAndCategoriesCount = {
   items: number;
@@ -103,8 +103,7 @@ export type ItemsAndCategoriesCount = {
 
 export type SignUpCode = {
   code: string;
-}
-
+};
 
 export type ServerResponse<T> = {
   error: boolean;
@@ -122,4 +121,10 @@ export type SignUpData = {
   email: string;
   residence_location: string;
   role: RoleOptions;
-}
+};
+
+export type NotificationData = {
+  body_message: string;
+  priority_status: string;
+  date: Date;
+};

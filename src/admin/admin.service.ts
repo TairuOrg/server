@@ -8,10 +8,11 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
-import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse, CustomerId, Item, UpdateItem, UserId } from '@/types/api/types';
+import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse, CustomerId, Item, UpdateItem, UserId, NotificationData } from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
+import { NotificationService } from '@/notification/notification.service';
 
 @Injectable()
 export class AdminService {
@@ -25,6 +26,7 @@ export class AdminService {
     private readonly item: ItemsService,
     private readonly sale: SalesService,
     private readonly customer: CustomerService,
+    private readonly notification: NotificationService,
   ) {}
 
   async getAdminInfo(id: number): Promise<User> {
@@ -108,5 +110,9 @@ export class AdminService {
 
   async updateItem(data: UpdateItem, res:Response) {
     return this.item.update(data, res);
+  }
+
+  async insertNotification(data:NotificationData, res:Response) {
+    return this.notification.insert(data, res);
   }
 }
