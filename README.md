@@ -37,8 +37,8 @@
 <h2>CASHIER</h2>
 
 <ul>
-  <li>[ ] me GET (returns cashierSessionId)</li>
-  <li>[ ] items GET (returns a list of items in stock)</li>
+  <li>[x] me GET (returns cashierSessionId)</li>
+  <li>[x] items GET (returns a list of items in stock)</li>
   <li>[ ] client-verification POST (validates whether is already registered or not)</li>
   <li>[ ] client validation POST (validates a new client insertion data)</li>
   <li>[ ] client-insertion POST (inserts a new client)</li>

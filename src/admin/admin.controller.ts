@@ -120,4 +120,9 @@ export class AdminController {
   async getEntries(@Req() req: Request) {
     return this.adminService.getEntries();
   }
+
+  // @Post('validate-entries')
+  // async validateEntry(@Body() data: any, @Res() res: Response) {
+  //   return this.adminService.validateEntry(data, res);
+  // }
 }

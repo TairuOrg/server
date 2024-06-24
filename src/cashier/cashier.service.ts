@@ -5,14 +5,34 @@ import {
   ServerResponse,
   CashierView,
   UserId,
+  Item,
 } from '@/types/api/types';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
 import { verify } from 'crypto';
+import { UserService } from '@/user/user.service';
+import { ItemsService } from '@/items/items.service';
+import { SalesService } from '@/sales/sales.service';
+import { CustomerService } from '@/customer/customer.service';
+import { EntryService } from '@/entry/entry.service';
+import { NotificationService } from '@/notification/notification.service';
+import User from '@/user/dto/user';
 
 @Injectable()
 export class CashierService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly user: UserService,
+    private readonly item: ItemsService,
+    private readonly sale: SalesService,
+    private readonly customer: CustomerService,
+    private readonly notification: NotificationService,
+    private readonly entry: EntryService,
+  ) {}
+
+  async getCashierInfo(id: number): Promise<User> {
+    return await this.user.getUser(id);
+  }
   async getCashierStatus(): Promise<ServerResponse<CashierSummary>> {
     // Count active and inactive cashiers using Prisma queries
     const [activeCashiers, inactiveCashiers] = await Promise.all([
@@ -36,9 +56,12 @@ export class CashierService {
     };
   }
 
+  async getItems(): Promise<ServerResponse<Item[]>> {
+    return await this.item.findAll()
+  }
+
   async findAll(): Promise<ServerResponse<CashierView[]>> {
     const cashiers: CashierView[] = await this.prisma.cashier.findMany({
-   
       select: {
         is_online: true,
         User: {
