@@ -24,12 +24,14 @@
   <li>[x] item-validation POST (validates item insertion, or update data) </li>
   <li>[x] new-item-insertion POST (inserts a new item) </li>
   <li>[x] item-update POST (updates an item's data) </li>
-  <li>[]</li>
-  <li>[]</li>
-  <li>[]</li>
+  <li>[ ] notification-validation POST (validates notification data)</li>
+  <li>[ ] notification-insertion POST (inserts a new notification)</li>
+  <li>[ ] notifications GET (gets all notifications)</li>
+  <li>[ ] entry-validation POST (validates entry data)</li>
+  <li>[ ] entry-insertion POST (inserts a new entry)</li>
+  <li>[ ] entries GET (gets all entries)</li>
   <br>
   <li>TBD: Reports generation</li>
-  <li>TBD: Notifications Endpoints</li>
 </ul>
 
 <h2>CASHIER</h2>
