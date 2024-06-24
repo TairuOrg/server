@@ -12,11 +12,12 @@ import { ReportService } from '@/report/report.service';
 import { ReportModule } from '@/report/report.module';
 import { CustomerModule } from '@/customer/customer.module';
 import { NotificationModule } from '@/notification/notification.module';
+import { EntryModule } from '@/entry/entry.module';
 
 @Module({
   controllers: [AdminController],
   providers: [AdminService],
-  imports: [UserModule, PrismaModule, ExchangeModule, CashierModule, ItemsModule, CashierModule, SalesModule, ReportModule, CustomerModule, NotificationModule],
+  imports: [UserModule, PrismaModule, ExchangeModule, CashierModule, ItemsModule, CashierModule, SalesModule, ReportModule, CustomerModule, NotificationModule, EntryModule],
 })
 export class AdminModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

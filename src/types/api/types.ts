@@ -128,3 +128,19 @@ export type NotificationData = {
   priority_status: string;
   date: Date;
 };
+
+export type EntryItem = {
+  item_id: number;
+  quantity: number;
+  name: string;
+  category: string;
+  price: Decimal;
+  manufacturer: string;
+};
+
+export type Entry = {
+  admin_id: number;
+  description: string;
+  date: Date;
+  entry_items: EntryItem[];
+}

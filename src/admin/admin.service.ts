@@ -13,6 +13,7 @@ import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
 import { NotificationService } from '@/notification/notification.service';
+import { EntryService } from '@/entry/entry.service';
 
 @Injectable()
 export class AdminService {
@@ -27,6 +28,7 @@ export class AdminService {
     private readonly sale: SalesService,
     private readonly customer: CustomerService,
     private readonly notification: NotificationService,
+    private readonly entry: EntryService
   ) {}
 
   async getAdminInfo(id: number): Promise<User> {
@@ -118,5 +120,9 @@ export class AdminService {
 
   async getNotifications() {
     return await this.notification.findAll();
+  }
+
+  async getEntries() {
+    return await this.entry.findAll();
   }
 }

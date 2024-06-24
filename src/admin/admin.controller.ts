@@ -115,4 +115,9 @@ export class AdminController {
   async getNotifications(@Req() req: Request) {
     return this.adminService.getNotifications();
   }
+
+  @Get('get-entries') 
+  async getEntries(@Req() req: Request) {
+    return this.adminService.getEntries();
+  }
 }
