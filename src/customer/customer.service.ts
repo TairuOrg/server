@@ -65,6 +65,11 @@ export class CustomerService {
       where: { personal_id: old_personal_id },
     });
 
+    const verify_phone = await this.prisma.customers.findUnique({
+      where: { phone_number: phone_number },
+    });
+    console.log("wtf",verify_phone)
+
     if (old_personal_id == null) {
       const response: AuthResponse = {
         error: true,
@@ -122,7 +127,23 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    } else if (
+    } 
+    
+    else if(verify_phone && verify_phone.personal_id != old_personal_id){
+      const response: AuthResponse = {
+        error: true,
+        body: {
+          message: {
+            title: 'Número de teléfono ya registrado',
+            description:
+              'El número de teléfono ya se encuentra registrado en el sistema',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+    else if (
       residence_location.length > 50 ||
       residence_location.length < 3
     ) {
@@ -140,7 +161,7 @@ export class CustomerService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    if (id_validation && (id_validation.personal_id != old_personal_id || id_validation.is_deleted == true)) {
+    if (id_validation && (id_validation.personal_id != old_personal_id)) {
       const response: AuthResponse = {
         error: true,
         body: {
