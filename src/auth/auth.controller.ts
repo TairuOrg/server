@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Query, Res, HttpStatus, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/login';
 import { encryptSessionCookie } from './lib';
@@ -136,5 +136,15 @@ export class AuthController {
   ) {
     const response = await this.authService.signupInsertion(data, res);
     return response;
+  }
+
+  @Post('logout') async logout(@Req() req: Request,@Res() res: Response) {
+    res.clearCookie('SESSION_TOKEN');
+    return res.status(HttpStatus.OK).json({
+      error: false,
+      body: {
+        message: 'Sesión cerrada',
+      },
+    });
   }
 }

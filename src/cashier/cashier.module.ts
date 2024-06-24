@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CashierService } from './cashier.service';
 import { CashierController } from './cashier.controller';
 import { PrismaModule } from '@/prisma/prisma.module';
@@ -11,6 +11,7 @@ import { CustomerModule } from '@/customer/customer.module';
 import { NotificationModule } from '@/notification/notification.module';
 import { EntryModule } from '@/entry/entry.module';
 import { AdminModule } from '@/admin/admin.module';
+import { SessionMiddleware } from '@/middleware/session.middleware';
 
 @Module({
   controllers: [CashierController],
@@ -18,4 +19,8 @@ import { AdminModule } from '@/admin/admin.module';
   imports: [UserModule, PrismaModule, ExchangeModule, ItemsModule, SalesModule, ReportModule, CustomerModule, NotificationModule, EntryModule],
   exports: [CashierService]
 })
-export class CashierModule {}
+export class CashierModule {
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(SessionMiddleware).forRoutes(CashierController);
+  // }
+}
