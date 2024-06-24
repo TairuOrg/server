@@ -16,6 +16,7 @@ import {
 } from '@/types/api/regex';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
+import { JWSSignatureVerificationFailed } from 'jose/dist/types/util/errors';
 
 @Injectable()
 export class CustomerService {
@@ -58,6 +59,10 @@ export class CustomerService {
 
     const id_validation = await this.prisma.customers.findUnique({
       where: { personal_id: personal_id },
+    });
+
+    const verify_deleted = await this.prisma.customers.findUnique({
+      where: { personal_id: old_personal_id },
     });
 
     if (old_personal_id == null) {
@@ -135,7 +140,7 @@ export class CustomerService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    if (id_validation && id_validation.personal_id != old_personal_id) {
+    if (id_validation && (id_validation.personal_id != old_personal_id || id_validation.is_deleted == true)) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -147,7 +152,21 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    } else {
+    } 
+    if(verify_deleted && verify_deleted.is_deleted == true){
+      const response: AuthResponse = {
+        error: true,
+        body: {
+          message: {
+            title: 'No se puede modificar este cajero',
+            description: 'Este cajero está eliminado del sistema',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+    else {
       return res.status(HttpStatus.OK).json({
         error: false,
         body: {
