@@ -68,7 +68,6 @@ export class CustomerService {
     const verify_phone = await this.prisma.customers.findUnique({
       where: { phone_number: phone_number },
     });
-    console.log("wtf",verify_phone)
 
     if (old_personal_id == null) {
       const response: AuthResponse = {
@@ -262,11 +261,26 @@ export class CustomerService {
           },
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
-      } else {
+      } 
+      else if (customer.is_deleted == true) {
+        const response: AuthResponse = {
+          error: true,
+          body: {
+            message: {
+              title: "Cliente eliminado previamente",
+              description: "Este cliente ya ha sido eliminado del sistema",
+              notificationStatus: NotificationStatus.ERROR,
+            }
+          }
+        }
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
+      else {
         const deletion = await this.prisma.customers.update({
           where: { personal_id: personal_id.personal_id },
           data: {
             is_deleted: true,
+            phone_number: null,
           },
         });
         const response: AuthResponse = {
