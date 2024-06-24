@@ -1,8 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { NotificationData } from '@/types/api/types';
-import { Response } from 'express';
+import { NotificationData, ServerResponse } from '@/types/api/types';
+import { Response, response } from 'express';
 import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
@@ -38,9 +38,27 @@ export class NotificationService {
     }
   }
 
-  findAll() {
-    return `This action returns all notification`;
-  }
+  async findAll(): Promise<ServerResponse<NotificationData[]>> {
+      const notifications : NotificationData[] = await this.prisma.notifications.findMany({
+        select: {
+          body_message: true,
+          priority_status: true,
+          date: true,
+        },
+      });
+  
+      const response = {
+        error: false,
+        body: {
+          message: 'Lista de notificaciones del sistema.',
+          payload: notifications,
+        },
+      };
+      return response;
+  
+    }
+ 
+  
 
   findOne(id: number) {
     return `This action returns a #${id} notification`;
@@ -53,4 +71,6 @@ export class NotificationService {
   remove(id: number) {
     return `This action removes a #${id} notification`;
   }
+
+
 }

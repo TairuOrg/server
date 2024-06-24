@@ -115,4 +115,8 @@ export class AdminService {
   async insertNotification(data:NotificationData, res:Response) {
     return this.notification.insert(data, res);
   }
+
+  async getNotifications() {
+    return await this.notification.findAll();
+  }
 }

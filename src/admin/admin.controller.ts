@@ -110,4 +110,9 @@ export class AdminController {
     const response = await this.adminService.insertNotification(data, res);
     return response;
   }
+
+  @Get('get-notifications')
+  async getNotifications(@Req() req: Request) {
+    return this.adminService.getNotifications();
+  }
 }
