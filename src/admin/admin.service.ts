@@ -8,7 +8,7 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
-import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse, CustomerId, Item, UserId } from '@/types/api/types';
+import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse, CustomerId, Item, UpdateItem, UserId } from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
@@ -98,7 +98,15 @@ export class AdminService {
     return this.customer.deleteCustomer(personal_id, res);
   }
 
+  async validateItem(data:Item, res:Response) {
+    return this.item.validate(data, res);
+  }
+
   async insertItem(data: Item, res: Response) {
     return this.item.create(data, res);
+  }
+
+  async updateItem(data: UpdateItem, res:Response) {
+    return this.item.update(data, res);
   }
 }

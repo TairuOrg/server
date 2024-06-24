@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Request } from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
-import { CustomerId, UpdateCustomerData, Item } from '@/types/api/types';
+import { CustomerId, UpdateCustomerData, Item, UpdateItem } from '@/types/api/types';
 import { Response } from 'express';
 
 @Controller('admin')
@@ -88,9 +88,20 @@ export class AdminController {
     return response;
   }
 
+  @Post('validate-item')
+  async validateItem(@Body() data: Item, @Res() res: Response) {
+    const response = await this.adminService.validateItem(data, res);
+    return response;
+  }
+
   @Post('insert-item')
   async insertItem(@Body() data: Item, @Res() res: Response) {
     const response = await this.adminService.insertItem(data, res);
+    return response;
+  }
+  @Post('update-item')
+  async updateItem(@Body() data: UpdateItem, @Res() res: Response) {
+    const response = await this.adminService.updateItem(data, res);
     return response;
   }
 }

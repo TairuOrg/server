@@ -12,8 +12,8 @@ model User {
   personal_id        String          @unique(map: "unique_personal_id_constraint") @db.VarChar(10)
   password           String          @db.VarChar(255)
   name               String          @db.VarChar(70)
-  phone_number       String?         @unique(map: "user_phone_number_unique") @db.VarChar(17)
-  email              String?         @unique(map: "email_unique_user") @db.VarChar(70)
+  phone_number       String          @unique(map: "user_phone_number_unique") @db.VarChar(17)
+  email              String          @unique(map: "email_unique_user") @db.VarChar(70)
   residence_location String          @db.VarChar(50)
   is_deleted         Boolean         @default(false)
   administrators     administrators?
@@ -39,7 +39,7 @@ model customers {
   id                 Int     @id @default(autoincrement())
   name               String  @db.VarChar(70)
   personal_id        String  @unique(map: "unique_personal_id") @db.VarChar(10)
-  phone_number       String? @unique(map: "phone_number_unique") @db.VarChar(17)
+  phone_number       String  @unique(map: "phone_number_unique") @db.VarChar(17)
   residence_location String  @db.VarChar(50)
   is_deleted         Boolean @default(false)
   sales              sales[]
@@ -69,7 +69,7 @@ model entries_items {
 
 model items {
   id            Int             @id(map: "articles_pk") @default(autoincrement())
-  barcode_id    String?         @unique(map: "item_barcode_unique") @db.VarChar(12)
+  barcode_id    String?         @unique(map: "barcode_id") @db.VarChar(14)
   name          String          @db.VarChar(70)
   price         Decimal         @db.Decimal(4, 2)
   category      String          @db.VarChar(25)

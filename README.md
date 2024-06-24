@@ -21,9 +21,12 @@
   <li>[x] new-cashier-validation POST (validates cashier insertion data) </li>
   <li>[x] new-cashier-insertion POST (inserts a new cashier) </li>
   <li>[x] cashier-delete POST (deletes a specific cashier)</li>
-  <li>[ ] item-validation POST (validates item insertion, or update data) </li>
+  <li>[x] item-validation POST (validates item insertion, or update data) </li>
   <li>[x] new-item-insertion POST (inserts a new item) </li>
-  <li>[ ] item-update POST (updates an item's data) </li>
+  <li>[x] item-update POST (updates an item's data) </li>
+  <li>[]</li>
+  <li>[]</li>
+  <li>[]</li>
   <br>
   <li>TBD: Reports generation</li>
   <li>TBD: Notifications Endpoints</li>
