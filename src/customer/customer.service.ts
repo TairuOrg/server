@@ -7,6 +7,7 @@ import {
   UpdateCustomerData,
   ServerResponse,
   CustomerId,
+  VerifyCustomer,
 } from '@/types/api/types';
 import {
   nameRegExp,
@@ -308,6 +309,54 @@ export class CustomerService {
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
+  }
+
+  async verifyCustomer(personal_id: VerifyCustomer, res: Response) {
+  try{
+    const customer = await this.prisma.customers.findUnique({
+      where: { personal_id: personal_id.personal_id},
+    });
+  
+    if (customer && customer.is_deleted==false) {
+      const response: AuthResponse = {
+        error: false,
+        body: {
+          message: {
+            title: 'Cliente encontrado',
+            description: 'El cliente se encuentra registrado en el sistema',
+            notificationStatus: NotificationStatus.SUCCESS,
+          },
+        },
+      };
+      return res.status(HttpStatus.OK).json(response);
+    }
+    else {
+      const response: AuthResponse = {
+        error: false,
+        body: {
+          message: {
+            title: 'Cliente no encontrado',
+            description: 'El cliente no se encuentra registrado en el sistema',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+  } catch (error) {
+    const response: AuthResponse = {
+      error: true,
+      body: {
+        message: {
+          title: 'Error al verificar el cliente',
+          description: 'Ha ocurrido un error al verificar el cliente',
+          notificationStatus: NotificationStatus.ERROR,
+        },
+      },
+    };
+    return res.status(HttpStatus.BAD_REQUEST).json(response);
+  }
+
   }
 
   findOne(id: number) {

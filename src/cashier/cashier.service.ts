@@ -6,6 +6,7 @@ import {
   CashierView,
   UserId,
   Item,
+  VerifyCustomer,
 } from '@/types/api/types';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
@@ -163,5 +164,13 @@ export class CashierService {
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
+  }
+
+  async verifyCustomer(personal_id: VerifyCustomer, res: Response) {
+    
+      // Find the customer with the given personal_id
+      return await this.customer.verifyCustomer(personal_id, res);
+
+     
   }
 }

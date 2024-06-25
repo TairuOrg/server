@@ -144,3 +144,7 @@ export type Entry = {
   date: Date;
   entry_items: EntryItem[];
 }
+
+export type VerifyCustomer = {
+  personal_id: string;
+}
