@@ -42,14 +42,11 @@ export class ItemsService {
     console.log(itemExists);
 
     if (itemExists) {
-      const response: AuthResponse = {
-        error: false,
+      const response: ServerResponse<String> = {
+        error: true,
         body: {
-          message: {
-            title: 'Artículo inválido',
-            description: 'Ya existe un artículo con ese código de barras',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo inválido",
+          payload: "Ya hay un artículo con ese código de barras en el inventario."
         },
       };
 
@@ -58,97 +55,76 @@ export class ItemsService {
 
     if (validateData.barcode_id.length < 13 || validateData.barcode_id.length > 14 || !/\S/.test(validateData.barcode_id)) {
       
-      const response: AuthResponse = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Artículo inválido',
-            description: 'El código de barras del artículo es inválido.',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo inválido",
+          payload: "El código de barras del artículo es inválido."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.name.length < 1 || validateData.name.length > 70 || !/\S/.test(validateData.name)) {
-      const response: AuthResponse = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Artículo inválido',
-            description: 'El nombre del artículo es inválido.',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo inválido",
+          payload: "El nombre del artículo es inválido."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.price < new Decimal(0.01) || validateData.price > new Decimal(9999.99)) {
-      const response: AuthResponse = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Artículo inválido',
-            description: 'El precio del artículo es inválido.',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo inválido",
+          payload: "El precio del artículo es inválido."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.category.length < 1 || validateData.category.length > 25 || !/\S/.test(validateData.category)) {
-      const response: AuthResponse = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Artículo inválido',
-            description: 'La categoría del artículo es inválido.',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo inválido",
+          payload: "La categoría del artículo es inválida."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.manufacturer.length < 1 || validateData.manufacturer.length > 70 || !/\S/.test(validateData.manufacturer)) {
-      const response: AuthResponse = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Artículo inválido',
-            description: 'El proveedor del articulo es inválido.',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo inválido",
+          payload: "El proveedor del artículo es inválido."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (!Number.isInteger(validateData.quantity) || validateData.quantity < 0) {
-      const response: AuthResponse = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Artículo inválido',
-            description: 'La cantidad ingresada para el artículo es inválida.',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo inválido",
+          payload: "La cantidad del artículo es inválida."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    const response: AuthResponse = {
+    const response: ServerResponse<String> = {
       error: false,
       body: {
-        message: {
-          title: 'Artículo válido',
-          description: 'Todos los datos del artículo son válidos.',
-          notificationStatus: NotificationStatus.SUCCESS,
-        },
+        message: "Artículo válido",
+        payload: "Todos los datos del artículo son válidos."
       },
     };
     return res.status(HttpStatus.BAD_REQUEST).json(response);
@@ -230,7 +206,7 @@ export class ItemsService {
         },
       });
     } catch (error) {
-      const response: ServerResponse<String> =  {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
           message: "Artículo no actualizado",
