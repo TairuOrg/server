@@ -19,19 +19,21 @@ export class NotificationService {
         },
       });
 
-      const response = {
+      const response: ServerResponse<String> = {
         error: false,
         body: {
-          message: 'Notificación creada con éxito.',
+          message: "Notificación creada",
+          payload: "La notificación ha sido creada satisfactoriamente."
         },
       };
 
       return res.status(HttpStatus.OK).json(response);
     } catch (error) {
-      const response = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: 'Error al crear la notificación.',
+          message: "No se creó la notificación",
+          payload: "Ocurrió un error al crear la notificación."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
