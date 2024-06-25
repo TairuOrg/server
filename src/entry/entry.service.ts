@@ -23,14 +23,11 @@ export class EntryService {
         }
       });
     } catch (error) {
-      const response = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Entrada de artículos no registrada',
-            description: 'Ha ocurrido un error al registrar la entrada de artículos',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Entrada de artículos no registrada",
+          payload: "Ocurrió un error al registrar la entrada de artículos."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
@@ -66,27 +63,21 @@ export class EntryService {
       }
     }
     if(has_error){
-      const response = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Entrada de artículos no registrada',
-            description: 'Error registrando un articulo de la entrada',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Entrada de artículos no registrada",
+          payload: "Ocurrió un error al registrar un artículo de la entrada de artículos."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    const response = {
+    const response: ServerResponse<String> = {
       error: false,
       body: {
-        message: {
-          title: 'Entrada de artículos registrada',
-          description: 'La entrada de articulos ha sido registrada satisfactoriamente',
-          notificationStatus: NotificationStatus.SUCCESS,
-        },
+        message: "Entrada de artículos registrada",
+        payload: "La entrada de artículos ha sido registrada de manera satisfactoria."
       },
     };
     return res.status(HttpStatus.OK).json(response);
