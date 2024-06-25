@@ -8,7 +8,18 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
-import { Customer, UpdateCustomerData, ExchangeRate, Revenue, ServerResponse, CustomerId, Item, UpdateItem, UserId, NotificationData } from '@/types/api/types';
+import { 
+  Customer, 
+  UpdateCustomerData, 
+  ExchangeRate, 
+  Revenue, 
+  ServerResponse, 
+  CustomerId, 
+  Item, 
+  UpdateItem, 
+  UserId, 
+  NotificationData,
+  Entry } from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
@@ -124,5 +135,9 @@ export class AdminService {
 
   async getEntries() {
     return await this.entry.findAll();
+  }
+
+  async insertEntry(data: Entry, res) {
+    return await this.entry.create(data, res);
   }
 }
