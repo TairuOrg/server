@@ -167,27 +167,21 @@ export class ItemsService {
         },
       });
     } catch (error) {
-      const response: AuthResponse =  {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Artículo no agregado',
-            description: 'Ha ocurrido un error al agregar el artículo',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo no agregado",
+          payload: "Ha ocurrido un error al agregar el artículo."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    const response: AuthResponse = {
+    const response: ServerResponse<String> = {
       error: false,
       body: {
-        message: {
-          title: 'Artículo agregado',
-          description: 'El artículo ha sido agregado satisfactoriamente',
-          notificationStatus: NotificationStatus.SUCCESS,
-        },
+        message: "Artículo agregado",
+        payload: "El artículo ha sido agregado satisfactoriamente."
       },
     };
     
@@ -236,27 +230,21 @@ export class ItemsService {
         },
       });
     } catch (error) {
-      const response: AuthResponse =  {
+      const response: ServerResponse<String> =  {
         error: true,
         body: {
-          message: {
-            title: 'Artículo no actualizado',
-            description: 'Ha ocurrido un error al actualizar el artículo',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Artículo no actualizado",
+          payload: "Ha ocurrido un error al actualizar el artículo.",
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    const response: AuthResponse = {
+    const response: ServerResponse<String> = {
       error: false,
       body: {
-        message: {
-          title: 'Artículo actualizado',
-          description: 'El artículo ha sido actualizado satisfactoriamente',
-          notificationStatus: NotificationStatus.SUCCESS,
-        },
+        message: 'Artículo actualizado',
+        payload: 'El artículo ha sido actualizado satisfactoriamente.',
       },
     };
     

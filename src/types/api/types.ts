@@ -131,7 +131,8 @@ export type NotificationData = {
 
 export type EntryItem = {
   item_id: number;
-  quantity: number;
+  current_quantity: number;
+  add_quantity: number;
   name: string;
   category: string;
   price: Decimal;

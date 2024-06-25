@@ -27,7 +27,7 @@
   <li>[x] notification-insertion POST (inserts a new notification)</li>
   <li>[x] notifications GET (gets all notifications)</li>
   <li>[ ] entry-validation POST (validates entry data)</li>
-  <li>[ ] entry-insertion POST (inserts a new entry)</li>
+  <li>[x] entry-insertion POST (inserts a new entry)</li>
   <li>[x] entries GET (gets all entries)</li>
   <br>
   <li>TBD: Reports generation</li>

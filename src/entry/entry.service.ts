@@ -1,15 +1,95 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateEntryDto } from './dto/create-entry.dto';
 import { UpdateEntryDto } from './dto/update-entry.dto';
-import { Entry, ServerResponse } from '@/types/api/types';
+import { Entry, EntryItem, Item, ServerResponse, UpdateItem } from '@/types/api/types';
+import { NotificationStatus } from '@/types/api/Responses'
+import { ItemsService } from '@/items/items.service'
 import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class EntryService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly item: ItemsService,
+  ) {}
 
-  create(createEntryDto: CreateEntryDto) {
-    return 'This action adds a new entry';
+  async create(insertData: Entry, res) {
+    let Entry;
+    try {
+      Entry = await this.prisma.entries.create({
+        data: {
+          admin_id: insertData.admin_id,
+          description: insertData.description,
+        }
+      });
+    } catch (error) {
+      const response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Entrada de artículos no registrada',
+            description: 'Ha ocurrido un error al registrar la entrada de artículos',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+    
+    return await this.addItemsToEntry(insertData.entry_items, Entry.id, res);
+  } 
+
+  async addItemsToEntry(Items: EntryItem[], EntryId, res) {
+    let has_error = false;
+    for (const Item of Items) {
+      try {
+        await this.prisma.entries_items.create({
+          data: {
+            entry_id: EntryId,
+            item_id: Item.item_id,
+            quantity: Item.add_quantity,
+          }
+        });
+        await this.prisma.items.update({
+          where: {
+            id: Item.item_id
+          },
+          data: {
+            quantity: Item.add_quantity + Item.current_quantity
+          }
+          }
+        );
+      }
+      catch(error) {
+        has_error = true;
+        break;
+      }
+    }
+    if(has_error){
+      const response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Entrada de artículos no registrada',
+            description: 'Error registrando un articulo de la entrada',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+
+    const response = {
+      error: false,
+      body: {
+        message: {
+          title: 'Entrada de artículos registrada',
+          description: 'La entrada de articulos ha sido registrada satisfactoriamente',
+          notificationStatus: NotificationStatus.SUCCESS,
+        },
+      },
+    };
+    return res.status(HttpStatus.OK).json(response);
   }
 
   async findAll(): Promise<ServerResponse<any>> {
