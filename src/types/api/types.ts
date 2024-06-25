@@ -149,3 +149,10 @@ export type Entry = {
 export type VerifyCustomer = {
   personal_id: string;
 }
+
+export type CustomerData = { 
+  name:string
+  personal_id:string
+  phone_number:string
+  residence_location:string
+}

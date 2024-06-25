@@ -7,6 +7,7 @@ import {
   UserId,
   Item,
   VerifyCustomer,
+  CustomerData,
 } from '@/types/api/types';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
@@ -58,7 +59,7 @@ export class CashierService {
   }
 
   async getItems(): Promise<ServerResponse<Item[]>> {
-    return await this.item.findAll()
+    return await this.item.findAll();
   }
 
   async findAll(): Promise<ServerResponse<CashierView[]>> {
@@ -167,10 +168,11 @@ export class CashierService {
   }
 
   async verifyCustomer(personal_id: VerifyCustomer, res: Response) {
-    
-      // Find the customer with the given personal_id
-      return await this.customer.verifyCustomer(personal_id, res);
+    // Find the customer with the given personal_id
+    return await this.customer.verifyCustomer(personal_id, res);
+  }
 
-     
+  async validateCustomer(data: CustomerData, res: Response) {
+  return await this.customer.validateCustomer(data, res);
   }
 }

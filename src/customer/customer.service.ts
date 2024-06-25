@@ -8,6 +8,7 @@ import {
   ServerResponse,
   CustomerId,
   VerifyCustomer,
+  CustomerData,
 } from '@/types/api/types';
 import {
   nameRegExp,
@@ -127,9 +128,7 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    } 
-    
-    else if(verify_phone && verify_phone.personal_id != old_personal_id){
+    } else if (verify_phone && verify_phone.personal_id != old_personal_id) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -142,8 +141,7 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    }
-    else if (
+    } else if (
       residence_location.length > 50 ||
       residence_location.length < 3
     ) {
@@ -161,7 +159,7 @@ export class CustomerService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    if (id_validation && (id_validation.personal_id != old_personal_id)) {
+    if (id_validation && id_validation.personal_id != old_personal_id) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -173,8 +171,8 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    } 
-    if(verify_deleted && verify_deleted.is_deleted == true){
+    }
+    if (verify_deleted && verify_deleted.is_deleted == true) {
       const response: AuthResponse = {
         error: true,
         body: {
@@ -186,8 +184,7 @@ export class CustomerService {
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-    }
-    else {
+    } else {
       return res.status(HttpStatus.OK).json({
         error: false,
         body: {
@@ -262,21 +259,19 @@ export class CustomerService {
           },
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
-      } 
-      else if (customer.is_deleted == true) {
+      } else if (customer.is_deleted == true) {
         const response: AuthResponse = {
           error: true,
           body: {
             message: {
-              title: "Cliente eliminado previamente",
-              description: "Este cliente ya ha sido eliminado del sistema",
+              title: 'Cliente eliminado previamente',
+              description: 'Este cliente ya ha sido eliminado del sistema',
               notificationStatus: NotificationStatus.ERROR,
-            }
-          }
-        }
+            },
+          },
+        };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
-      }
-      else {
+      } else {
         const deletion = await this.prisma.customers.update({
           where: { personal_id: personal_id.personal_id },
           data: {
@@ -312,51 +307,157 @@ export class CustomerService {
   }
 
   async verifyCustomer(personal_id: VerifyCustomer, res: Response) {
-  try{
-    const customer = await this.prisma.customers.findUnique({
-      where: { personal_id: personal_id.personal_id},
-    });
-  
-    if (customer && customer.is_deleted==false) {
-      const response: AuthResponse = {
-        error: false,
-        body: {
-          message: {
-            title: 'Cliente encontrado',
-            description: 'El cliente se encuentra registrado en el sistema',
-            notificationStatus: NotificationStatus.SUCCESS,
+    try {
+      const customer = await this.prisma.customers.findUnique({
+        where: { personal_id: personal_id.personal_id },
+      });
+
+      if (customer && customer.is_deleted == false) {
+        const response: AuthResponse = {
+          error: false,
+          body: {
+            message: {
+              title: 'Cliente encontrado',
+              description: 'El cliente se encuentra registrado en el sistema',
+              notificationStatus: NotificationStatus.SUCCESS,
+            },
           },
-        },
-      };
-      return res.status(HttpStatus.OK).json(response);
-    }
-    else {
+        };
+        return res.status(HttpStatus.OK).json(response);
+      } else {
+        const response: AuthResponse = {
+          error: false,
+          body: {
+            message: {
+              title: 'Cliente no encontrado',
+              description:
+                'El cliente no se encuentra registrado en el sistema',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
+    } catch (error) {
       const response: AuthResponse = {
-        error: false,
+        error: true,
         body: {
           message: {
-            title: 'Cliente no encontrado',
-            description: 'El cliente no se encuentra registrado en el sistema',
+            title: 'Error al verificar el cliente',
+            description: 'Ha ocurrido un error al verificar el cliente',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
-  } catch (error) {
-    const response: AuthResponse = {
-      error: true,
-      body: {
-        message: {
-          title: 'Error al verificar el cliente',
-          description: 'Ha ocurrido un error al verificar el cliente',
-          notificationStatus: NotificationStatus.ERROR,
-        },
-      },
-    };
-    return res.status(HttpStatus.BAD_REQUEST).json(response);
   }
 
+  async validateCustomer(data: CustomerData, res: Response) {
+    try {
+      const name = data.name;
+      const personal_id = data.personal_id;
+      const phone_number = data.phone_number;
+      const residence_location = data.residence_location;
+
+      const customer = await this.prisma.customers.findUnique({
+        where: { personal_id: data.personal_id },
+      });
+
+      const verify_personal_id = await this.prisma.customers.findUnique({
+        where: { personal_id: personal_id },
+      });
+
+      const verify_phone = await this.prisma.customers.findUnique({
+        where: { phone_number: phone_number },
+      });
+
+      if (!nameRegExp.test(name) || name.length > 70 || name.length < 3) {
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+            message: 'Nombre inválido',
+            payload:
+              'El nombre no puede ser menor a 3 caracteres, mayor a 70, ni contener caracteres especiales o números',
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else if (
+        !idRegExp.test(personal_id) ||
+        personal_id.length > 10 ||
+        personal_id.length < 8
+      ) {
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+            message: 'Cédula inválida',
+            payload:
+              'La cédula no puede ser menor a 8 caracteres, mayor a 10, ni contener caracteres especiales o letras',
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else if (!phoneRegExp.test(phone_number) || phone_number.length != 10) {
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+            message: 'Número de teléfono inválido',
+            payload:
+              'El número de teléfono debe tener 10 dígitos y no contener caracteres especiales o letras',
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else if (verify_personal_id && verify_personal_id.is_deleted == false) {
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+            message: 'Cédula ya registrada',
+            payload: 'La cédula ya se encuentra registrada en el sistema',
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else if (verify_phone) {
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+            message: 'Número de teléfono ya registrado',
+            payload:
+              'El número de teléfono ya se encuentra registrado en el sistema',
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else if (
+        residence_location.length > 50 ||
+        residence_location.length < 3
+      ) {
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+            message: 'Dirección de residencia inválida',
+            payload:
+              'La dirección de residencia no puede ser menor a 3 caracteres, mayor a 50',
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else {
+        const response: ServerResponse<String> = {
+          error: false,
+          body: {
+            message: 'Datos del cliente válidos',
+            payload: 'Los datos del cliente son válidos para su inserción',
+          },
+        };
+        return res.status(HttpStatus.OK).json(response);
+      }
+    } catch (error) {
+      const response: ServerResponse<String> = {
+        error: true,
+        body: {
+          message: 'Error al validar el cliente',
+          payload: 'Ha ocurrido un error al validar el cliente',
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
   }
 
   findOne(id: number) {
