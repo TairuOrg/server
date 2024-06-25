@@ -26,7 +26,7 @@
   <li>[x] item-update POST (updates an item's data) </li>
   <li>[x] notification-insertion POST (inserts a new notification)</li>
   <li>[x] notifications GET (gets all notifications)</li>
-  <li>[ ] entry-validation POST (validates entry data)</li>
+  <li>[x] entry-validation POST (validates entry data)</li>
   <li>[x] entry-insertion POST (inserts a new entry)</li>
   <li>[x] entries GET (gets all entries)</li>
   <br>

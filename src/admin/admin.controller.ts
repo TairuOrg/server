@@ -131,4 +131,10 @@ export class AdminController {
   // async validateEntry(@Body() data: any, @Res() res: Response) {
   //   return this.adminService.validateEntry(data, res);
   // }
+
+  @Post('validate-entry') 
+  async validateEntry(@Body() data: Entry, @Res() res: Response) {
+    const response = await this.adminService.validateEntry(data, res);
+    return response;
+  }
 }

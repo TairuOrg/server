@@ -140,4 +140,8 @@ export class AdminService {
   async insertEntry(data: Entry, res) {
     return await this.entry.create(data, res);
   }
+
+  async validateEntry(data: Entry, res: Response) {
+    return await this.entry.validate(data, res);
+  }
 }
