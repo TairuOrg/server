@@ -121,14 +121,11 @@ export class CashierService {
 
       // Check if the user is deleted
       if (user.is_deleted) {
-        const response: AuthResponse = {
+        const response: ServerResponse<String> = {
           error: true,
           body: {
-            message: {
-              title: 'Error al eliminar cajero',
-              description: 'El cajero ingresado ya ha sido eliminado',
-              notificationStatus: NotificationStatus.ERROR,
-            },
+            message: "Error al eliminar el cajero",
+            payload: "El cajero ya se encuentra eliminado."
           },
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
@@ -138,14 +135,11 @@ export class CashierService {
           data: { is_deleted: true, phone_number: null },
         });
         // Return the JSON representation of the data object
-        const response: AuthResponse = {
+        const response: ServerResponse<String> = {
           error: false,
           body: {
-            message: {
-              title: 'Cajero eliminado',
-              description: 'El cajero ha sido eliminado satisfactoriamente',
-              notificationStatus: NotificationStatus.SUCCESS,
-            },
+            message: "Cajero eliminado",
+            payload: "El cajero ha sido eliminado satisfactoriamente."
           },
         };
         return res.status(HttpStatus.OK).json(response);
@@ -153,14 +147,11 @@ export class CashierService {
     } catch (error) {
       // Return the JSON representation of the data object
 
-      const response: AuthResponse = {
+      const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: {
-            title: 'Error al eliminar cajero',
-            description: 'El cajero no ha podido ser eliminado',
-            notificationStatus: NotificationStatus.ERROR,
-          },
+          message: "Error al eliminar el cajero",
+          payload: "Ocurrió un error al eliminar el cajero."
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
