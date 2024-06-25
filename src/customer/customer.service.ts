@@ -460,6 +460,74 @@ export class CustomerService {
     }
   }
 
+  async insertCustomer(data: CustomerData, res:Response): Promise<Response> {
+    try {
+
+      const customer = await this.prisma.customers.findUnique({
+        where: { personal_id: data.personal_id },
+      });
+
+      if (customer && customer.is_deleted == true) {
+        const update_customer = await this.prisma.customers.update({
+          where: { personal_id: data.personal_id },
+          data: {
+            is_deleted: false,
+            phone_number: data.phone_number,
+            name: data.name,
+            residence_location: data.residence_location,
+            personal_id: data.personal_id,
+          },
+        });
+        const response: ServerResponse<String> = {
+          error: false,
+          body: {
+            
+              message: 'Usuario Reactivado',
+              payload: 'El usuario se ha reactivado satisfactoriamente',
+              
+          
+          },
+        };
+        return res.status(HttpStatus.OK).json(response);
+      }
+      else {
+        const insert_customer = await this.prisma.customers.create({
+          data: {
+            name: data.name,
+            personal_id: data.personal_id,
+            phone_number: data.phone_number,
+            residence_location: data.residence_location,
+            is_deleted: false
+          },
+        });
+        const response: AuthResponse = {
+          error: false,
+          body: {
+            message: {
+              title: 'Cliente registrado',
+              description: 'El cliente ha sido registrado satisfactoriamente',
+              notificationStatus: NotificationStatus.SUCCESS,
+            },
+          },
+        };
+        return res.status(HttpStatus.OK).json(response);
+      }
+    } catch (error) {
+      const response: AuthResponse = {
+        error: true,
+        body: {
+          message: {
+            title: 'Error al registrar el cliente',
+            description: 'Ha ocurrido un error al registrar el cliente',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+    
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} customer`;
   }

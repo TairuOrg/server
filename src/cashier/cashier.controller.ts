@@ -45,5 +45,10 @@ export class CashierController {
   async validateCustomer(@Body() data: CustomerData, @Res() res: Response) {
     return this.cashierService.validateCustomer(data, res);
   }
+  
+  @Post('insert-customer') 
+  async insertCustomer(@Body() data: CustomerData, @Res() res: Response) {
+    return this.cashierService.insertCustomer(data, res);
+  }
 
 }

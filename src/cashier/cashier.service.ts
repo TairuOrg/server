@@ -175,4 +175,8 @@ export class CashierService {
   async validateCustomer(data: CustomerData, res: Response) {
   return await this.customer.validateCustomer(data, res);
   }
+
+  async insertCustomer(data: CustomerData, res: Response) {
+    return await this.customer.insertCustomer(data,res);
+  }
 }
