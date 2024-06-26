@@ -191,21 +191,23 @@ export class ItemsService {
   }
 
   async update(updateData: UpdateItem, res) {
+    console.log(typeof updateData.quantity)
     try {
       await this.prisma.items.update({
         where: {
           barcode_id: updateData.old_barcode_id
         },
         data: {
-          barcode_id: updateData.new_barcode_id,
+          barcode_id: updateData.barcode_id,
           name: updateData.name,
           price: updateData.price,
           category: updateData.category,
           manufacturer: updateData.manufacturer,
-          quantity: updateData.quantity
+          quantity: parseInt(updateData.quantity)
         },
       });
     } catch (error) {
+      console.error(error)
       const response: ServerResponse<String> = {
         error: true,
         body: {

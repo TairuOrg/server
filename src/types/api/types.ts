@@ -37,12 +37,12 @@ export type Item = {
 
 export type UpdateItem = {
   old_barcode_id: string;
-  new_barcode_id: string;
+  barcode_id: string;
   name: string;
   price: Decimal;
   category: string;
   manufacturer: string;
-  quantity: number;
+  quantity: string;
 };
 
 export type Report = {

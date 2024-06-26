@@ -101,6 +101,7 @@ export class AdminController {
   }
   @Post('update-item')
   async updateItem(@Body() data: UpdateItem, @Res() res: Response) {
+    console.log(data)
     const response = await this.adminService.updateItem(data, res);
     return response;
   }
