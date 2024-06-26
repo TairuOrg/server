@@ -3,7 +3,7 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { checkSameDate } from '@/utils/date-manager';
-import { ServerResponse, Sale, SaleData } from '@/types/api/types';
+import { ServerResponse, Sale, SaleData, AddItemData } from '@/types/api/types';
 
 @Injectable()   
 export class SalesService {
@@ -63,7 +63,7 @@ export class SalesService {
     return res.status(HttpStatus.OK).json(response);
   }
 
-  async addItem(data, res) {
+  async addItem(data: AddItemData, res) {
     try {
       if (this.isCompleted(data.sale_id)){
         const response = {
@@ -86,7 +86,7 @@ export class SalesService {
         }
       });
 
-      if (Item.quantity - data.quantity < 0) {
+      if (Item.quantity - parseInt(data.quantity) < 0) {
         const response = {
           error: true,
           body: {
@@ -100,8 +100,8 @@ export class SalesService {
       await this.prisma.sales_items.create({
         data: {
           item_id: Item.id,
-          sale_id: data.sale_id,
-          quantity: data.quantity
+          sale_id: parseInt(data.sale_id),
+          quantity: parseInt(data.quantity)
         }
       });
     }

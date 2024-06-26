@@ -161,3 +161,9 @@ export type SaleData = {
   cashier_id: number;
   customer_personal_id: string;
 }
+
+export type AddItemData = {
+  sale_id: string;
+  item_barcode_id: string;
+  quantity: string;
+}
