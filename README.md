@@ -41,10 +41,11 @@
   <li>[x] client-verification POST (validates whether is already registered or not)</li>
   <li>[x] client validation POST (validates a new client insertion data)</li>
   <li>[x] client-insertion POST (inserts a new client)</li>
-  <li>[ ] new-sale POST (registers a new sale)</li>
-  <li>[ ] add-article POST (adds articles to a sale)</li>
-  <li>[ ] remove-article POST (removes articles from a sale)</li>
-  <li>[ ] cancel-sale POST (cancels a sale)</li>
+  <li>[x] new-sale POST (registers a new sale)</li>
+  <li>[x] add-article POST (adds articles to a sale)</li>
+  <li>[x] remove-article POST (removes articles from a sale)</li>
+  <li>[x] cancel-sale POST (cancels a sale)</li>
+  <li>[x] commit-sale</li>
 </ul>
 <h2>AUTH</h2>
 <ul>
@@ -52,6 +53,6 @@
   <li>[x] signup-access POST (validates signup code)</li>
   <li>[x] signup-validation POST (validates signup insertion data)</li>
   <li>[x] signup-insertion POST (inserts validated signup data)</li>
-  <li>[ ] logout POST (logs out the current user, updates cashier session if the user is a cashier)</li>
+  <li>[?] logout POST (logs out the current user, updates cashier session if the user is a cashier)</li>
 </ul>
 
