@@ -15,7 +15,7 @@ import { Response } from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
 import { CreateCashierDto } from './dto/create-cashier.dto';
 import { UpdateCashierDto } from './dto/update-cashier.dto';
-import { CustomerData, VerifyCustomer, SaleData } from '@/types/api/types';
+import { CustomerData, VerifyCustomer, SaleData, AddItemData, RemoveItemData, FinishSaleData } from '@/types/api/types';
 
 @Controller('cashier')
 export class CashierController {
@@ -53,27 +53,27 @@ export class CashierController {
 
   @Post('begin-sale')
   async beginSale(@Body() data: SaleData, @Res() res: Response) {
-    return this.cashierService.beginSale(data,res);
+    return this.cashierService.beginSale(data, res);
   }
 
   @Post('add-item')
-  async addItem(@Body() data: SaleData, @Res() res: Response) {
-    return this.cashierService.addItem(data,res);
+  async addItem(@Body() data: AddItemData, @Res() res: Response) {
+    return this.cashierService.addItem(data, res);
   }
 
   @Post('remove-item')
-  async removeItem(@Body() data: SaleData, @Res() res: Response) {
-    return this.cashierService.removeItem(data,res);
+  async removeItem(@Body() data: RemoveItemData, @Res() res: Response) {
+    return this.cashierService.removeItem(data, res);
   }
 
   @Post('cancel-sale')
-  async cancelSale(@Body() data: number, @Res() res: Response) {
+  async cancelSale(@Body() data: FinishSaleData, @Res() res: Response) {
     return this.cashierService.cancelSale(data, res);
   }
 
   @Post('commit-sale')
-  async commitSale(@Body() data: number, @Res() res: Response) {
-    return this.cashierService.commitSale(data,res);
+  async commitSale(@Body() data: FinishSaleData, @Res() res: Response) {
+    return this.cashierService.commitSale(data, res);
   }
 
 }

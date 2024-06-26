@@ -167,3 +167,12 @@ export type AddItemData = {
   item_barcode_id: string;
   quantity: string;
 }
+
+export type RemoveItemData = {
+  sale_id: string;
+  item_barcode_id: string;
+}
+
+export type FinishSaleData = {
+  sale_id: string;
+}

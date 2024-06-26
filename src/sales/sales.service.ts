@@ -3,7 +3,7 @@ import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { checkSameDate } from '@/utils/date-manager';
-import { ServerResponse, Sale, SaleData, AddItemData } from '@/types/api/types';
+import { ServerResponse, Sale, SaleData, AddItemData, RemoveItemData, FinishSaleData } from '@/types/api/types';
 
 @Injectable()   
 export class SalesService {
@@ -65,7 +65,7 @@ export class SalesService {
 
   async addItem(data: AddItemData, res) {
     try {
-      if (this.isCompleted(data.sale_id)){
+      if (this.isCompleted(data.sale_id)) {
         const response = {
           error: true,
           body: {
@@ -127,7 +127,7 @@ export class SalesService {
     return res.status(HttpStatus.OK).json(response);
   }
 
-  async removeItem(data, res) {
+  async removeItem(data: RemoveItemData, res) {
     try {
       if (this.isCompleted(data.sale_id)){
         const response = {
@@ -151,7 +151,7 @@ export class SalesService {
 
       let ItemEntry = await this.prisma.sales_items.findFirst({
         where: {
-          sale_id: data.sale_id,
+          sale_id: parseInt(data.sale_id),
           item_id: Item.id
         },
         select: {
@@ -186,18 +186,20 @@ export class SalesService {
     return res.status(HttpStatus.OK).json(response);
   }
 
-  async cancelSale(saleId, res) {
+  async cancelSale(data: FinishSaleData, res) {
+    const saleId = parseInt(data.sale_id);
+
     try {
-      if (!this.isCompleted(saleId.sale_id)) {
+      if (!this.isCompleted(saleId)) {
         await this.prisma.sales_items.deleteMany({
           where: {
-            sale_id: saleId.sale_id
+            sale_id: saleId
           }
         });
   
         await this.prisma.sales.delete({
           where: {
-            id: saleId.sale_id
+            id: saleId
           }
         });
       }
@@ -234,9 +236,11 @@ export class SalesService {
     return res.status(HttpStatus.OK).json(response);
   }
 
-  async commitSale(saleId, res) {
+  async commitSale(data: FinishSaleData, res) {
+    const saleId = parseInt(data.sale_id);
+
     try {
-      if (this.isCompleted(saleId.sale_id)) {
+      if (this.isCompleted(saleId)) {
         const response = {
           error: true,
           body: {
@@ -248,7 +252,7 @@ export class SalesService {
       }
       await this.prisma.sales.update({
         where: {
-          id: saleId.sale_id
+          id: saleId
         },
         data: {
           is_completed: true,
@@ -267,7 +271,7 @@ export class SalesService {
     }
     const items = await this.prisma.sales_items.findMany({
       where: {
-        sale_id: saleId.sale_id
+        sale_id: saleId
       },
       select: {
         item_id: true,
