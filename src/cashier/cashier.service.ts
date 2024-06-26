@@ -133,7 +133,7 @@ export class CashierService {
       } else {
         const deletedCashier = await this.prisma.user.update({
           where: { personal_id: personal_id.personal_id },
-          data: { is_deleted: true, phone_number: null },
+          data: { is_deleted: true, phone_number: "" }, // doesn't accept null, this is a workaround
         });
         // Return the JSON representation of the data object
         const response: ServerResponse<String> = {
@@ -147,7 +147,7 @@ export class CashierService {
       }
     } catch (error) {
       // Return the JSON representation of the data object
-
+      console.log(error)
       const response: ServerResponse<String> = {
         error: true,
         body: {
