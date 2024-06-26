@@ -9,6 +9,19 @@ import { ServerResponse, Sale, SaleData } from '@/types/api/types';
 export class SalesService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async isCompleted(sale_id) {
+    const sale = await this.prisma.sales.findUniqueOrThrow({
+      where: {
+        id: sale_id
+      },
+      select: {
+        is_completed: true,
+      }
+    });
+    
+    return sale.is_completed;
+  }
+
   async create(insertData: SaleData, res): Promise<ServerResponse<number>> {
     let Sale;
     try {
@@ -52,6 +65,17 @@ export class SalesService {
 
   async addItem(data, res) {
     try {
+      if (this.isCompleted(data.sale_id)){
+        const response = {
+          error: true,
+          body: {
+            message: 'Artículo no añadido',
+            payload: "La venta ya ha sido concretada, no se pueden añadir artículos a ella.",
+          }
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
+
       let Item = await this.prisma.items.findUnique({
         where: {
           barcode_id: data.item_barcode_id
@@ -93,6 +117,17 @@ export class SalesService {
 
   async removeItem(data, res) {
     try {
+      if (this.isCompleted(data.sale_id)){
+        const response = {
+          error: true,
+          body: {
+            message: 'Artículo no eliminado',
+            payload: "La venta ya ha sido concretada, no se pueden eliminar artículos de ella.",
+          }
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
+
       let Item = await this.prisma.items.findUnique({
         where: {
           barcode_id: data.item_barcode_id
@@ -141,16 +176,7 @@ export class SalesService {
 
   async cancelSale(saleId, res) {
     try {
-      let sale = await this.prisma.sales.findUnique({
-        where: {
-          id: saleId.sale_id
-        },
-        select: {
-          is_completed: true
-        }
-      });
-      
-      if (!sale.is_completed) {
+      if (!this.isCompleted(saleId.sale_id)) {
         await this.prisma.sales_items.deleteMany({
           where: {
             sale_id: saleId.sale_id
@@ -198,6 +224,16 @@ export class SalesService {
 
   async commitSale(saleId, res) {
     try {
+      if (this.isCompleted(saleId.sale_id)) {
+        const response = {
+          error: true,
+          body: {
+            message: 'Venta no concretada',
+            payload: "La venta ya ha sido concretada."
+          }
+        }
+        return res.status(HttpStatus.OK).json(response);
+      }
       await this.prisma.sales.update({
         where: {
           id: saleId.sale_id
@@ -217,6 +253,33 @@ export class SalesService {
       }
       return res.status(HttpStatus.OK).json(response);
     }
+    const items = await this.prisma.sales_items.findMany({
+      where: {
+        sale_id: saleId.sale_id
+      },
+      select: {
+        item_id: true,
+        quantity: true,
+        items: {
+          select: {
+            quantity: true
+          }
+        }
+      }
+    });
+
+    const itemsSubstracted = await this.substractToItems(items);
+
+    if (!itemsSubstracted) {
+      const response = {
+        error: true,
+        body: {
+          message: 'Venta no concretada',
+          payload: "Ocurrio un error al concretar la venta."
+        }
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
 
     const response = {
       error: false,
@@ -228,8 +291,30 @@ export class SalesService {
     return res.status(HttpStatus.OK).json(response);
   }
 
-  async substractToItems(Items) {
-    
+  async substractToItems(items) {
+    let hasError = false;
+    for (const item of items) {
+      try {
+        await this.prisma.items.update({
+          data: {
+            quantity: item.items.quantity - item.quantity, 
+          },
+          where: {
+            id: item.item_id
+          }
+        });
+      }
+      catch (error) {
+        hasError = true;
+        break;
+      }
+    }
+
+    if (hasError) {
+      return false;
+    }
+
+    return true;
   }
 
   async findAll(): Promise<ServerResponse<Sale[]>> {
