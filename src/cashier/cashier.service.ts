@@ -8,6 +8,7 @@ import {
   Item,
   VerifyCustomer,
   CustomerData,
+  SaleData
 } from '@/types/api/types';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
@@ -169,5 +170,25 @@ export class CashierService {
 
   async insertCustomer(data: CustomerData, res: Response) {
     return await this.customer.insertCustomer(data,res);
+  }
+
+  async beginSale(data: SaleData, res) {
+    return await this.sale.create(data, res);
+  }
+
+  async addItem(data, res) {
+    return await this.sale.addItem(data,res);
+  }
+
+  async removeItem(data, res) {
+    return await this.sale.removeItem(data, res);
+  }
+
+  async cancelSale(saleId, res) {
+    return await this.sale.cancelSale(saleId, res);
+  }
+
+  async commitSale(saleId,res) {
+    return await this.sale.commitSale(saleId, res);
   }
 }

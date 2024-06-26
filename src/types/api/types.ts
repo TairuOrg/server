@@ -156,3 +156,8 @@ export type CustomerData = {
   phone_number:string
   residence_location:string
 }
+
+export type SaleData = {
+  cashier_id: number;
+  customer_personal_id: string;
+}
