@@ -81,9 +81,21 @@ export class SalesService {
           barcode_id: data.item_barcode_id
         },
         select: {
-          id: true
+          id: true,
+          quantity: true
         }
       });
+
+      if (Item.quantity - data.quantity < 0) {
+        const response = {
+          error: true,
+          body: {
+            message: 'Artículo no añadido',
+            payload: "No hay suficientes unidades disponibles del artículo.",
+          }
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
 
       await this.prisma.sales_items.create({
         data: {
