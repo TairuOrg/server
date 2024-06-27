@@ -113,14 +113,6 @@ export class AdminService {
     return this.customer.deleteCustomer(personal_id, res);
   }
 
-  async validateItem(data:Item, res:Response) {
-    return this.item.validate(data, res);
-  }
-
-  async insertItem(data: Item, res: Response) {
-    return this.item.create(data, res);
-  }
-
   async updateItem(data: UpdateItem, res:Response) {
     return this.item.update(data, res);
   }

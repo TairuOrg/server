@@ -33,7 +33,7 @@ export class ItemsService {
       },
     };
   }
-  async validate(validateData: Item, res): Promise<Response> {
+  async validate(validateData: Item) {
     const itemExists = await this.prisma.items.findFirst({
       where: {
         barcode_id: validateData.barcode_id
@@ -42,97 +42,78 @@ export class ItemsService {
     console.log(itemExists);
 
     if (itemExists) {
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo inválido",
-          payload: "Ya hay un artículo con ese código de barras en el inventario."
-        },
+      return {
+        successful: false,
+        message: "El artículo ya existe en el inventario",
+        item: null,
       };
-
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    if (validateData.barcode_id.length < 13 || validateData.barcode_id.length > 14 || !/\S/.test(validateData.barcode_id)) {
-      
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo inválido",
-          payload: "El código de barras del artículo es inválido."
-        },
+    if (validateData.barcode_id.length < 12 || validateData.barcode_id.length > 14 || !/\S/.test(validateData.barcode_id)) {
+      return {
+        successful: false,
+        message: "El código de barras del artículo es inválido.",
+        item: null,
       };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.name.length < 1 || validateData.name.length > 70 || !/\S/.test(validateData.name)) {
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo inválido",
-          payload: "El nombre del artículo es inválido."
-        },
+      return {
+        successful: false,
+        message: "El nombre del artículo es inválido.",
+        item: null,
       };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.price < new Decimal(0.01) || validateData.price > new Decimal(9999.99)) {
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo inválido",
-          payload: "El precio del artículo es inválido."
-        },
+      return {
+        successful: false,
+        message: "La categoría del ártículo es inválida.",
+        item: null,
       };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.category.length < 1 || validateData.category.length > 25 || !/\S/.test(validateData.category)) {
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo inválido",
-          payload: "La categoría del artículo es inválida."
-        },
+      return {
+        successful: false,
+        message: "La categoría del ártículo es inválida.",
+        item: null,
       };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (validateData.manufacturer.length < 1 || validateData.manufacturer.length > 70 || !/\S/.test(validateData.manufacturer)) {
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo inválido",
-          payload: "El proveedor del artículo es inválido."
-        },
+      return {
+        successful: false,
+        message: "El proveedor del artículo es inválido.",
+        item: null,
       };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
     if (!Number.isInteger(validateData.quantity) || validateData.quantity < 0) {
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo inválido",
-          payload: "La cantidad del artículo es inválida."
-        },
+      return {
+        successful: false,
+        message: "La cantidad del artículo es inválida.",
+        item: null,
       };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    const response: ServerResponse<String> = {
-      error: false,
-      body: {
-        message: "Artículo válido",
-        payload: "Todos los datos del artículo son válidos."
-      },
+    return {
+      successful: true,
+      message: "Todos los datos del artículo son válidos.",
+      item: null,
     };
-    return res.status(HttpStatus.BAD_REQUEST).json(response);
+    
   }
 
-  async create(insertData: Item, res): Promise<Response> {
+  async create(insertData: Item) {
+    const validationData = await this.validate(insertData);
+
+    if (!validationData.successful) {
+      return validationData;
+    }
+    let Item;
     try {
-      await this.prisma.items.create({
+      Item = await this.prisma.items.create({
         data: {
           barcode_id: insertData.barcode_id,
           name: insertData.name,
@@ -142,26 +123,20 @@ export class ItemsService {
           quantity: insertData.quantity
         },
       });
-    } catch (error) {
-      const response: ServerResponse<String> = {
-        error: true,
-        body: {
-          message: "Artículo no agregado",
-          payload: "Ha ocurrido un error al agregar el artículo."
-        },
+    } 
+    catch (error) {
+      return {
+        successful: false,
+        message: "Ocurrio un error al crear el articulo",
+        item: null,
       };
-      return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
-
-    const response: ServerResponse<String> = {
-      error: false,
-      body: {
-        message: "Artículo agregado",
-        payload: "El artículo ha sido agregado satisfactoriamente."
-      },
-    };
     
-    return res.status(HttpStatus.OK).json(response);
+    return {
+      successful: true,
+      message: "Articulo creado satisfactoriamente",
+      item: Item,
+    };
   }
 
   async findAll(): Promise<ServerResponse<Item[]>> {

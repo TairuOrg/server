@@ -39,8 +39,42 @@ export class EntryService {
 
   async addItemsToEntry(Items: EntryItem[], EntryId, res) {
     let has_error = false;
-    for (const Item of Items) {
+    for (let Item of Items) {
       try {
+        const itemExists = await this.prisma.items.findUnique({
+          where: {
+            barcode_id: Item.barcode_id
+          },
+          select: {
+            quantity: true
+          }
+        });
+        console.log(itemExists);
+        if (!itemExists) {
+          const creation = await this.item.create({
+            barcode_id: Item.barcode_id,
+            name: Item.name,
+            price: Item.price,
+            category: Item.category,
+            manufacturer: Item.manufacturer,
+            quantity: Item.add_quantity,
+          });
+
+          if (!creation.successful) {
+            const response: ServerResponse<String> = {
+              error: true,
+              body: {
+                message: "Entrada de artículos no registrada",
+                payload: creation.message
+              },
+            };
+            return res.status(HttpStatus.BAD_REQUEST).json(response);
+          }
+          console.log(creation.message);
+
+          Item.item_id = creation.item.id;
+        }
+
         await this.prisma.entries_items.create({
           data: {
             entry_id: EntryId,
@@ -53,12 +87,13 @@ export class EntryService {
             id: Item.item_id
           },
           data: {
-            quantity: Item.add_quantity + Item.current_quantity
+            quantity: itemExists.quantity + Item.add_quantity
           }
           }
         );
       }
       catch(error) {
+        console.log(error);
         has_error = true;
         break;
       }

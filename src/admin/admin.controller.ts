@@ -88,17 +88,6 @@ export class AdminController {
     return response;
   }
 
-  @Post('validate-item')
-  async validateItem(@Body() data: Item, @Res() res: Response) {
-    const response = await this.adminService.validateItem(data, res);
-    return response;
-  }
-
-  @Post('insert-item')
-  async insertItem(@Body() data: Item, @Res() res: Response) {
-    const response = await this.adminService.insertItem(data, res);
-    return response;
-  }
   @Post('update-item')
   async updateItem(@Body() data: UpdateItem, @Res() res: Response) {
     console.log(data)
