@@ -18,7 +18,7 @@ import {
 } from '@/types/api/regex';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
-import { JWSSignatureVerificationFailed } from 'jose/dist/types/util/errors';
+
 
 @Injectable()
 export class CustomerService {
@@ -500,15 +500,12 @@ export class CustomerService {
             is_deleted: false
           },
         });
-        const response: AuthResponse = {
+        const response = {
           error: false,
           body: {
-            message: {
-              title: 'Cliente registrado',
-              description: 'El cliente ha sido registrado satisfactoriamente',
-              notificationStatus: NotificationStatus.SUCCESS,
-            },
-          },
+            message: 'Cliente registrado',
+            payload: insert_customer
+          }
         };
         return res.status(HttpStatus.OK).json(response);
       }

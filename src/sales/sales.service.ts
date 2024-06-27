@@ -44,7 +44,7 @@ export class SalesService {
           id: true,
         },
       });
-
+      console.log('el cliente es:', customer)
       Sale = await this.prisma.sales.create({
         data: {
           cashier_id: insertData.cashier_id,
@@ -53,6 +53,7 @@ export class SalesService {
         },
       });
     } catch (error) {
+      console.log(error)
       const response = {
         error: true,
         body: {

@@ -50,12 +50,16 @@ export class CashierController {
   
   @Post('insert-customer') 
   async insertCustomer(@Body() data: CustomerData, @Res() res: Response) {
+    console.log('insertar cliente:', data)
     return this.cashierService.insertCustomer(data, res);
   }
 
   @Post('begin-sale')
   async beginSale(@Body() data: SaleData, @Res() res: Response) {
-    return this.cashierService.beginSale(data, res);
+    console.log('iniciar venta:', data)
+    const response = await this.cashierService.beginSale(data, res);
+    console.log('response:', response)
+    return response;
   }
 
   @Post('add-item')
