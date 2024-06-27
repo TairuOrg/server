@@ -12,7 +12,8 @@ import {
   AddItemData,
   RemoveItemData,
   FinishSaleData,
-  SaleId
+  SaleId,
+  Barcode
 } from '@/types/api/types';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
@@ -198,5 +199,9 @@ export class CashierService {
 
   async verifySale(data: SaleId, res) {
     return await this.sale.verifySale(data, res);
+  }
+
+  async getItem(data: Barcode, res) {
+    return await this.item.findOne(data, res);
   }
 }

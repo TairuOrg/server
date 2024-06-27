@@ -15,7 +15,7 @@ import { Response } from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
 import { CreateCashierDto } from './dto/create-cashier.dto';
 import { UpdateCashierDto } from './dto/update-cashier.dto';
-import { CustomerData, VerifyCustomer, SaleData, AddItemData, RemoveItemData, FinishSaleData, FullSaleData, SaleId } from '@/types/api/types';
+import { CustomerData, VerifyCustomer, SaleData, AddItemData, RemoveItemData, FinishSaleData, FullSaleData, SaleId, Barcode } from '@/types/api/types';
 
 @Controller('cashier')
 export class CashierController {
@@ -80,4 +80,9 @@ export class CashierController {
   async verifySale(@Body() data: SaleId, @Res() res: Response) {
     return this.cashierService.verifySale(data, res);
 
-}}
+  }
+  @Post('get-item')
+  async getItem(@Body() data: Barcode, @Res() res: Response) {
+    return this.cashierService.getItem(data, res);
+  }
+}

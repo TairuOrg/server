@@ -187,3 +187,7 @@ export type FullSaleData = {
 export type SaleId ={
   sale_id: string;
 }
+
+export type Barcode = {
+  barcode_id: string;
+}

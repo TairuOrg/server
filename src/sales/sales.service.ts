@@ -19,7 +19,7 @@ export class SalesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async isCompleted(sale_id) {
-    const sale = await this.prisma.sales.findUniqueOrThrow({
+    const sale = await this.prisma.sales.findUnique({
       where: {
         id: sale_id,
       },
@@ -27,7 +27,9 @@ export class SalesService {
         is_completed: true,
       },
     });
-
+    if (sale === null) {
+      return true;
+    }
     return sale.is_completed;
   }
 
@@ -73,7 +75,7 @@ export class SalesService {
 
   async addItem(data: AddItemData, res) {
     try {
-      if (this.isCompleted(data.sale_id)) {
+      if (await this.isCompleted(data.sale_id)) {
         const response = {
           error: true,
           body: {
@@ -84,7 +86,7 @@ export class SalesService {
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
-
+      console.log("hola");
       let Item = await this.prisma.items.findUnique({
         where: {
           barcode_id: data.item_barcode_id,
@@ -137,7 +139,7 @@ export class SalesService {
 
   async removeItem(data: RemoveItemData, res) {
     try {
-      if (this.isCompleted(data.sale_id)) {
+      if (await this.isCompleted(data.sale_id)) {
         const response = {
           error: true,
           body: {
@@ -198,7 +200,7 @@ export class SalesService {
     const saleId = parseInt(data.sale_id);
 
     try {
-      if (!this.isCompleted(saleId)) {
+      if (!await this.isCompleted(saleId)) {
         await this.prisma.sales_items.deleteMany({
           where: {
             sale_id: saleId,
@@ -247,7 +249,7 @@ export class SalesService {
     const saleId = parseInt(data.sale_id);
 
     try {
-      if (this.isCompleted(saleId)) {
+      if (await this.isCompleted(saleId)) {
         const response = {
           error: true,
           body: {

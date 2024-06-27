@@ -6,6 +6,7 @@ import {
   Item,
   UpdateItem,
   ItemsAndCategoriesCount,
+  Barcode
 } from '@/types/api/types';
 import { Decimal } from '@prisma/client/runtime/library';
 
@@ -161,8 +162,49 @@ export class ItemsService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} item`;
+  async findOne(data: Barcode, res) {
+    let Item;
+    try {
+      Item = await this.prisma.items.findUnique({
+        where: {
+          barcode_id: data.barcode_id
+        }
+      });
+    }
+    catch(error) {
+      const response: ServerResponse<String> = {
+        error: true,
+        body: {
+          message: "Artículo no encontrado",
+          payload: "Ha ocurrido un error al buscar el artículo.",
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+
+    if (!Item) {
+      const response: ServerResponse<String> = {
+        error: true,
+        body: {
+          message: "Artículo no encontrado",
+          payload: "Ha ocurrido un error al buscar el artículo.",
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+
+    const response: ServerResponse<any> = {
+      error: false,
+      body: {
+        message: "Artículo encontrado",
+        payload: {
+          barcode_id: Item.barcode_id,
+          name: Item.name,
+          quantity: Item.quantity
+        }
+      },
+    };
+    return res.status(HttpStatus.OK).json(response);
   }
 
   async update(updateData: UpdateItem, res) {
