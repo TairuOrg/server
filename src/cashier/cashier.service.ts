@@ -11,7 +11,8 @@ import {
   SaleData,
   AddItemData,
   RemoveItemData,
-  FinishSaleData
+  FinishSaleData,
+  SaleId
 } from '@/types/api/types';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
@@ -193,5 +194,9 @@ export class CashierService {
 
   async commitSale(saleId: FinishSaleData, res) {
     return await this.sale.commitSale(saleId, res);
+  }
+
+  async verifySale(data: SaleId, res) {
+    return await this.sale.verifySale(data, res);
   }
 }

@@ -176,3 +176,14 @@ export type RemoveItemData = {
 export type FinishSaleData = {
   sale_id: string;
 }
+
+export type FullSaleData = {
+  sale_id: number;
+  is_completed: boolean;
+  cashier_name: string;
+  customer_name: string;
+}
+
+export type SaleId ={
+  sale_id: string;
+}
