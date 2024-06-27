@@ -114,7 +114,7 @@ export class SalesService {
         },
       });
     } catch (error) {
-      console.log(error);
+
       const response = {
         error: true,
         body: {
@@ -222,7 +222,7 @@ export class SalesService {
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
     } catch (error) {
-      console.log(error);
+  
       const response = {
         error: true,
         body: {
@@ -361,8 +361,19 @@ export class SalesService {
     data: SaleId,
     res,
   ): Promise<ServerResponse<FullSaleData> | ServerResponse<String>> {
-    
-      let sale_id = parseInt(data.sale_id);
+    let sale_id = parseInt(data.sale_id);
+
+      if(Number.isNaN(sale_id) || sale_id === undefined || sale_id === null) {
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+              message: 'Venta no encontrada',
+              payload: 'Id de venta no válido',
+          },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
+
       try{
       const sale = await this.prisma.sales.findUnique({
         where: {
@@ -376,16 +387,16 @@ export class SalesService {
         },
       });
 
-      console.log("pepe",sale);
+  
       if (sale && !sale.is_completed) {
-        console.log("papa")
+ 
         const customer = await this.prisma.customers.findUnique({
           where: { id: sale.customer_id },
           select: {
             name: true,
           },
         });
-        console.log("customer")
+
         const cashier = await this.prisma.user.findUnique({
           where: {
             id: sale.cashier_id,
@@ -394,25 +405,25 @@ export class SalesService {
             name: true,
           },
         });
-        console.log("cashier")
+
         const json: FullSaleData = {
           sale_id: sale.id,
           is_completed: sale.is_completed,
           cashier_name: cashier.name,
           customer_name: customer.name,
         };
-        console.log("json??",json)
+
         const response: ServerResponse<FullSaleData> = {
           error: false,
           body: {
-              message: 'Venta no encontrada',
+              message: 'Venta encontrada',
               payload: json,
           },
       };
       return res.status(HttpStatus.OK).json(response);
-        console.log("retornando?")
+
       } else {
-        console.log("mamaguevo")
+  
         const response: ServerResponse<String> = {
             error: true,
             body: {
@@ -423,7 +434,7 @@ export class SalesService {
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
   } catch (error) {
-    console.log("pipo",error);
+
     const response: ServerResponse<String> = {
       error: true,
       body: {
@@ -447,7 +458,7 @@ export class SalesService {
         },
       },
     });
-    console.log('sales', sales);
+
     const todayRevenue = sales.reduce((acc, sale) => {
       //Check if the current sale dates from today
 
