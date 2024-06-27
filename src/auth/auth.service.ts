@@ -260,7 +260,7 @@ export class AuthService {
   async signupInsertion(data: SignUpData, res: Response): Promise<Response> {
     try {
       //se inserta el usuario en la base de datos
-      console.log('ghrui', data.role);
+      console.log('sdsdsdsdsadadsddadsdadasdsd', data.role);
 
 
       let user_data = await this.prisma.user.findUnique({

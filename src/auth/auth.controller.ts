@@ -38,6 +38,7 @@ export class AuthController {
     @Body() cred: AuthCredentials,
     @Res() res: Response,
   ) {
+    console.log('mis credenciales:', cred, role)
     let user: User | null = null;
     let message: {
       title: string;
@@ -90,7 +91,7 @@ export class AuthController {
     }
     const sessionToken = await encryptSessionCookie({
       id: user?.id,
-      role: 'admin',
+      role: role,
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 2),
     });
 
@@ -134,6 +135,7 @@ export class AuthController {
     @Body() data: SignUpData,
     @Res() res: Response, 
   ) {
+    console.log('los datos para el insertion:', data)
     const response = await this.authService.signupInsertion(data, res);
     return response;
   }
