@@ -16,6 +16,7 @@ export class EntryService {
 
   async create(insertData: Entry, res) {
     let Entry;
+    console.log('entry para agregar:', insertData)
     try {
       Entry = await this.prisma.entries.create({
         data: {
@@ -39,6 +40,7 @@ export class EntryService {
 
   async addItemsToEntry(Items: EntryItem[], EntryId, res) {
     let has_error = false;
+    console.log('dasdasdasds', Items)
     for (let Item of Items) {
       try {
         const itemExists = await this.prisma.items.findUnique({
@@ -46,7 +48,7 @@ export class EntryService {
             barcode_id: Item.barcode_id
           },
         });
-        console.log(itemExists);
+        console.log('existe el item o no:',itemExists);
         if (!itemExists) {
           const creation = await this.item.create({
             barcode_id: Item.barcode_id,
@@ -67,7 +69,7 @@ export class EntryService {
             };
             return res.status(HttpStatus.BAD_REQUEST).json(response);
           }
-          console.log(creation.message);
+          console.log('diavlazo',creation.message);
 
           Item.item_id = creation.item.id;
         }

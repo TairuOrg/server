@@ -113,6 +113,7 @@ export class AdminController {
 
   @Post('insert-entry')
   async insertEntry(@Body() data: Entry, @Res() res: Response) {
+    console.log(data)
     const response = await this.adminService.insertEntry(data, res);
     return response;
   }

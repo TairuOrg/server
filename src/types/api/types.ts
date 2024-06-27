@@ -130,7 +130,7 @@ export type NotificationData = {
 };
 
 export type EntryItem = {
-  item_id: number;
+  item_id: number | null;
   barcode_id: string;
   add_quantity: number;
   name: string;

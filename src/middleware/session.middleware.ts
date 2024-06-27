@@ -10,6 +10,7 @@ export class SessionMiddleware implements NestMiddleware {
     console.log('session', session)
     
     const [e, parsedPayload] = await decryptSessionCookie(session);
+    console.log('parsedPayload', parsedPayload)
 
     if (e) {
       return res.status(401).json({
