@@ -11,8 +11,9 @@ export class AdminController {
 
   @Get('me')
   async getAdminInfo(@Req() req: Request) {
+    
     const session_token = req.headers.cookie?.split('=')[1];
-
+    console.log('session_token:', session_token)
     const [e, sessionParsed] = await decryptSessionCookie(session_token);
     if (e) return e;
 

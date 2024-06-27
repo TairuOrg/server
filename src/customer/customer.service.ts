@@ -326,7 +326,7 @@ export class CustomerService {
         return res.status(HttpStatus.OK).json(response);
       } else {
         const response: AuthResponse = {
-          error: false,
+          error: true,
           body: {
             message: {
               title: 'Cliente no encontrado',

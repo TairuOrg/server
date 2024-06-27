@@ -38,11 +38,13 @@ export class CashierController {
 
   @Post('verify-customer')
   async verifyCustomer(@Body() personal_id: VerifyCustomer, @Res() res: Response) { 
+    console.log('verificar cliente:', personal_id)
     return this.cashierService.verifyCustomer(personal_id, res);
   } 
 
   @Post('validate-customer')
   async validateCustomer(@Body() data: CustomerData, @Res() res: Response) {
+    console.log('buscar cliente:', data)
     return this.cashierService.validateCustomer(data, res);
   }
   
