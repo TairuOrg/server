@@ -45,9 +45,6 @@ export class EntryService {
           where: {
             barcode_id: Item.barcode_id
           },
-          select: {
-            quantity: true
-          }
         });
         console.log(itemExists);
         if (!itemExists) {
@@ -57,7 +54,7 @@ export class EntryService {
             price: Item.price,
             category: Item.category,
             manufacturer: Item.manufacturer,
-            quantity: Item.add_quantity,
+            quantity: 0,
           });
 
           if (!creation.successful) {
@@ -82,12 +79,22 @@ export class EntryService {
             quantity: Item.add_quantity,
           }
         });
+
+        const entryItem = await this.prisma.items.findUnique({
+          where: {
+            barcode_id: Item.barcode_id
+          },
+          select: {
+            quantity: true
+          }
+        });
+
         await this.prisma.items.update({
           where: {
             id: Item.item_id
           },
           data: {
-            quantity: itemExists.quantity + Item.add_quantity
+            quantity: entryItem.quantity + Item.add_quantity
           }
           }
         );
