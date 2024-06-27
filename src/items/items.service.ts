@@ -175,7 +175,7 @@ export class ItemsService {
       const response: ServerResponse<String> = {
         error: true,
         body: {
-          message: "Artículo no encontrado",
+          message: "Error al buscar el artículo.",
           payload: "Ha ocurrido un error al buscar el artículo.",
         },
       };
@@ -187,7 +187,7 @@ export class ItemsService {
         error: true,
         body: {
           message: "Artículo no encontrado",
-          payload: "Ha ocurrido un error al buscar el artículo.",
+          payload: "No se encontró ese artículo en los registros.",
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
