@@ -402,34 +402,36 @@ export class SalesService {
           customer_name: customer.name,
         };
         console.log("json??",json)
-        return {
+        const response: ServerResponse<FullSaleData> = {
           error: false,
           body: {
-            message: 'Venta encontrada',
-            payload: json,
+              message: 'Venta no encontrada',
+              payload: json,
           },
-        };
+      };
+      return res.status(HttpStatus.OK).json(response);
         console.log("retornando?")
       } else {
         console.log("mamaguevo")
-        return {
+        const response: ServerResponse<String> = {
             error: true,
             body: {
                 message: 'Venta no encontrada',
                 payload: 'La venta no existe o ya ha sido completada',
             },
         };
-
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
   } catch (error) {
     console.log("pipo",error);
-    return {
+    const response: ServerResponse<String> = {
       error: true,
       body: {
-          message: 'Mamaguevo',
+          message: 'Venta no encontrada',
           payload: 'La venta no existe o ya ha sido completada',
-      },
-    };
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
 }}
 
   async getTodaysRevenue(): Promise<number> {
