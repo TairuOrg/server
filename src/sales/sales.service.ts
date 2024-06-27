@@ -75,7 +75,7 @@ export class SalesService {
 
   async addItem(data: AddItemData, res) {
     try {
-      if (await this.isCompleted(data.sale_id)) {
+      if (await this.isCompleted(parseInt(data.sale_id))) {
         const response = {
           error: true,
           body: {
@@ -139,7 +139,7 @@ export class SalesService {
 
   async removeItem(data: RemoveItemData, res) {
     try {
-      if (await this.isCompleted(data.sale_id)) {
+      if (await this.isCompleted(parseInt(data.sale_id))) {
         const response = {
           error: true,
           body: {
