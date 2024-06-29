@@ -13,7 +13,7 @@ import {
   SaleId,
   FullSaleData,
   Item,
-  SaleItem,
+
 } from '@/types/api/types';
 import { Decimal } from '@prisma/client/runtime/library';
 import { Response } from 'express';

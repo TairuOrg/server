@@ -9,6 +9,7 @@ import {
   CustomerId,
   VerifyCustomer,
   CustomerData,
+  CustomerPersonalId,
 } from '@/types/api/types';
 import {
   nameRegExp,
@@ -525,6 +526,41 @@ export class CustomerService {
     
   }
 
+  async getCustomerData(personal_id: CustomerPersonalId, res:Response) {
+    try {
+      const customer: Customer = await this.prisma.customers.findUnique({
+        where: { personal_id: personal_id.personal_id },
+      });
+      if (!customer) {
+        const response: ServerResponse<Customer | String> = {
+          error: true,
+          body: {
+            message: 'Cliente no encontrado',
+            payload: "No se encontró el cliente en la base de datos"
+          }
+        }; 
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      } else {
+        const response: ServerResponse<Customer> = {
+          error: false,
+          body: {
+            message: 'Cliente encontrado',
+            payload: customer
+          }
+        };
+        return res.status(HttpStatus.OK).json(response);
+      }
+    } catch (error) {
+      const response: ServerResponse<Customer> = {
+        error: true,
+        body: {
+          message: 'Error al buscar el cliente',
+          payload: null
+        }
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+  }
   findOne(id: number) {
     return `This action returns a #${id} customer`;
   }

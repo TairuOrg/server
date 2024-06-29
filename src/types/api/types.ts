@@ -192,7 +192,11 @@ export type Barcode = {
   barcode_id: string;
 }
 
-export type SaleItem = {
+export type SaleItems = {
   item_id: number;
   items: Item[]
 }
+
+export type CustomerPersonalId = {
+  personal_id: string
+  }
