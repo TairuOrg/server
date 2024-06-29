@@ -15,6 +15,7 @@ import {
   Item,
   SaleItem,
 } from '@/types/api/types';
+import { Decimal } from '@prisma/client/runtime/library';
 import { Response } from 'express';
 
 @Injectable()
@@ -476,6 +477,86 @@ export class SalesService {
       }
     }, 0);
     return todayRevenue;
+  }
+
+  getRange(frequency) {
+    let date = new Date();
+
+    switch(frequency) {
+      case "monthly": {
+        date.setDate(date.getDate() - 31);
+        break;
+      }
+      case "daily": {
+        date.setDate(date.getDate() - 1);
+        break;
+      }
+      case "anually": {
+        date.setDate(date.getDate() - 364);
+        break;
+      }
+    }
+    //const trailer = `T${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}+${date.getMilliseconds()}`;
+    //today += trailer;
+    //range += trailer;
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; 
+  }
+
+  async getSalesAmount(frequency) {
+    const range = this.getRange(frequency); 
+
+    return await this.prisma.sales.count({
+      where: {
+        date: {
+          gte: new Date(range),
+        }
+      }
+    });
+  }
+
+  async getSalesTotal(frequency) {
+    const range = this.getRange(frequency);
+
+    let sales = await this.prisma.sales.findMany({
+      where: {
+        date : {
+          gte: new Date(range),
+        }
+      },
+
+      select: {
+        sales_items: {
+          select: {
+            items: {
+              select: {
+                price: true
+              }
+            }
+          }
+        }
+      }
+    });
+    let salesSum = 0; 
+    for (let sale of sales) {
+      for (let sales_item of sale.sales_items) {
+        salesSum += sales_item.items.price.toNumber();
+      }
+    }
+    return salesSum;
+  }
+
+  async getSalesAverage(frequency) {
+    return await this.getSalesTotal(frequency) / await this.getSalesAmount(frequency);
+  }
+
+  async getStatistics(data, res) {
+    console.log(await this.getSalesAmount(data.frequency));
+    console.log(await this.getSalesTotal(data.frequency));
+    console.log(await this.getSalesAverage(data.frequency));
+    const response = {
+      "message": "fino"
+    }
+    return res.status(HttpStatus.OK).json(response);
   }
 
   async getSalesItems(sale_id: SaleId, res: Response) {
