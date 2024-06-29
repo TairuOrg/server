@@ -512,7 +512,8 @@ export class SalesService {
       where: {
         date: {
           gte: new Date(range),
-        }
+        },
+        is_completed: true
       }
     });
   }
@@ -524,12 +525,14 @@ export class SalesService {
       where: {
         date : {
           gte: new Date(range),
-        }
+        },
+        is_completed: true
       },
 
       select: {
         sales_items: {
           select: {
+            quantity: true,
             items: {
               select: {
                 price: true
@@ -542,7 +545,7 @@ export class SalesService {
     let salesSum = 0; 
     for (let sale of sales) {
       for (let sales_item of sale.sales_items) {
-        salesSum += sales_item.items.price.toNumber();
+        salesSum += sales_item.quantity * sales_item.items.price.toNumber();
       }
     }
     return salesSum;
@@ -552,10 +555,34 @@ export class SalesService {
     return await this.getSalesTotal(frequency) / await this.getSalesAmount(frequency);
   }
 
+  async topTenMostSoldItems(frequency) {
+    let range = this.getRange(frequency);
+  
+    return this.prisma.$queryRaw`
+    select 
+      count(i.id) as item_count, 
+      sum(si.quantity) as total_sold, 
+      i.price,
+      sum(si.quantity) * i.price as total_income, 
+      i.name 
+    from 
+      sales s 
+      inner join sales_items si on s.id = si.sale_id
+      inner join items i on si.item_id = i.id
+    where
+      s.is_completed = true and
+      date > ${new Date(range)}
+    group by i.id
+    order by total_sold desc
+    limit 10;
+  `;
+  }
+
   async getStatistics(data, res) {
     console.log(await this.getSalesAmount(data.frequency));
     console.log(await this.getSalesTotal(data.frequency));
     console.log(await this.getSalesAverage(data.frequency));
+    console.log (await this.topTenMostSoldItems(data.frequency));
     const response = {
       "message": "fino"
     }
