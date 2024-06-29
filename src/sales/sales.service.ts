@@ -13,6 +13,7 @@ import {
   SaleId,
   FullSaleData,
 } from '@/types/api/types';
+import { Decimal } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class SalesService {
@@ -519,11 +520,42 @@ export class SalesService {
   async getSalesTotal(frequency) {
     const range = this.getRange(frequency);
 
-    return await this.prisma.sales.aggregate
+    let sales = await this.prisma.sales.findMany({
+      where: {
+        date : {
+          gte: new Date(range),
+        }
+      },
+
+      select: {
+        sales_items: {
+          select: {
+            items: {
+              select: {
+                price: true
+              }
+            }
+          }
+        }
+      }
+    });
+    let salesSum = 0; 
+    for (let sale of sales) {
+      for (let sales_item of sale.sales_items) {
+        salesSum += sales_item.items.price.toNumber();
+      }
+    }
+    return salesSum;
+  }
+
+  async getSalesAverage(frequency) {
+    return await this.getSalesTotal(frequency) / await this.getSalesAmount(frequency);
   }
 
   async getStatistics(data, res) {
     console.log(await this.getSalesAmount(data.frequency));
+    console.log(await this.getSalesTotal(data.frequency));
+    console.log(await this.getSalesAverage(data.frequency));
     const response = {
       "message": "fino"
     }
