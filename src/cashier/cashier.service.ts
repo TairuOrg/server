@@ -204,4 +204,8 @@ export class CashierService {
   async getItem(data: Barcode, res) {
     return await this.item.findOne(data, res);
   }
+
+  async getSaleItems(data: SaleId, res) {
+    return await this.sale.getSalesItems(data, res);
+  }
 }

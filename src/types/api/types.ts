@@ -191,3 +191,8 @@ export type SaleId ={
 export type Barcode = {
   barcode_id: string;
 }
+
+export type SaleItem = {
+  item_id: number;
+  items: Item[]
+}

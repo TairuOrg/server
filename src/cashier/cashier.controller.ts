@@ -91,4 +91,9 @@ export class CashierController {
   async getItem(@Body() data: Barcode, @Res() res: Response) {
     return this.cashierService.getItem(data, res);
   }
+
+  @Post('get-sale-items')
+  async getSaleItems(@Body() data: SaleId, @Res() res: Response) {
+    return this.cashierService.getSaleItems(data, res);
+  }
 }

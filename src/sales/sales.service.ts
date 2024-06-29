@@ -12,7 +12,10 @@ import {
   FinishSaleData,
   SaleId,
   FullSaleData,
+  Item,
+  SaleItem,
 } from '@/types/api/types';
+import { Response } from 'express';
 
 @Injectable()
 export class SalesService {
@@ -44,7 +47,7 @@ export class SalesService {
           id: true,
         },
       });
-      console.log('el cliente es:', customer)
+      console.log('el cliente es:', customer);
       Sale = await this.prisma.sales.create({
         data: {
           cashier_id: insertData.cashier_id,
@@ -53,7 +56,7 @@ export class SalesService {
         },
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       const response = {
         error: true,
         body: {
@@ -87,7 +90,7 @@ export class SalesService {
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
-      console.log("hola");
+      console.log('hola');
       let Item = await this.prisma.items.findUnique({
         where: {
           barcode_id: data.item_barcode_id,
@@ -117,7 +120,6 @@ export class SalesService {
         },
       });
     } catch (error) {
-
       const response = {
         error: true,
         body: {
@@ -201,7 +203,7 @@ export class SalesService {
     const saleId = parseInt(data.sale_id);
 
     try {
-      if (!await this.isCompleted(saleId)) {
+      if (!(await this.isCompleted(saleId))) {
         await this.prisma.sales_items.deleteMany({
           where: {
             sale_id: saleId,
@@ -225,7 +227,6 @@ export class SalesService {
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
     } catch (error) {
-  
       const response = {
         error: true,
         body: {
@@ -366,18 +367,18 @@ export class SalesService {
   ): Promise<ServerResponse<FullSaleData> | ServerResponse<String>> {
     let sale_id = parseInt(data.sale_id);
 
-      if(Number.isNaN(sale_id) || sale_id === undefined || sale_id === null) {
-        const response: ServerResponse<String> = {
-          error: true,
-          body: {
-              message: 'Venta no encontrada',
-              payload: 'Id de venta no válido',
-          },
+    if (Number.isNaN(sale_id) || sale_id === undefined || sale_id === null) {
+      const response: ServerResponse<String> = {
+        error: true,
+        body: {
+          message: 'Venta no encontrada',
+          payload: 'Id de venta no válido',
+        },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-      }
+    }
 
-      try{
+    try {
       const sale = await this.prisma.sales.findUnique({
         where: {
           id: sale_id,
@@ -390,9 +391,7 @@ export class SalesService {
         },
       });
 
-  
       if (sale && !sale.is_completed) {
- 
         const customer = await this.prisma.customers.findUnique({
           where: { id: sale.customer_id },
           select: {
@@ -419,34 +418,32 @@ export class SalesService {
         const response: ServerResponse<FullSaleData> = {
           error: false,
           body: {
-              message: 'Venta encontrada',
-              payload: json,
+            message: 'Venta encontrada',
+            payload: json,
           },
-      };
-      return res.status(HttpStatus.OK).json(response);
-
+        };
+        return res.status(HttpStatus.OK).json(response);
       } else {
-  
         const response: ServerResponse<String> = {
-            error: true,
-            body: {
-                message: 'Venta no encontrada',
-                payload: 'La venta no existe o ya ha sido completada',
-            },
+          error: true,
+          body: {
+            message: 'Venta no encontrada',
+            payload: 'La venta no existe o ya ha sido completada',
+          },
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
-  } catch (error) {
-
-    const response: ServerResponse<String> = {
-      error: true,
-      body: {
+    } catch (error) {
+      const response: ServerResponse<String> = {
+        error: true,
+        body: {
           message: 'Venta no encontrada',
           payload: 'La venta no existe o ya ha sido completada',
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
-}}
+    }
+  }
 
   async getTodaysRevenue(): Promise<number> {
     // Fetch all sales data, including related sales_items and items data
@@ -479,5 +476,61 @@ export class SalesService {
       }
     }, 0);
     return todayRevenue;
+  }
+
+  async getSalesItems(sale_id: SaleId, res: Response) {
+    let saleItems;
+    let saleId:number;
+    try {
+      saleId = parseInt(sale_id.sale_id);
+    }
+    catch{
+      const response = {
+        error: true,
+        body: {
+          message: 'Venta no encontrada',
+          payload: 'Id de venta no válido',
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+    try {
+      saleItems = await this.prisma.sales_items.findMany({
+        where: {
+          sale_id: saleId,
+        },
+        select: {
+          item_id: true,
+          items: {
+            select: {
+              barcode_id: true,
+              name: true,
+              price: true,
+              category: true,
+              manufacturer: true,
+              quantity: true,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      const response = {
+        error: true,
+        body: {
+          message: 'Artículos no encontrados',
+          payload: 'Ha ocurrido un error al buscar los artículos de la venta.',
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+    }
+    console.log(saleItems);
+    const response = {
+      error: false,
+      body: {
+        message: 'Artículos encontrados',
+        payload: saleItems,
+      },
+    };
+    return res.status(HttpStatus.OK).json(response);
   }
 }
