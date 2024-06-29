@@ -13,7 +13,8 @@ import {
   RemoveItemData,
   FinishSaleData,
   SaleId,
-  Barcode
+  Barcode,
+  CustomerPersonalId
 } from '@/types/api/types';
 import { AuthResponse, NotificationStatus } from '@/types/api/Responses';
 import { Response } from 'express';
@@ -203,5 +204,13 @@ export class CashierService {
 
   async getItem(data: Barcode, res) {
     return await this.item.findOne(data, res);
+  }
+
+  async getSaleItems(data: SaleId, res) {
+    return await this.sale.getSalesItems(data, res);
+  }
+
+  async getCustomerData(data: CustomerPersonalId, res) {
+    return await this.customer.getCustomerData(data, res);
   }
 }
