@@ -129,4 +129,9 @@ export class AdminController {
     const response = await this.adminService.validateEntry(data, res);
     return response;
   }
+
+  @Post('get-statistics')
+  async getStatistics(@Body() data: Entry, @Res() res: Response) {
+    const response = await this.adminService.getStatisics(data, res);
+  }
 }

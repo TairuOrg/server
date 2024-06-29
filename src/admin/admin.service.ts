@@ -136,4 +136,8 @@ export class AdminService {
   async validateEntry(data: Entry, res: Response) {
     return await this.entry.validate(data, res);
   }
+
+  async getStatisics(data, res) {
+    return await this.sale.getStatistics(data, res); 
+  }
 }

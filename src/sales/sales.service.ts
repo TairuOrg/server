@@ -480,4 +480,53 @@ export class SalesService {
     }, 0);
     return todayRevenue;
   }
+
+  getRange(frequency) {
+    let date = new Date();
+
+    switch(frequency) {
+      case "monthly": {
+        date.setDate(date.getDate() - 31);
+        break;
+      }
+      case "daily": {
+        date.setDate(date.getDate() - 1);
+        break;
+      }
+      case "anually": {
+        date.setDate(date.getDate() - 364);
+        break;
+      }
+    }
+    //const trailer = `T${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}+${date.getMilliseconds()}`;
+    //today += trailer;
+    //range += trailer;
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; 
+  }
+
+  async getSalesAmount(frequency) {
+    const range = this.getRange(frequency); 
+
+    return await this.prisma.sales.count({
+      where: {
+        date: {
+          gte: new Date(range),
+        }
+      }
+    });
+  }
+
+  async getSalesTotal(frequency) {
+    const range = this.getRange(frequency);
+
+    return await this.prisma.sales.aggregate
+  }
+
+  async getStatistics(data, res) {
+    console.log(await this.getSalesAmount(data.frequency));
+    const response = {
+      "message": "fino"
+    }
+    return res.status(HttpStatus.OK).json(response);
+  }
 }
