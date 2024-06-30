@@ -12,7 +12,8 @@ import {
   SaleId,
   FullSaleData,
   Item,
-
+  getStatisticsData,
+  Statistics
 } from '@/types/api/types';
 import { Response } from 'express';
 
@@ -632,8 +633,8 @@ export class SalesService {
 
   async topTenMostSoldItems(frequency) {
     let range = this.getRange(frequency);
-  
-    return this.prisma.$queryRaw`
+    //Don't change this typing. They will kill you
+    const results: any[] = await this.prisma.$queryRaw`
     select
       i.name,
       i.category, 
@@ -652,46 +653,96 @@ export class SalesService {
     order by total_income desc
     limit 10;
   `;
+
+    for (const result of results) {
+      result.item_count = Number(result.item_count);
+      result.total_sold = Number(result.total_sold);
+    }
+
+    return results;
   }
 
   async topTenMostSoldCategories(frequency) {
     let range = this.getRange(frequency);
-  
-    return this.prisma.$queryRaw`
-    select 
-      sub.category, 
-      count(sub.category), 
-      sum(sub.total_sold) as total_sold, 
-      sum(sub.total_income) as total_income
-    from
-      (
-        select
-          i.category as category,
-          si.quantity as total_sold,
-          si.quantity * i.price as total_income
-        from 
-          sales s 
-          inner join sales_items si on s.id = si.sale_id
-          inner join items i on si.item_id = i.id
-        where
-          s.is_completed = true and
-          date > ${new Date(range)}
-      ) sub
-    group by sub.category
-    order by total_income desc
-    limit 10;
-  `;
+    //Don't change this typing. They will kill you
+    const results: any[] = await this.prisma.$queryRaw`
+      select 
+        sub.category, 
+        count(sub.category), 
+        sum(sub.total_sold) as total_sold, 
+        sum(sub.total_income) as total_income
+      from
+        (
+          select
+            i.category as category,
+            si.quantity as total_sold,
+            si.quantity * i.price as total_income
+          from 
+            sales s 
+            inner join sales_items si on s.id = si.sale_id
+            inner join items i on si.item_id = i.id
+          where
+            s.is_completed = true and
+            date > ${new Date(range)}
+        ) sub
+      group by sub.category
+      order by total_income desc
+      limit 10;
+    `;
+
+    for (const result of results) {
+      result.count = Number(result.item_count);
+      result.total_sold = Number(result.total_sold);
+    }
+
+    return results;
   }
 
-  async getStatistics(data, res) {
-    console.log(await this.getSalesAmount(data.frequency));
-    console.log(await this.getSalesTotal(data.frequency));
-    console.log(await this.getSalesAverage(data.frequency));
-    console.log(await this.topTenMostSoldItems(data.frequency));
-    console.log(await this.topTenMostSoldCategories(data.frequency))
-    const response = {
-      "message": "fino"
+  async getStatistics(data: getStatisticsData, res) {
+
+    const content: Statistics = {
+      salesAmount: null,
+      salesTotal: null,
+      salesAverage: null,
+      topTenItems: null,
+      topTenCategories: null
+    };
+
+    for (const stat of data.statistics) {
+      switch (stat) {
+        case "Cantidad de Ventas": {
+          content.salesAmount = await this.getSalesAmount(data.frequency);
+          break;
+        }
+        case "Ganancia total de ventas": {
+          content.salesTotal = await this.getSalesTotal(data.frequency);
+          break;
+        }
+        case "Promedio de monto de ventas": {
+          content.salesAverage = await this.getSalesAverage(data.frequency);
+          break;
+        }
+        case "Top 10 articulos mas vendidos": {
+          content.topTenItems = await this.topTenMostSoldItems(data.frequency);
+          break;
+        }
+        case "Top 10 categorias mas vendidas": {
+          content.topTenCategories = await this.topTenMostSoldCategories(data.frequency);
+          break;
+        }
+      }
     }
+
+    console.log(content);
+
+    const response: ServerResponse<Statistics> = {
+      error: false,
+        body: {
+          message: 'Lista de estadisticas',
+          payload: content
+        },
+    }
+    
     return res.status(HttpStatus.OK).json(response);
   }
 

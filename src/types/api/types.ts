@@ -200,3 +200,31 @@ export type SaleItems = {
 export type CustomerPersonalId = {
   personal_id: string
   }
+
+export type getStatisticsData = {
+  frequency: string;
+  statistics : string[];
+}
+export type Statistics = {
+  salesAmount: number | null;
+  salesTotal: number | null;
+  salesAverage: number | null;
+  topTenItems: any | null;
+  topTenCategories: any | null;
+}
+
+export type TopTenItems = {
+  name: string;
+  category: string;
+  itemCount: number;
+  totalSold: number;
+  price: Decimal;
+  total_income: Decimal;
+}
+
+export type TopTenCategories = {
+  category: string;
+  count: number;
+  totalSold: number;
+  total_income: Decimal;
+}
