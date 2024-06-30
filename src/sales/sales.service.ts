@@ -1,6 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { CreateSaleDto } from './dto/create-sale.dto';
-import { UpdateSaleDto } from './dto/update-sale.dto';
+
 import { PrismaService } from '@/prisma/prisma.service';
 import { checkSameDate } from '@/utils/date-manager';
 import {
@@ -15,7 +14,6 @@ import {
   Item,
 
 } from '@/types/api/types';
-import { Decimal } from '@prisma/client/runtime/library';
 import { Response } from 'express';
 
 @Injectable()
@@ -662,7 +660,7 @@ export class SalesService {
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
-    console.log(saleItems);
+    console.log('sdasdasd', saleItems);
     const response = {
       error: false,
       body: {
