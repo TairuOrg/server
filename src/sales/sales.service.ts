@@ -556,12 +556,13 @@ export class SalesService {
     let range = this.getRange(frequency);
   
     return this.prisma.$queryRaw`
-    select 
+    select
+      i.name,
+      i.category, 
       count(i.id) as item_count, 
       sum(si.quantity) as total_sold, 
       i.price,
-      sum(si.quantity) * i.price as total_income, 
-      i.name 
+      sum(si.quantity) * i.price as total_income
     from 
       sales s 
       inner join sales_items si on s.id = si.sale_id
@@ -570,7 +571,36 @@ export class SalesService {
       s.is_completed = true and
       date > ${new Date(range)}
     group by i.id
-    order by total_sold desc
+    order by total_income desc
+    limit 10;
+  `;
+  }
+
+  async topTenMostSoldCategories(frequency) {
+    let range = this.getRange(frequency);
+  
+    return this.prisma.$queryRaw`
+    select 
+      sub.category, 
+      count(sub.category), 
+      sum(sub.total_sold) as total_sold, 
+      sum(sub.total_income) as total_income
+    from
+      (
+        select
+          i.category as category,
+          si.quantity as total_sold,
+          si.quantity * i.price as total_income
+      from 
+        sales s 
+        inner join sales_items si on s.id = si.sale_id
+        inner join items i on si.item_id = i.id
+      where
+        s.is_completed = true and
+        date > ${new Date(range)}
+      ) sub
+    group by sub.category
+    order by total_income desc
     limit 10;
   `;
   }
@@ -579,7 +609,8 @@ export class SalesService {
     console.log(await this.getSalesAmount(data.frequency));
     console.log(await this.getSalesTotal(data.frequency));
     console.log(await this.getSalesAverage(data.frequency));
-    console.log (await this.topTenMostSoldItems(data.frequency));
+    console.log(await this.topTenMostSoldItems(data.frequency));
+    console.log(await this.topTenMostSoldCategories(data.frequency))
     const response = {
       "message": "fino"
     }
