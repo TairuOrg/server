@@ -133,5 +133,12 @@ export class AdminController {
   @Post('get-statistics')
   async getStatistics(@Body() data: Entry, @Res() res: Response) {
     const response = await this.adminService.getStatisics(data, res);
+    return response;
+  }
+
+  @Get('get-dashboard-data')
+  async getDasboardData(@Req() req: Request) {
+    const response = await this.adminService.getDasboardData();
+    return response;
   }
 }

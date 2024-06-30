@@ -140,4 +140,8 @@ export class AdminService {
   async getStatisics(data, res) {
     return await this.sale.getStatistics(data, res); 
   }
+
+  async getDasboardData() {
+    return await this.sale.getDashboardData();
+  }
 }

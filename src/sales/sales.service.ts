@@ -558,6 +558,53 @@ export class SalesService {
     return todayRevenue;
   }
 
+  async getDashboardData() {
+    let thisWeekData: Number[] = [];
+    let pastWeekData: Number[] = [];
+    let date = new Date();
+    let upperRange = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    let lowerRange;
+
+    for (let i = 0; i < 14; i++) {
+      date.setDate(date.getDate() - 1);
+      lowerRange = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+      console.log(upperRange + "\n" + lowerRange)
+      const data = await this.prisma.sales.count({
+        where: {
+          date: {
+            lte: new Date(upperRange),
+            gte: new Date(lowerRange),
+          },
+          is_completed: true
+        }
+      });
+      console.log("data ", data);
+      if (i < 7) {
+        thisWeekData[i] = data;
+        console.log("week " + i + " data: " + thisWeekData[i]);
+      }
+      else {
+        pastWeekData[i - 7] = data;
+        console.log("week " + i + "data: " + pastWeekData[i]);
+      }
+    
+      upperRange = lowerRange;
+    }
+
+    const response = {
+      error: false,
+      body: {
+        message: 'stadisticas de ventas de las ultimas semanas',
+        payload: {
+          "thisWeekData": thisWeekData,
+          "pastWeekData": pastWeekData
+        },
+      },
+    }
+
+    return response;
+  }
+
   getRange(frequency) {
     let date = new Date();
 
