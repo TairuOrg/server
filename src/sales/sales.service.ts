@@ -13,7 +13,8 @@ import {
   FullSaleData,
   Item,
   getStatisticsData,
-  Statistics
+  Statistics,
+  DashboardData
 } from '@/types/api/types';
 import { Response } from 'express';
 
@@ -591,13 +592,13 @@ export class SalesService {
       upperRange = lowerRange;
     }
 
-    const response = {
+    const response: ServerResponse<DashboardData> = {
       error: false,
       body: {
         message: 'stadisticas de ventas de las ultimas semanas',
         payload: {
-          "thisWeekData": thisWeekData,
-          "pastWeekData": pastWeekData
+          thisWeekSales: thisWeekData,
+          pastWeekSales: pastWeekData
         },
       },
     }

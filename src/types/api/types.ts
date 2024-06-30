@@ -205,6 +205,12 @@ export type getStatisticsData = {
   frequency: string;
   statistics : string[];
 }
+
+export type DashboardData = {
+  thisWeekSales: Number[];
+  pastWeekSales: Number[];
+}
+
 export type Statistics = {
   salesAmount: number | null;
   salesTotal: number | null;
