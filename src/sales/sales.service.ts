@@ -47,6 +47,28 @@ export class SalesService {
         },
       });
       console.log('el cliente es:', customer);
+
+      const onGoingSale = await this.prisma.sales.findFirst({
+        where: {
+          customer_id: customer.id,
+          is_completed: false
+        },
+        select: {
+          id: true
+        }
+      });
+
+      if (onGoingSale) {
+        const response = {
+          error: false,
+          body: {
+            message: 'Falta por concretar una venta con el cliente',
+            payload: onGoingSale.id,
+          },
+        };
+        return res.status(HttpStatus.OK).json(response);
+      }
+
       Sale = await this.prisma.sales.create({
         data: {
           cashier_id: insertData.cashier_id,
@@ -89,7 +111,7 @@ export class SalesService {
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
-      console.log('hola');
+
       let Item = await this.prisma.items.findUnique({
         where: {
           barcode_id: data.item_barcode_id,
@@ -99,8 +121,24 @@ export class SalesService {
           quantity: true,
         },
       });
+      let substractQuantity = parseInt(data.quantity);
 
-      if (Item.quantity - parseInt(data.quantity) < 0) {
+      let isAdded = await this.prisma.sales_items.findFirst({
+        where: {
+          item_id: Item.id,
+          sale_id: parseInt(data.sale_id)
+        },
+        select: {
+          id: true,
+          quantity: true,
+        }
+      });
+
+      if(isAdded) {
+        substractQuantity += isAdded.quantity;
+      }
+
+      if (Item.quantity - substractQuantity < 0) {
         const response = {
           error: true,
           body: {
@@ -110,14 +148,36 @@ export class SalesService {
         };
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
+      else if (parseInt(data.quantity) < 1) {
+        const response = {
+          error: true,
+          body: {
+            message: 'Artículo no añadido',
+            payload: 'No se puede agregar un artículo con cantidad de 0.',
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
 
-      await this.prisma.sales_items.create({
+      if (isAdded) {
+        await this.prisma.sales_items.update({
+          where: {
+            id: isAdded.id,
+          },
+          data: {
+            quantity: substractQuantity
+          }
+        });
+      }
+      else {
+        await this.prisma.sales_items.create({
         data: {
           item_id: Item.id,
           sale_id: parseInt(data.sale_id),
           quantity: parseInt(data.quantity),
         },
       });
+      }
     } catch (error) {
       const response = {
         error: true,
@@ -260,6 +320,26 @@ export class SalesService {
         };
         return res.status(HttpStatus.OK).json(response);
       }
+      const commitSale = await this.prisma.sales.findUnique({
+        where: {
+          id: saleId
+        },
+        select: {
+          sales_items: true
+        }
+      });
+      console.log(commitSale.sales_items.length)
+      if(commitSale.sales_items.length === 0) {
+        const response = {
+          error: true,
+          body: {
+            message: 'Venta no concretada',
+            payload: 'No se puede culminar una venta sin articulos.',
+          },
+        };
+        return res.status(HttpStatus.OK).json(response);
+      }
+
       await this.prisma.sales.update({
         where: {
           id: saleId,
@@ -589,13 +669,13 @@ export class SalesService {
           i.category as category,
           si.quantity as total_sold,
           si.quantity * i.price as total_income
-      from 
-        sales s 
-        inner join sales_items si on s.id = si.sale_id
-        inner join items i on si.item_id = i.id
-      where
-        s.is_completed = true and
-        date > ${new Date(range)}
+        from 
+          sales s 
+          inner join sales_items si on s.id = si.sale_id
+          inner join items i on si.item_id = i.id
+        where
+          s.is_completed = true and
+          date > ${new Date(range)}
       ) sub
     group by sub.category
     order by total_income desc
