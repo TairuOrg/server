@@ -562,15 +562,15 @@ export class SalesService {
     let date = new Date();
 
     switch(frequency) {
-      case "monthly": {
+      case "Este mes": {
         date.setDate(date.getDate() - 31);
         break;
       }
-      case "daily": {
+      case "Hoy": {
         date.setDate(date.getDate() - 1);
         break;
       }
-      case "anually": {
+      case "Este año": {
         date.setDate(date.getDate() - 364);
         break;
       }
@@ -732,8 +732,6 @@ export class SalesService {
         }
       }
     }
-
-    console.log(content);
 
     const response: ServerResponse<Statistics> = {
       error: false,

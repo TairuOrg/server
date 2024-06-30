@@ -209,9 +209,14 @@ export type Statistics = {
   salesAmount: number | null;
   salesTotal: number | null;
   salesAverage: number | null;
-  topTenItems: any | null;
-  topTenCategories: any | null;
+  topTenItems: any[] | null;
+  topTenCategories: any[] | null;
 }
+
+/* 
+  can't assign these types due to prisma not knowing what the fuck is returning from raw queries.
+  Have them for reference.
+*/
 
 export type TopTenItems = {
   name: string;
