@@ -123,7 +123,7 @@ export class SalesService {
           quantity: true,
         },
       });
-      let substractQuantity = parseInt(data.quantity);
+      let quantity = parseInt(data.quantity);
 
       let isAdded = await this.prisma.sales_items.findFirst({
         where: {
@@ -136,11 +136,7 @@ export class SalesService {
         }
       });
 
-      if(isAdded) {
-        substractQuantity += isAdded.quantity;
-      }
-
-      if (Item.quantity - substractQuantity < 0) {
+      if (Item.quantity - quantity < 0) {
         const response = {
           error: true,
           body: {
@@ -167,7 +163,7 @@ export class SalesService {
             id: isAdded.id,
           },
           data: {
-            quantity: substractQuantity
+            quantity: quantity
           }
         });
       }
@@ -815,6 +811,7 @@ export class SalesService {
         },
         select: {
           item_id: true,
+          quantity: true,
           items: {
             select: {
               barcode_id: true,
