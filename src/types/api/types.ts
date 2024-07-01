@@ -207,8 +207,8 @@ export type getStatisticsData = {
 }
 
 export type DashboardData = {
-  thisWeekSales: Number[];
-  pastWeekSales: Number[];
+  thisWeekSales: number[];
+  pastWeekSales: number[];
 }
 
 export type Statistics = {

@@ -556,8 +556,8 @@ export class SalesService {
   }
 
   async getDashboardData() {
-    let thisWeekData: Number[] = [];
-    let pastWeekData: Number[] = [];
+    let thisWeekData: number[] = [];
+    let pastWeekData: number[] = [];
     let date = new Date();
     let upperRange = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
     let lowerRange;
@@ -591,7 +591,7 @@ export class SalesService {
     const response: ServerResponse<DashboardData> = {
       error: false,
       body: {
-        message: 'stadisticas de ventas de las ultimas semanas',
+        message: 'Estadisticas de ventas de las ultimas semanas',
         payload: {
           thisWeekSales: thisWeekData,
           pastWeekSales: pastWeekData
