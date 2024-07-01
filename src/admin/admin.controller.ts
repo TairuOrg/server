@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Request } from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
-import { CustomerId, UpdateCustomerData, Item, UpdateItem, NotificationData, Entry } from '@/types/api/types';
+import { CustomerId, UpdateCustomerData, Item, UpdateItem, NotificationData, Entry, getStatisticsData } from '@/types/api/types';
 import { Response } from 'express';
 
 @Controller('admin')
@@ -131,7 +131,7 @@ export class AdminController {
   }
 
   @Post('get-statistics')
-  async getStatistics(@Body() data: Entry, @Res() res: Response) {
+  async getStatistics(@Body() data: getStatisticsData, @Res() res: Response) {
     const response = await this.adminService.getStatisics(data, res);
     return response;
   }

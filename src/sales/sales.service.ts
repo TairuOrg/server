@@ -694,7 +694,7 @@ export class SalesService {
       s.is_completed = true and
       date > ${new Date(range)}
     group by i.id
-    order by total_income desc
+    order by total_income asc
     limit 10;
   `;
 
