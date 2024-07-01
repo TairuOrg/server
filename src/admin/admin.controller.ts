@@ -132,6 +132,7 @@ export class AdminController {
 
   @Post('get-statistics')
   async getStatistics(@Body() data: getStatisticsData, @Res() res: Response) {
+    console.log("yeehaw",data)
     const response = await this.adminService.getStatisics(data, res);
     return response;
   }

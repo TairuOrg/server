@@ -559,18 +559,22 @@ export class SalesService {
     let thisWeekData: number[] = [];
     let pastWeekData: number[] = [];
     let date = new Date();
-    let upperRange = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    let lowerRange;
+    date.setDate(date.getDate() + 8 - date.getDay())
+    let upperRange = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() }`;
 
-    for (let i = 0; i < 14; i++) {
+    
+    let lowerRange;
+    console.log('el upperange es:',  upperRange)
+    
+    for (let i = 0; i < 14; i++) {  
       date.setDate(date.getDate() - 1);
       lowerRange = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-      console.log(upperRange + "\n" + lowerRange)
+     console.log("este es el lowerrange", lowerRange)
       const data = await this.prisma.sales.count({
         where: {
           date: {
             lte: new Date(upperRange),
-            gte: new Date(lowerRange),
+            gt: new Date(lowerRange),
           },
           is_completed: true
         }
@@ -587,14 +591,14 @@ export class SalesService {
     
       upperRange = lowerRange;
     }
-
+    console.log("yeehaaw33",thisWeekData);
     const response: ServerResponse<DashboardData> = {
       error: false,
       body: {
         message: 'Estadisticas de ventas de las ultimas semanas',
         payload: {
-          thisWeekSales: thisWeekData,
-          pastWeekSales: pastWeekData
+          thisWeekSales: thisWeekData.reverse(),
+          pastWeekSales: pastWeekData.reverse()
         },
       },
     }
@@ -608,6 +612,7 @@ export class SalesService {
     switch(frequency) {
       case "Este mes": {
         date.setDate(date.getDate() - 31);
+        console.log("repetido")
         break;
       }
       case "Hoy": {
@@ -694,7 +699,7 @@ export class SalesService {
       s.is_completed = true and
       date > ${new Date(range)}
     group by i.id
-    order by total_income asc
+    order by total_income desc
     limit 10;
   `;
 
