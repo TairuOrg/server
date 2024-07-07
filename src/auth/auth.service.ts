@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 import User from '@/user/dto/user';
 import { UserService } from '@/user/user.service';
-import { SignUpData, RoleOptions, SignUpCode } from '@/types/api/types';
+import { SignUpData, RoleOptions, SignUpCode, EditUserData } from '@/types/api/types';
 import { NotificationStatus, AuthResponse } from '@/types/api/Responses';
 import { Response } from 'express';
 import {
@@ -262,14 +262,13 @@ export class AuthService {
       //se inserta el usuario en la base de datos
       console.log('sdsdsdsdsadadsddadsdadasdsd', data.role);
 
-
       let user_data = await this.prisma.user.findUnique({
         where: {
           personal_id: data.personal_id,
         },
       });
-      
-      if(user_data) {
+
+      if (user_data) {
         const update_user = await this.prisma.user.update({
           where: {
             personal_id: data.personal_id,
@@ -283,8 +282,7 @@ export class AuthService {
             residence_location: data.residence_location,
           },
         });
-      }
-      else{
+      } else {
         const insert_user = await this.prisma.user.create({
           data: {
             personal_id: data.personal_id,
@@ -296,11 +294,12 @@ export class AuthService {
           },
         });
 
-        user_data = await this.prisma.user.findUnique({ where: { personal_id: data.personal_id } });
+        user_data = await this.prisma.user.findUnique({
+          where: { personal_id: data.personal_id },
+        });
       }
 
       //se busca el usuario recien insertado, con el fin de poder obtener el id autoincremental de la base de datos
-
 
       //se verifica el rol del usuario, para insertarlo como un administrador de ser necesario
       if (data.role === RoleOptions.ADMIN) {
@@ -384,5 +383,323 @@ export class AuthService {
       };
       return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
+  }
+
+  async editUser(data: EditUserData, res: Response): Promise<Response> {
+    let response: AuthResponse;
+
+    let current_password = null;
+    let current_name = null;
+    let current_phone_number = null;
+    let current_email = null;
+    let current_residence_location = null;
+
+    let new_password = data.password;
+    let new_name = data.name;
+    let new_phone_number = data.phone_number;
+    let new_email = data.email;
+    let new_residence_location = data.residence_location;
+
+    try {
+      let current_data = await this.prisma.user.findUnique({
+        where: { personal_id: data.personal_id },
+        select: {
+          personal_id: true,
+          password: true,
+          name: true,
+          phone_number: true,
+          email: true,
+          residence_location: true,
+        },
+      });
+      if (current_data) {
+        current_password = current_data.password;
+        current_name = current_data.name;
+        current_phone_number = current_data.phone_number;
+        current_email = current_data.email;
+        current_residence_location = current_data.residence_location;
+      }
+    } catch (error) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'No se encontró el usuario ingresado',
+            description:
+              'Cédula de identidad no encontrada en la base de datos',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+
+    if (new_password !== current_password) {
+      if (new_password.length > 255) {
+        response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Contraseña inválida',
+              description: 'la contraseña no puede ser mayor a 255 caracteres',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
+      try {
+        const update_password = await this.prisma.user.update({
+          where: {
+            personal_id: data.personal_id,
+          },
+          data: {
+            password: new_password,
+          },
+        });
+      } catch (error) {
+        response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Error al actualizar la contraseña',
+              description:
+                'Ocurrió un error al actualizar la contraseña en la base de datos',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
+    }
+
+    if (new_email !== current_email) {
+      let check_new_email = null;
+      try {
+        check_new_email = await this.prisma.user.findUnique({
+          where: { email: new_email },
+        });
+      } catch (error) {
+        response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Error al verificar el correo electrónico',
+              description:
+                'Ocurrió un error al verificar el correo electrónico en la base de datos',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
+
+      if (!check_new_email) {
+        if (
+          new_email.length < 5 ||
+          new_email.length > 70 ||
+          !emailRegExp.test(new_email)
+        ) {
+          response = {
+            error: true,
+            body: {
+              message: {
+                title: 'Correo electrónico inválido',
+                description:
+                  'El correo electrónico debe tener una estructura válida, y contener entre 5 y 70 caracteres',
+                notificationStatus: NotificationStatus.ERROR,
+              },
+            },
+          };
+          return res.status(HttpStatus.UNAUTHORIZED).json(response);
+        }
+        try {
+          const update_email = await this.prisma.user.update({
+            where: {
+              personal_id: data.personal_id,
+            },
+            data: {
+              email: new_email,
+            },
+          });
+        } catch (error) {
+          response = {
+            error: true,
+            body: {
+              message: {
+                title: 'Error al actualizar el correo electrónico',
+                description:
+                  'Ocurrió un error al actualizar el correo electrónico en la base de datos',
+                notificationStatus: NotificationStatus.ERROR,
+              },
+            },
+          };
+          return res.status(HttpStatus.UNAUTHORIZED).json(response);
+        }
+      } else {
+        response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Correo electrónico inválido',
+              description: 'Ya existe un usuario con este correo electrónico',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
+    }
+
+    if (new_phone_number !== current_phone_number) {
+      let check_phone_number = null;
+      try {
+        check_phone_number = await this.prisma.user.findUnique({
+          where: { phone_number: new_phone_number },
+        });
+      } catch (error) {
+        response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Error al verificar el número de teléfono',
+              description:
+                'Ocurrió un error al verificar el número de teléfono en la base de datos',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
+
+      if (!check_phone_number) {
+        if (
+          new_phone_number.length != 10 ||
+          !phoneRegExp.test(new_phone_number)
+        ) {
+          response = {
+            error: true,
+            body: {
+              message: {
+                title: 'Número de teléfono inválido',
+                description:
+                  'El número de teléfono debe contener solo números y tener 10 caracteres',
+                notificationStatus: NotificationStatus.ERROR,
+              },
+            },
+          };
+          return res.status(HttpStatus.UNAUTHORIZED).json(response);
+        }
+        try {
+          const update_phone_number = await this.prisma.user.update({
+            where: {
+              personal_id: data.personal_id,
+            },
+            data: {
+              phone_number: new_phone_number,
+            },
+          });
+        } catch (error) {
+          response = {
+            error: true,
+            body: {
+              message: {
+                title: 'Error al actualizar el número de teléfono',
+                description:
+                  'Ocurrió un error al actualizar el número de teléfono en la base de datos',
+                notificationStatus: NotificationStatus.ERROR,
+              },
+            },
+          };
+          return res.status(HttpStatus.UNAUTHORIZED).json(response);
+        }
+      } else {
+        response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Número de teléfono inválido',
+              description: 'Ya existe un usuario con este número de teléfono',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
+    }
+
+    if (
+      new_residence_location.length < 3 ||
+      new_residence_location.length > 70
+    ) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Ubicación de residencia inválida',
+            description:
+              'La ubicación de residencia no puede ser menor a 3 caracteres, ni mayor a 70',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+
+    if (
+      new_name.length < 3 ||
+      !nameRegExp.test(new_name) ||
+      new_name.length > 70
+    ) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Nombre inválido',
+            description:
+              'El nombre no puede ser menor a 3 caracteres, mayor a 70, ni contener caracteres especiales o números',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+
+    try {
+      const update_user = await this.prisma.user.update({
+        where: {
+          personal_id: data.personal_id,
+        },
+        data: {
+          name: new_name,
+          residence_location: new_residence_location,
+        },
+      });
+    } catch (error) {
+      response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Error al actualizar el usuario',
+            description:
+              'Ocurrió un error al actualizar el usuario en la base de datos',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+    }
+
+    response = {
+      error: false,
+      body: {
+        message: {
+          title: 'Usuario actualizado correctamente',
+          description: 'Se actualizó el usuario correctamente en la base de datos',
+          notificationStatus: NotificationStatus.SUCCESS,
+        },
+      },
+    };
+    return res.status(HttpStatus.OK).json(response);
   }
 }

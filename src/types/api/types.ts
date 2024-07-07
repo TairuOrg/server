@@ -123,6 +123,15 @@ export type SignUpData = {
   role: RoleOptions;
 };
 
+export type EditUserData = {
+  personal_id: string;
+  password: string;
+  name: string;
+  phone_number: string;
+  email: string;
+  residence_location: string;
+}
+
 export type NotificationData = {
   body_message: string;
   priority_status: string;
