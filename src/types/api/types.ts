@@ -124,12 +124,12 @@ export type SignUpData = {
 };
 
 export type EditUserData = {
-  personal_id: string;
-  password: string;
-  name: string;
-  phone_number: string;
-  email: string;
-  residence_location: string;
+  current_personal_id: string;
+  new_password: string;
+  new_name: string;
+  new_phone_number: string;
+  new_email: string;
+  new_residence_location: string;
 }
 
 export type NotificationData = {

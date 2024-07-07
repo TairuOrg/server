@@ -394,15 +394,15 @@ export class AuthService {
     let current_email = null;
     let current_residence_location = null;
 
-    let new_password = data.password;
-    let new_name = data.name;
-    let new_phone_number = data.phone_number;
-    let new_email = data.email;
-    let new_residence_location = data.residence_location;
+    let new_password = data.new_password;
+    let new_name = data.new_name;
+    let new_phone_number = data.new_phone_number;
+    let new_email = data.new_email;
+    let new_residence_location = data.new_residence_location;
 
     try {
       let current_data = await this.prisma.user.findUnique({
-        where: { personal_id: data.personal_id },
+        where: { personal_id: data.current_personal_id },
         select: {
           personal_id: true,
           password: true,
@@ -419,20 +419,35 @@ export class AuthService {
         current_email = current_data.email;
         current_residence_location = current_data.residence_location;
       }
+      else {
+        response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Usuario no encontrado',
+              description:
+                'No se encontró el usuario en la base de datos',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
     } catch (error) {
       response = {
         error: true,
         body: {
           message: {
-            title: 'No se encontró el usuario ingresado',
+            title: 'Error buscando usuario',
             description:
-              'Cédula de identidad no encontrada en la base de datos',
+              'Ocurrió un error consultando la cédula en la base de datos',
             notificationStatus: NotificationStatus.ERROR,
           },
         },
       };
       return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
+
 
     if (new_password !== current_password) {
       if (new_password.length > 255) {
@@ -448,29 +463,29 @@ export class AuthService {
         };
         return res.status(HttpStatus.UNAUTHORIZED).json(response);
       }
-      try {
+      // try {
         const update_password = await this.prisma.user.update({
           where: {
-            personal_id: data.personal_id,
+            personal_id: data.current_personal_id,
           },
           data: {
             password: new_password,
           },
         });
-      } catch (error) {
-        response = {
-          error: true,
-          body: {
-            message: {
-              title: 'Error al actualizar la contraseña',
-              description:
-                'Ocurrió un error al actualizar la contraseña en la base de datos',
-              notificationStatus: NotificationStatus.ERROR,
-            },
-          },
-        };
-        return res.status(HttpStatus.UNAUTHORIZED).json(response);
-      }
+      // } catch (error) {
+      //   response = {
+      //     error: true,
+      //     body: {
+      //       message: {
+      //         title: 'Error al actualizar la contraseña',
+      //         description:
+      //           'Ocurrió un error al actualizar la contraseña en la base de datos',
+      //         notificationStatus: NotificationStatus.ERROR,
+      //       },
+      //     },
+      //   };
+      //   return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      // }
     }
 
     if (new_email !== current_email) {
@@ -516,7 +531,7 @@ export class AuthService {
         try {
           const update_email = await this.prisma.user.update({
             where: {
-              personal_id: data.personal_id,
+              personal_id: data.current_personal_id,
             },
             data: {
               email: new_email,
@@ -593,7 +608,7 @@ export class AuthService {
         try {
           const update_phone_number = await this.prisma.user.update({
             where: {
-              personal_id: data.personal_id,
+              personal_id: data.current_personal_id,
             },
             data: {
               phone_number: new_phone_number,
@@ -668,7 +683,7 @@ export class AuthService {
     try {
       const update_user = await this.prisma.user.update({
         where: {
-          personal_id: data.personal_id,
+          personal_id: data.current_personal_id,
         },
         data: {
           name: new_name,

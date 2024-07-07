@@ -12,6 +12,7 @@ import {
   ServerResponse,
   SignUpData,
   RoleOptions,
+  EditUserData,
 } from '@/types/api/types';
 import User from '@/user/dto/user';
 
@@ -148,5 +149,13 @@ export class AuthController {
         message: 'Sesión cerrada',
       },
     });
+  }
+
+  @Post('edit-user') async editUser(
+    @Body() data: EditUserData,
+    @Res() res: Response,
+  ) {
+    const response = await this.authService.editUser(data, res);
+    return response;
   }
 }
