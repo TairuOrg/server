@@ -142,4 +142,9 @@ export class AdminController {
     const response = await this.adminService.getDasboardData();
     return response;
   }
+
+  @Get('backup-database') 
+  async backupDatabase(@Req() req: Request) {
+    return this.adminService.backupDatabase("test3.sql");
+  }
 }

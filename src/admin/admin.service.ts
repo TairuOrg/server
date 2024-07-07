@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { exec } from 'child_process';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { UserService } from '@/user/user.service';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -144,4 +145,34 @@ export class AdminService {
   async getDasboardData() {
     return await this.sale.getDashboardData();
   }
+
+  
+  
+
+  async backupDatabase(filename = 'database_backup.sql') {
+      const { env } = process; // Access environment variables
+      const { exec } = require('child_process');
+      // Construct the pg_dump command with connection details
+      let pgDumpCommand = `pg_dump -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} -f ${filename} -a`;
+  
+      // Execute the pg_dump command with error handling
+      return new Promise((resolve, reject) => {
+          exec(pgDumpCommand, (error, stdout, stderr) => {
+              if (error) {
+                  console.error('Error during database backup:', error);
+                  reject(error);
+                  return;
+              }
+              if (stderr) {
+                  console.warn('Warnings from pg_dump:', stderr);
+              }
+              console.log('Database backup successful:', filename);
+              resolve(filename);
+           
+          });
+      });
+  }
+  
+  // Example usag
+  
 }
