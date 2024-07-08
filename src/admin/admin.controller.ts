@@ -1,9 +1,13 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Request } from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
 import { CustomerId, UpdateCustomerData, Item, UpdateItem, NotificationData, Entry, getStatisticsData } from '@/types/api/types';
 import { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as fs from 'fs';
+import * as path from 'path';
+
 
 @Controller('admin')
 export class AdminController {
@@ -144,7 +148,46 @@ export class AdminController {
   }
 
   @Get('backup-database') 
-  async backupDatabase(@Req() req: Request) {
-    return this.adminService.backupDatabase("test3.sql");
+  async backupDatabase(@Req() req: Request, @Res() res: Response) {
+    try {
+      const backupName = new Date().toISOString().replace(/:/g, '-').replace(/\./g, '-').replace(/T/g, '-').replace(/Z/g, '') + '.sql';
+      const filename = await this.adminService.backupDatabase(backupName);
+      const strFileName = filename.toString();
+      const filePath = path.join(__dirname, '..', '..', '..', strFileName);
+
+      res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch (error) {
+      console.error('Error during file download:', error);
+      res.status(500).send('Error during file download');
+    }
   }
+
+  // @Post('restore-database')
+  // async restoreDatabase(@Body() url: String, @Req() req: Request) {
+  //   return this.adminService.restoreDatabase("test3.sql");
+  // }
+
+  
+  // @Post('upload')
+  // @UseInterceptors(FileInterceptor('file'))
+  // uploadFile(@UploadedFile() file: Express.Multer.File) {
+  //   const uploadPath = path.join(__dirname, '..','..','..', file.originalname);
+
+  //   fs.writeFile(uploadPath, file.buffer, (err) => {
+  //     if (err) {
+  //       console.error('Error writing file:', err);
+  //       throw new Error('Error writing file');
+  //     } else {
+  //       console.log('File successfully saved:', uploadPath);
+  //     }
+  //   });
+
+  //   console.log(file);
+  // }
+
+
 }

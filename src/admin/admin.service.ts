@@ -26,6 +26,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
 import { NotificationService } from '@/notification/notification.service';
 import { EntryService } from '@/entry/entry.service';
+import { promisify } from 'util';
 
 @Injectable()
 export class AdminService {
@@ -153,7 +154,7 @@ export class AdminService {
       const { env } = process; // Access environment variables
       const { exec } = require('child_process');
       // Construct the pg_dump command with connection details
-      let pgDumpCommand = `pg_dump -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} -f ${filename} -a`;
+      let pgDumpCommand = `pg_dump -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} -f ${filename}`;
   
       // Execute the pg_dump command with error handling
       return new Promise((resolve, reject) => {
@@ -161,17 +162,57 @@ export class AdminService {
               if (error) {
                   console.error('Error during database backup:', error);
                   reject(error);
-                  return;
+                  return "error";
               }
               if (stderr) {
                   console.warn('Warnings from pg_dump:', stderr);
               }
               console.log('Database backup successful:', filename);
               resolve(filename);
+              return filename;
            
           });
       });
   }
+
+  // async restoreDatabase(filename = 'database_backup.sql') {
+  //   const { env } = process; // Access environment variables
+  //   const { exec } = require('child_process');
+  //   // Construct the pg_dump command with connection details
+  //   let pgDeleteCommand = `psql -U ${env.PGUSER} -d ${env.PGDATABASE} -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`;
+  //   let pgRestoreCommand = `psql tairu_db < ${filename}`;
+
+  //   // Execute the pg_dump command with error handling
+  //   return new Promise((resolve, reject) => {
+  //       // exec(pgDeleteCommand, (error, stdout, stderr) => {
+  //       //     if (error) {
+  //       //         console.error('Error during database backup:', error);
+  //       //         reject(error);
+  //       //         return;
+  //       //     }
+  //       //     if (stderr) {
+  //       //         console.warn('Warnings from pg_dump:', stderr);
+  //       //     }
+  //       //     console.log('Schema truncated successfully:', filename);
+  //       //     resolve(filename)
+         
+  //       // });
+
+  //       exec(pgRestoreCommand, (error, stdout, stderr) => {
+  //           if (error) {
+  //               console.error('Error during database backup:', error);
+  //               reject(error);
+  //               return;
+  //           }
+  //           if (stderr) {
+  //               console.warn('Warnings from pg_dump:', stderr);
+  //           }
+  //           console.log('Database restore successful:', filename);
+  //           resolve(filename);
+         
+  //       });
+  //   });
+  // }
   
   // Example usag
   
