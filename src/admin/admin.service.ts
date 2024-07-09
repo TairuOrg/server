@@ -58,9 +58,9 @@ export class AdminService {
       body: {
         message: 'Revenue for today',
         payload: {
-          VE: { amount: foreignRevenue.body.payload.bs},
-          US: { amount: todaysRevenue },
-          EU: { amount: foreignRevenue.body.payload.euro },
+          VE: { amount: parseFloat(foreignRevenue.body.payload.bs.toFixed(2))},
+          US: { amount: parseFloat(todaysRevenue.toFixed(2)) },
+          EU: { amount: parseFloat(foreignRevenue.body.payload.euro.toFixed(2)) },
         },
       },
     };

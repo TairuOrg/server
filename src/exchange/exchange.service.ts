@@ -13,13 +13,14 @@ export class ExchangeService {
     amount: number,
   ): Promise<ServerResponse<ConvertExchange>> {
     const exchangeRate = await this.fetchExchangeRate();
+    console.log("wtffff",parseFloat((exchangeRate.dolar * amount).toFixed(2)));
     return {
       error: false,
       body: {
         message: 'Price conversion',
         payload: {
-          bs: exchangeRate.dolar * amount,
-          euro: (exchangeRate.dolar * amount) / exchangeRate.euro,
+          bs: parseFloat((exchangeRate.dolar * amount).toFixed(2)),
+          euro: parseFloat(((exchangeRate.dolar * amount) / exchangeRate.euro).toFixed(2)),
         },
       },
     };
@@ -29,17 +30,14 @@ export class ExchangeService {
     const result = await fetch('https://www.bcv.org.ve/');
     const staticHTML = await result.text();
     const $ = cheerio.load(staticHTML);
-    console.log('DOLAR', $);
-    console.log('html', staticHTML);
-    console.log('result', result);
 
-    const [currencyExchangeUSD, currencyExchangeEUR] = [
-      parseFloat($('#dolar').find('strong').first().text().replace(',', '.')),
-      parseFloat($('#euro').find('strong').first().text().replace(',', '.')),
+    let [currencyExchangeUSD, currencyExchangeEUR] = [
+      parseFloat(parseFloat($('#dolar').find('strong').first().text().replace(',', '.')).toFixed(2)),
+      parseFloat(parseFloat($('#euro').find('strong').first().text().replace(',', '.')).toFixed(2)),
     ];
 
-    console.log('dolar?', currencyExchangeEUR);
-    console.log('euro?', currencyExchangeEUR);
+    console.log('currencyExchangeUSD:', currencyExchangeUSD);
+    console.log('currencyExchangeEUR:', currencyExchangeEUR);
 
     return {
       dolar: currencyExchangeUSD,

@@ -35,13 +35,15 @@ export class EntryService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
     
-    return await this.addItemsToEntry(insertData.entry_items, Entry.id, res);
+    return await this.addItemsToEntry(insertData.entries_items, Entry.id, res);
   } 
 
   async addItemsToEntry(Items: EntryItem[], EntryId, res) {
     let has_error = false;
     console.log('dasdasdasds', Items)
+    console.log("idd",EntryId)
     for (let Item of Items) {
+      console.log("wat da heeel", Item)
       try {
         const itemExists = await this.prisma.items.findUnique({
           where: {
@@ -50,6 +52,7 @@ export class EntryService {
         });
         console.log('existe el item o no:',itemExists);
         if (!itemExists) {
+          console.log("seguro?",itemExists)
           const creation = await this.item.create({
             barcode_id: Item.barcode_id,
             name: Item.name,
@@ -58,6 +61,7 @@ export class EntryService {
             manufacturer: Item.manufacturer,
             quantity: 0,
           });
+          console.log("creacion",creation)
 
           if (!creation.successful) {
             const response: ServerResponse<String> = {
@@ -194,7 +198,7 @@ export class EntryService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    else if (data.entry_items.length == 0){
+    else if (data.entries_items.length == 0){
       const response: ServerResponse<String> = {
         error: true,
         body: {
@@ -216,7 +220,7 @@ export class EntryService {
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
 
-    for (const Item of data.entry_items) {
+    for (const Item of data.entries_items) {
       const verify_item = await this.prisma.items.findFirst({where: {id: Item.item_id}});
       if(!verify_item){
         const response: ServerResponse<String> = {
