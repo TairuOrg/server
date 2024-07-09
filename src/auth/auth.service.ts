@@ -449,7 +449,7 @@ export class AuthService {
     }
 
 
-    if (new_password !== current_password) {
+    if (new_password !== current_password && !new_password) {
       if (new_password.length > 255) {
         response = {
           error: true,

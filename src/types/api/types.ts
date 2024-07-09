@@ -125,7 +125,7 @@ export type SignUpData = {
 
 export type EditUserData = {
   current_personal_id: string;
-  new_password: string;
+  new_password?: string;
   new_name: string;
   new_phone_number: string;
   new_email: string;
