@@ -158,7 +158,7 @@ export class AdminController {
       // res.setHeader('Content-Disposition', `attachment; filename=${filename}`);
       res.setHeader('Content-Type', 'application/octet-stream');
       // res.download(filePath, (err) => {console.error(err)});
-      res.sendFile(filePath, (err) => {console.error("yippie",err)});
+      res.download(filePath, (err) => {console.error("yippie",err)});
       const fileStream = fs.createReadStream(filePath);
       fileStream.pipe(res);
     } catch (error) {
