@@ -228,6 +228,11 @@ export type Statistics = {
   topTenCategories: any[] | null;
 }
 
+export type RestorePassword = {
+  personal_id: string;
+  password: string;
+ }
+
 /* 
   can't assign these types due to prisma not knowing what the fuck is returning from raw queries.
   Have them for reference.

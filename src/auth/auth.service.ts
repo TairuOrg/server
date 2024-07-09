@@ -4,7 +4,13 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 import User from '@/user/dto/user';
 import { UserService } from '@/user/user.service';
-import { SignUpData, RoleOptions, SignUpCode, EditUserData } from '@/types/api/types';
+import {
+  SignUpData,
+  RoleOptions,
+  SignUpCode,
+  EditUserData,
+  RestorePassword,
+} from '@/types/api/types';
 import { NotificationStatus, AuthResponse } from '@/types/api/Responses';
 import { Response } from 'express';
 import {
@@ -13,6 +19,7 @@ import {
   nameRegExp,
   phoneRegExp,
 } from '@/types/api/regex';
+import { calculateJwkThumbprint } from 'jose';
 
 @Injectable()
 export class AuthService {
@@ -418,15 +425,13 @@ export class AuthService {
         current_phone_number = current_data.phone_number;
         current_email = current_data.email;
         current_residence_location = current_data.residence_location;
-      }
-      else {
+      } else {
         response = {
           error: true,
           body: {
             message: {
               title: 'Usuario no encontrado',
-              description:
-                'No se encontró el usuario en la base de datos',
+              description: 'No se encontró el usuario en la base de datos',
               notificationStatus: NotificationStatus.ERROR,
             },
           },
@@ -448,8 +453,7 @@ export class AuthService {
       return res.status(HttpStatus.UNAUTHORIZED).json(response);
     }
 
-
-    if (new_password !== current_password && !new_password) {
+    if (new_password !== current_password && Boolean(new_password)) {
       if (new_password.length > 255) {
         response = {
           error: true,
@@ -464,14 +468,14 @@ export class AuthService {
         return res.status(HttpStatus.UNAUTHORIZED).json(response);
       }
       // try {
-        const update_password = await this.prisma.user.update({
-          where: {
-            personal_id: data.current_personal_id,
-          },
-          data: {
-            password: new_password,
-          },
-        });
+      const update_password = await this.prisma.user.update({
+        where: {
+          personal_id: data.current_personal_id,
+        },
+        data: {
+          password: new_password,
+        },
+      });
       // } catch (error) {
       //   response = {
       //     error: true,
@@ -710,7 +714,8 @@ export class AuthService {
       body: {
         message: {
           title: 'Usuario actualizado correctamente',
-          description: 'Se actualizó el usuario correctamente en la base de datos',
+          description:
+            'Se actualizó el usuario correctamente en la base de datos',
           notificationStatus: NotificationStatus.SUCCESS,
         },
       },
@@ -718,4 +723,108 @@ export class AuthService {
     return res.status(HttpStatus.OK).json(response);
   }
 
+  async restorePassword(data: RestorePassword, res: Response) {
+    let password = data.password;
+    let personal_id = data.personal_id;
+    let user;
+
+    try {
+      user = await this.prisma.user.findUnique({
+        where: {
+          personal_id: personal_id,
+        },
+      });
+    } catch (error) {
+      let Response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Error al buscar usuario',
+            description:
+              'Ocurrió un error al buscar el usuario en la base de datos',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(Response);
+    }
+
+    if (!user) {
+      let Response = {
+        error: true,
+        body: {
+          message: {
+            title: 'Usuario no encontrado',
+            description: 'No se encontró el usuario en la base de datos',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(Response);
+    } else {
+      if (!password) {
+        let Response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Contraseña inválida',
+              description: 'La contraseña no puede estar vacía',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(Response);
+      }
+
+      if (password.length > 255) {
+        let Response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Contraseña inválida',
+              description: 'El hash no debe contener más de 255 caracteres',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(Response);
+      }
+
+      try {
+        const update_password = await this.prisma.user.update({
+          where: {
+            personal_id: personal_id,
+          },
+          data: {
+            password: password,
+          },
+        });
+      } catch (error) {
+        let Response = {
+          error: true,
+          body: {
+            message: {
+              title: 'Error al actualizar la contraseña',
+              description:
+                'Ocurrió un error al actualizar la contraseña en la base de datos',
+              notificationStatus: NotificationStatus.ERROR,
+            },
+          },
+        };
+        return res.status(HttpStatus.UNAUTHORIZED).json(Response);
+      }
+      let Response = {
+        error: false,
+        body: {
+          message: {
+            title: 'Contraseña actualizada correctamente',
+            description:
+              'Se actualizó la contraseña correctamente en la base de datos',
+            notificationStatus: NotificationStatus.SUCCESS,
+          },
+        },
+      };
+      return res.status(HttpStatus.OK).json(Response);
+    }
+  }
 }

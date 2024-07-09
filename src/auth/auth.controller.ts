@@ -13,6 +13,7 @@ import {
   SignUpData,
   RoleOptions,
   EditUserData,
+  RestorePassword,
 } from '@/types/api/types';
 import User from '@/user/dto/user';
 
@@ -156,6 +157,14 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const response = await this.authService.editUser(data, res);
+    return response;
+  }
+
+  @Post('restore-password') async restorePassword(
+    @Body() data: RestorePassword,
+    @Res() res: Response,
+  ) {
+    const response = await this.authService.restorePassword(data, res);
     return response;
   }
 }
