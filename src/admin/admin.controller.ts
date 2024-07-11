@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { Request } from 'express';
+import { Request, response } from 'express';
 import { Express} from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
 import { CustomerId, UpdateCustomerData, Item, UpdateItem, NotificationData, Entry, getStatisticsData } from '@/types/api/types';
@@ -191,6 +191,14 @@ export class AdminController {
         } else {
           console.log('Archivo subido satisfactoriamente:', uploadPath);
           const restoreDb = await this.adminService.restoreDatabase(uploadPath);
+
+          let response = {
+            error: false,
+            body: {
+              message: 'Base de datos restaurada satisfactoriamente',
+            },
+          };
+          return res.status(200).json(response);
           
         }
       });
