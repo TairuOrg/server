@@ -9,18 +9,19 @@ import { checkSameDate } from '@/utils/date-manager';
 import { CashierService } from '@/cashier/cashier.service';
 import { ItemsService } from '@/items/items.service';
 import { SalesService } from '@/sales/sales.service';
-import { 
-  Customer, 
-  UpdateCustomerData, 
-  ExchangeRate, 
-  Revenue, 
-  ServerResponse, 
-  CustomerId, 
-  Item, 
-  UpdateItem, 
-  UserId, 
+import {
+  Customer,
+  UpdateCustomerData,
+  ExchangeRate,
+  Revenue,
+  ServerResponse,
+  CustomerId,
+  Item,
+  UpdateItem,
+  UserId,
   NotificationData,
-  Entry } from '@/types/api/types';
+  Entry,
+} from '@/types/api/types';
 import { ReportService } from '@/report/report.service';
 import { CustomerService } from '@/customer/customer.service';
 import { Response } from 'express';
@@ -30,7 +31,6 @@ import { promisify } from 'util';
 
 @Injectable()
 export class AdminService {
-  
   constructor(
     private readonly report: ReportService,
     private readonly user: UserService,
@@ -41,7 +41,7 @@ export class AdminService {
     private readonly sale: SalesService,
     private readonly customer: CustomerService,
     private readonly notification: NotificationService,
-    private readonly entry: EntryService
+    private readonly entry: EntryService,
   ) {}
 
   async getAdminInfo(id: number): Promise<User> {
@@ -58,9 +58,11 @@ export class AdminService {
       body: {
         message: 'Revenue for today',
         payload: {
-          VE: { amount: parseFloat(foreignRevenue.body.payload.bs.toFixed(2))},
+          VE: { amount: parseFloat(foreignRevenue.body.payload.bs.toFixed(2)) },
           US: { amount: parseFloat(todaysRevenue.toFixed(2)) },
-          EU: { amount: parseFloat(foreignRevenue.body.payload.euro.toFixed(2)) },
+          EU: {
+            amount: parseFloat(foreignRevenue.body.payload.euro.toFixed(2)),
+          },
         },
       },
     };
@@ -95,31 +97,40 @@ export class AdminService {
     return this.cashier.deleteCashier(personal_id, res);
   }
 
-  async getSales(){
+  async getSales() {
     return await this.sale.findAll();
   }
 
   async getCustomers() {
     return await this.customer.findAll();
-    }
+  }
 
-  async clientDataValidation(data:UpdateCustomerData, res: Response): Promise<Response> {
+  async clientDataValidation(
+    data: UpdateCustomerData,
+    res: Response,
+  ): Promise<Response> {
     return this.customer.clientDataValidation(data, res);
   }
 
-  async clientUpdate(data:UpdateCustomerData, res: Response): Promise<Response> {
+  async clientUpdate(
+    data: UpdateCustomerData,
+    res: Response,
+  ): Promise<Response> {
     return this.customer.updateCustomer(data, res);
   }
 
-  async deleteCustomer(personal_id:CustomerId, res: Response): Promise<Response> {
+  async deleteCustomer(
+    personal_id: CustomerId,
+    res: Response,
+  ): Promise<Response> {
     return this.customer.deleteCustomer(personal_id, res);
   }
 
-  async updateItem(data: UpdateItem, res:Response) {
+  async updateItem(data: UpdateItem, res: Response) {
     return this.item.update(data, res);
   }
 
-  async insertNotification(data:NotificationData, res:Response) {
+  async insertNotification(data: NotificationData, res: Response) {
     return this.notification.insert(data, res);
   }
 
@@ -140,96 +151,108 @@ export class AdminService {
   }
 
   async getStatisics(data, res) {
-    return await this.sale.getStatistics(data, res); 
+    return await this.sale.getStatistics(data, res);
   }
 
   async getDasboardData() {
     return await this.sale.getDashboardData();
   }
 
-  
-  
-
   async backupDatabase(filename = 'database_backup.sql') {
-      const { env } = process; // Access environment variables
-      const { exec } = require('child_process');
-      // Construct the pg_dump command with connection details
-      let pgDumpCommand = `pg_dump -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} -f ${filename}`;
-  
-      // Execute the pg_dump command with error handling
-      return new Promise((resolve, reject) => {
-          exec(pgDumpCommand, (error, stdout, stderr) => {
-              if (error) {
-                  console.error('Error during database backup:', error);
-                  reject(error);
-                  return "error";
-              }
-              if (stderr) {
-                  console.warn('Warnings from pg_dump:', stderr);
-              }
-              console.log('Database backup successful:', filename);
-              resolve(filename);
-              return filename;
-           
-          });
-      });
-  }
-
-
-  
-  async restoreDatabase(filename = 'database_backup.sql') {
     const { env } = process; // Access environment variables
     const { exec } = require('child_process');
     // Construct the pg_dump command with connection details
-    let pgDeleteCommand = `dropdb -f tairu_db`;
-    let createDatabaseCommand = `create database tairu_db`
-    let pgRestoreCommand = `psql -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} -f ${filename}`;
+    let pgDumpCommand = `pg_dump -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} -f ${filename}`;
 
     // Execute the pg_dump command with error handling
     return new Promise((resolve, reject) => {
-        exec(pgDeleteCommand, (error, stdout, stderr) => {
-            if (error) {
-                console.error('Error borrando la base de datos:', error);
-                reject(error);
-                return;
-            }
-            if (stderr) {
-                console.warn('Alertas de pg_dump:', stderr);
-            }
-            resolve(filename)
-         
-        });
-
-        exec(createDatabaseCommand, (error, stdout, stderr) => {
-          if (error) {
-              console.error('Error creando la base de datos', error);
-              reject(error);
-              return;
-          }
-          if (stderr) {
-              console.warn('Alerta de postgres:', stderr);
-          }
-          resolve(filename)
-        });
-
-        exec(pgRestoreCommand, (error, stdout, stderr) => {
-            if (error) {
-                console.error('Error during database backup:', error);
-                reject(error);
-                return;
-            }
-            if (stderr) {
-                console.warn('Warnings from pg_dump:', stderr);
-            }
-            console.log('Database restore successful:', filename);
-            resolve(filename);
-         
-        });
+      exec(pgDumpCommand, (error, stdout, stderr) => {
+        if (error) {
+          console.error('Error during database backup:', error);
+          reject(error);
+          return 'error';
+        }
+        if (stderr) {
+          console.warn('Warnings from pg_dump:', stderr);
+        }
+        console.log('Database backup successful:', filename);
+        resolve(filename);
+        console.log('backup', filename);
+        return filename;
+      });
     });
   }
 
-}
-  
-  // Example usag
-  
+  async restoreDatabase(filename) {
+    const { env } = process; // Access environment variables
+    const { exec } = require('child_process');
+    const util = require('util');
+    const execPromise = util.promisify(exec);
+    // Construct the pg_dump command with connection details
+    let pgDeleteCommand = `dropdb -f tairu_db`;
+    // let createDatabaseCommand = `psql -h localhost -U postgres -c "create database tairu_db"`;
+    let createDatabaseCommand = `createdb tairu_db`;
+    // let pgRestoreCommand = `psql -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} < ${filename}`;
+    let pgRestoreCommand = `psql -h localhost -U postgres -d tairu_db < backup.sql`;
 
+    try {
+      // Execute the commands sequentially
+      await execPromise(pgDeleteCommand);
+      console.log('Database deleted successfully');
+
+      await execPromise(createDatabaseCommand);
+      console.log('Database created successfully');
+
+      await execPromise(pgRestoreCommand);
+      console.log('Database restore successful:', filename);
+    } catch (error) {
+      console.error('Error during restore:', error);
+      throw error; // Re-throw the error for further handling
+    }
+  }
+
+  // // Execute the pg_dump command with error handling
+  // return new Promise((resolve, reject) => {
+  //     exec(pgDeleteCommand, (error, stdout, stderr) => {
+  //         if (error) {
+  //             console.error('Error borrando la base de datos:', error);
+  //             reject(error);
+  //             return;
+  //         }
+  //         if (stderr) {
+  //             console.warn('Alertas de pg_dump:', stderr);
+  //         }
+  //         console.log("borrado")
+  //         resolve(filename)
+
+  //     });
+
+  //     exec(createDatabaseCommand, (error, stdout, stderr) => {
+  //       if (error) {
+  //           console.error('Error creando la base de datos', error);
+  //           reject(error);
+  //           return;
+  //       }
+  //       if (stderr) {
+  //           console.warn('Alerta de postgres:', stderr);
+  //       }
+  //       resolve(filename)
+  //     });
+
+  //     exec(pgRestoreCommand, (error, stdout, stderr) => {
+  //         if (error) {
+  //             console.error('Error during database backup:', error);
+  //             reject(error);
+  //             return;
+  //         }
+  //         if (stderr) {
+  //             console.warn('Warnings from pg_dump:', stderr);
+  //         }
+  //         console.log('Database restore successful:', filename);
+  //         resolve(filename);
+
+  //     });
+  // });
+}
+
+// Example usag

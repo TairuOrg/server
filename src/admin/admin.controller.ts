@@ -174,7 +174,7 @@ export class AdminController {
   async uploadFile(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
 
     if (file.originalname.endsWith('.sql')) {
-      const uploadPath = path.join(__dirname, '..','..','..','/uploads', "backup.sql");
+      const uploadPath = path.join(__dirname, '..','..','..', "backup.sql");
 
       fs.writeFile(uploadPath, file.buffer, async (err: any) => {
         if (err) {
