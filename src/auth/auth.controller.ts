@@ -1,7 +1,7 @@
-import { Controller, Post, Body, Query, Res, HttpStatus, Req } from '@nestjs/common';
+import { Controller, Post, Body, Query, Res, HttpStatus, Req, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/login';
-import { encryptSessionCookie } from './lib';
+import { encryptSessionCookie, decryptSessionCookie } from './lib';
 import {
   AuthResponse,
   NotificationStatus,
@@ -17,7 +17,7 @@ import {
 } from '@/types/api/types';
 import User from '@/user/dto/user';
 
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { env } from 'node:process';
 import { idRegExp, nameRegExp, phoneRegExp } from '@/types/api/regex';
 
@@ -75,12 +75,14 @@ export class AuthController {
 
       case RoleOptions.CASHIER: {
         user = await this.authService.verifyCashier(cred);
+
         if (user) {
           message = {
             title: 'Inicio de sesión del cajero satisfactorio',
             description: 'Te damos la bienvenida de vuelta',
             notificationStatus: NotificationStatus.SUCCESS,
           };
+          await this.authService.updateCashierLastLogin(user.id);
         }
         break;
       }
@@ -142,15 +144,47 @@ export class AuthController {
     return response;
   }
 
-  @Post('logout') async logout(@Req() req: Request,@Res() res: Response) {
-    res.clearCookie('SESSION_TOKEN');
-    return res.status(HttpStatus.OK).json({
-      error: false,
-      body: {
-        message: 'Sesión cerrada',
-      },
-    });
-  }
+  @Get('logout-cashier') async logout(@Req() req: Request,@Res() res: Response) {
+    const cookie = await decryptSessionCookie(req.cookies['SESSION_TOKEN']);
+    const id = cookie[1]?.id;
+    const role = cookie[1]?.role;
+
+    if (typeof id === 'number' && role === RoleOptions.CASHIER){
+      const update_status = await this.authService.updateCashierLastLogout(id);
+      if (update_status === true) {
+      const response = { 
+        error: false,
+        body: {
+          message: 'Sesión cerrada',
+        },
+      };
+      return res.status(HttpStatus.OK).json(response);
+      }
+      else {
+        const response = {
+          error: true,
+          body: {
+            message: 'Error al cerrar sesión: Error actualizando el estatus del cajero',
+          },
+        };
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(response);
+      }
+    }
+      const response = {
+        error: true,
+        body: {
+          message: 'Error al cerrar sesión: No se ha encontrado la sesión o el rol es incorrecto',
+        },
+      };
+      return res.status(HttpStatus.UNAUTHORIZED).json(response);
+      }
+
+    
+
+
+  
+
+  
 
   @Post('edit-user') async editUser(
     @Body() data: EditUserData,
