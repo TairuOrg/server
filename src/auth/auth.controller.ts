@@ -114,11 +114,12 @@ export class AuthController {
 
   //receives the signup code and checks if it is valid, if it is, it returns a success message
   //the signup code is a confidential code that is given to a specific person, and allows them
-  //to register new administrators
+  //to register new administrators and restore passwords
   @Post('signup-access') async signupAccess(
     @Body() code: SignUpCode,
     @Res() res: Response,
   ) {
+   
     let response = await this.authService.signupCodeValidation(code, res);
     return response;
   }
@@ -129,6 +130,7 @@ export class AuthController {
     @Body() data: SignUpData,
     @Res() res: Response,
   ) {
+    
     const response = await this.authService.signupValidation(data, res);
     return response;
   }
@@ -151,13 +153,13 @@ export class AuthController {
 
     if (typeof id === 'number' && role === RoleOptions.CASHIER){
       const update_status = await this.authService.updateCashierLastLogout(id);
-      if (update_status === true) {
-      const response = { 
-        error: false,
-        body: {
-          message: 'Sesión cerrada',
-        },
-      };
+      if (update_status) {
+        const response = { 
+          error: false,
+          body: {
+            message: 'Sesión cerrada',
+          },
+        };
       return res.status(HttpStatus.OK).json(response);
       }
       else {
