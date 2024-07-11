@@ -764,13 +764,17 @@ export class AuthService {
   }
 
   async sendResetCode(email: string, res: Response): Promise<Response> {
+    console.log("2")
     // Send a random code to the email provided by the client, but first check if the email exists in the database, if it doesn't, then return an error message
    try {
     const isFoundUser = await this.prisma.user.findUnique({where: {email: email}});
     if(!Boolean(isFoundUser)) {
+      console.log("No se encontro el usuario")
       throw new Error('No se encontró el usuario')
+      
     }
     await this.mailService.sendResetPasswordCode(email)
+    console.log("Reset password code sent")
     return res.status(HttpStatus.OK).json({
       error: false,
       body: {

@@ -196,6 +196,7 @@ export class AuthController {
     @Body() data: { email: string },
     @Res() res: Response,
   ) {
+    console.log("1");
     const response = await this.authService.sendResetCode(data.email, res);
     return response;
   }
