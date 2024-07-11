@@ -59,6 +59,43 @@ export class AuthService {
     return 'unimplemented';
   }
 
+  async updateCashierLastLogin(id: number): Promise <String> {
+  try {
+    let update_status = await this.prisma.cashier.update({where: {
+      id:id,
+      
+    },
+    data: {
+      is_online:true
+    }});
+    return "Estatus actualizado"
+  }
+  catch (error) {
+    return "Error al actualizar el estatus del cajero"
+  }
+  
+  }
+
+  async updateCashierLastLogout(id: number): Promise <Boolean> {
+
+    try {
+      let update_status = await this.prisma.cashier.update({where: {
+        id:id, 
+      },
+      data: {
+        is_online:false
+      }});
+    
+      return true;
+      }
+      catch {
+        return false;
+      }
+    }
+
+    
+    
+
   async logoutCashier(id: string): Promise<any> {
     return 'unimplemented';
   }
