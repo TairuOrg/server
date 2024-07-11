@@ -211,7 +211,7 @@ export class AuthController {
           body: {
             message: {
               title: 'Código verificado correctamente',
-              notificationStatus: NotificationStatus.ERROR,
+              notificationStatus: NotificationStatus.SUCCESS,
             },
           },
         });
