@@ -19,13 +19,16 @@ import {
   nameRegExp,
   phoneRegExp,
 } from '@/types/api/regex';
-import { calculateJwkThumbprint } from 'jose';
+import { MailService } from '@/mail/mail.service';
+import { DbService } from '@/db/db.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private user: UserService,
+    private mailService: MailService,
+    private db: DbService,
   ) {}
   async verifyAdmin(cred: AuthCredentials): Promise<User> {
     const user = await this.user.findUser(cred.email, cred.password);
@@ -758,6 +761,46 @@ export class AuthService {
       },
     };
     return res.status(HttpStatus.OK).json(response);
+  }
+
+  async sendResetCode(email: string, res: Response): Promise<Response> {
+    // Send a random code to the email provided by the client, but first check if the email exists in the database, if it doesn't, then return an error message
+   try {
+    const isFoundUser = await this.prisma.user.findUnique({where: {email: email}});
+    if(!Boolean(isFoundUser)) {
+      throw new Error('No se encontró el usuario')
+    }
+    await this.mailService.sendResetPasswordCode(email)
+    return res.status(HttpStatus.OK).json({
+      error: false,
+      body: {
+        message: {
+          title: 'Código de verificación enviado',
+          description: `Se envió el código de verificación al correo electrónico: ${email}`,
+          notificationStatus: NotificationStatus.SUCCESS,
+        },
+      },
+    });
+   } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        error: true,
+        body: {
+          message: {
+            title: 'Error al enviar el código de verificación',
+            description: `${error}`,
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      });
+   }
+  }
+  async verifyResetCode(data: {email: string, code: string}) {
+    try {
+      const storedCodeByEmail = (await this.mailService.getSentCode(data.email));
+      return storedCodeByEmail === data.code;
+    } catch (error) {
+      throw new Error(error)
+    }
   }
 
   async restorePassword(data: RestorePassword, res: Response) {
