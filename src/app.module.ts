@@ -14,12 +14,15 @@ import { ReportModule } from './report/report.module';
 import { NotificationModule } from './notification/notification.module';
 import { EntryModule } from './entry/entry.module';
 import { CustomerModule } from './customer/customer.module';
+import { MailModule } from './mail/mail.module';
+import { DbService } from './db/db.service';
+import { DbModule } from './db/db.module';
 
 
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, AdminModule, ExchangeModule, SalesModule, CashierModule, ItemsModule, ReportModule, NotificationModule, EntryModule, CustomerModule],
+  imports: [PrismaModule, AuthModule, UserModule, AdminModule, ExchangeModule, SalesModule, CashierModule, ItemsModule, ReportModule, NotificationModule, EntryModule, CustomerModule, MailModule, DbModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, DbService],
 })
 export class AppModule { }

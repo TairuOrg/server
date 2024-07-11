@@ -184,19 +184,54 @@ export class AuthController {
       return res.status(HttpStatus.UNAUTHORIZED).json(response);
       }
 
-    
-
-
-  
-
-  
-
   @Post('edit-user') async editUser(
     @Body() data: EditUserData,
     @Res() res: Response,
   ) {
     const response = await this.authService.editUser(data, res);
     return response;
+  }
+
+  @Post('send-reset-code') async sendResetCode(
+    @Body() data: { email: string },
+    @Res() res: Response,
+  ) {
+    const response = await this.authService.sendResetCode(data.email, res);
+    return response;
+  }
+  
+  @Post('verify-reset-code') async verifyResetCode(
+    @Body() data: { email: string; code: string },
+    @Res() res: Response,
+  ) {
+    
+    
+    try {
+      const response = await this.authService.verifyResetCode(data);
+      if(response) {
+        return res.status(HttpStatus.OK).json({
+          error: false,
+          body: {
+            message: {
+              title: 'Código verificado correctamente',
+              notificationStatus: NotificationStatus.SUCCESS,
+            },
+          },
+        });
+      } else {
+        throw new Error('Código inválido')
+      }
+    } catch(e) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({
+        error: true,
+        body: {
+          message: {
+            title: 'Código inválido',
+            notificationStatus: NotificationStatus.ERROR,
+          },
+        },
+      });
+    }
   }
 
   @Post('restore-password') async restorePassword(
