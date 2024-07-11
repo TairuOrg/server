@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { Request } from 'express';
+import { Express} from 'express';
 import { decryptSessionCookie } from '@/auth/lib';
 import { CustomerId, UpdateCustomerData, Item, UpdateItem, NotificationData, Entry, getStatisticsData } from '@/types/api/types';
 import { Response } from 'express';
@@ -167,28 +168,56 @@ export class AdminController {
     }
   }
 
+
+  @Post('restore-database')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Res() res: Response) {
+
+    if (file.originalname.endsWith('.sql')) {
+      const uploadPath = path.join(__dirname, '..','..','..','/uploads', "backup.sql");
+
+      fs.writeFile(uploadPath, file.buffer, async (err: any) => {
+        if (err) {
+
+          let response = {
+            error: true,
+            body: {
+              message: 'Error subiendo el archivo',
+            },
+          };
+          res.status(500).json(response);
+
+          throw new Error('Error subiendo el archivo');
+        } else {
+          console.log('Archivo subido satisfactoriamente:', uploadPath);
+          const restoreDb = await this.adminService.restoreDatabase(uploadPath);
+          
+        }
+      });
+    }
+    else {
+      let response = {
+        error: true,
+        body: {
+          message: 'El archivo no es un archivo sql',
+        },
+      };
+      res.status(500).json(response);
+    }
+
+
+
+
+    console.log(file);
+  }
+
   // @Post('restore-database')
   // async restoreDatabase(@Body() url: String, @Req() req: Request) {
   //   return this.adminService.restoreDatabase("test3.sql");
   // }
 
   
-  // @Post('upload')
-  // @UseInterceptors(FileInterceptor('file'))
-  // uploadFile(@UploadedFile() file: Express.Multer.File) {
-  //   const uploadPath = path.join(__dirname, '..','..','..', file.originalname);
-
-  //   fs.writeFile(uploadPath, file.buffer, (err) => {
-  //     if (err) {
-  //       console.error('Error writing file:', err);
-  //       throw new Error('Error writing file');
-  //     } else {
-  //       console.log('File successfully saved:', uploadPath);
-  //     }
-  //   });
-
-  //   console.log(file);
-  // }
+ 
 
 
 }

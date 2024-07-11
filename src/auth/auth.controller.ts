@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Query, Res, HttpStatus, Req, Get } from '@nestjs/common';
+import { Controller, Post, Body, Query, Res, HttpStatus, Req, Get, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/login';
 import { encryptSessionCookie, decryptSessionCookie } from './lib';
@@ -20,6 +20,9 @@ import User from '@/user/dto/user';
 import { Response, Request } from 'express';
 import { env } from 'node:process';
 import { idRegExp, nameRegExp, phoneRegExp } from '@/types/api/regex';
+import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from 'node:path';
+import * as fs from 'fs';
 
 interface RolesQueryParams {
   role: RoleOptions;
@@ -203,4 +206,6 @@ export class AuthController {
     const response = await this.authService.restorePassword(data, res);
     return response;
   }
+
+
 }

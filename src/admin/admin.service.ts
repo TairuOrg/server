@@ -175,45 +175,61 @@ export class AdminService {
       });
   }
 
-  // async restoreDatabase(filename = 'database_backup.sql') {
-  //   const { env } = process; // Access environment variables
-  //   const { exec } = require('child_process');
-  //   // Construct the pg_dump command with connection details
-  //   let pgDeleteCommand = `psql -U ${env.PGUSER} -d ${env.PGDATABASE} -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`;
-  //   let pgRestoreCommand = `psql tairu_db < ${filename}`;
 
-  //   // Execute the pg_dump command with error handling
-  //   return new Promise((resolve, reject) => {
-  //       // exec(pgDeleteCommand, (error, stdout, stderr) => {
-  //       //     if (error) {
-  //       //         console.error('Error during database backup:', error);
-  //       //         reject(error);
-  //       //         return;
-  //       //     }
-  //       //     if (stderr) {
-  //       //         console.warn('Warnings from pg_dump:', stderr);
-  //       //     }
-  //       //     console.log('Schema truncated successfully:', filename);
-  //       //     resolve(filename)
-         
-  //       // });
+  
+  async restoreDatabase(filename = 'database_backup.sql') {
+    const { env } = process; // Access environment variables
+    const { exec } = require('child_process');
+    // Construct the pg_dump command with connection details
+    let pgDeleteCommand = `dropdb -f tairu_db`;
+    let createDatabaseCommand = `create database tairu_db`
+    let pgRestoreCommand = `psql -h ${env.PGHOST} -U ${env.PGUSER} -d ${env.PGDATABASE} -f ${filename}`;
 
-  //       exec(pgRestoreCommand, (error, stdout, stderr) => {
-  //           if (error) {
-  //               console.error('Error during database backup:', error);
-  //               reject(error);
-  //               return;
-  //           }
-  //           if (stderr) {
-  //               console.warn('Warnings from pg_dump:', stderr);
-  //           }
-  //           console.log('Database restore successful:', filename);
-  //           resolve(filename);
+    // Execute the pg_dump command with error handling
+    return new Promise((resolve, reject) => {
+        exec(pgDeleteCommand, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error borrando la base de datos:', error);
+                reject(error);
+                return;
+            }
+            if (stderr) {
+                console.warn('Alertas de pg_dump:', stderr);
+            }
+            resolve(filename)
          
-  //       });
-  //   });
-  // }
+        });
+
+        exec(createDatabaseCommand, (error, stdout, stderr) => {
+          if (error) {
+              console.error('Error creando la base de datos', error);
+              reject(error);
+              return;
+          }
+          if (stderr) {
+              console.warn('Alerta de postgres:', stderr);
+          }
+          resolve(filename)
+        });
+
+        exec(pgRestoreCommand, (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error during database backup:', error);
+                reject(error);
+                return;
+            }
+            if (stderr) {
+                console.warn('Warnings from pg_dump:', stderr);
+            }
+            console.log('Database restore successful:', filename);
+            resolve(filename);
+         
+        });
+    });
+  }
+
+}
   
   // Example usag
   
-}
+
