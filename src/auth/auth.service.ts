@@ -762,13 +762,13 @@ export class AuthService {
 
   async restorePassword(data: RestorePassword, res: Response) {
     let password = data.password;
-    let personal_id = data.personal_id;
+    let email = data.email;
     let user;
 
     try {
       user = await this.prisma.user.findUnique({
         where: {
-          personal_id: personal_id,
+          email: email,
         },
       });
     } catch (error) {
@@ -830,7 +830,7 @@ export class AuthService {
       try {
         const update_password = await this.prisma.user.update({
           where: {
-            personal_id: personal_id,
+            email: email,
           },
           data: {
             password: password,

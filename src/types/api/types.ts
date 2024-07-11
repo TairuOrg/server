@@ -229,7 +229,7 @@ export type Statistics = {
 }
 
 export type RestorePassword = {
-  personal_id: string;
+  email: string;
   password: string;
  }
 
