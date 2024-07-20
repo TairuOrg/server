@@ -209,41 +209,70 @@ export class ItemsService {
 
   async update(updateData: UpdateItem, res) {
     console.log(typeof updateData.quantity)
-    try {
-      await this.prisma.items.update({
-        where: {
-          barcode_id: updateData.old_barcode_id
-        },
-        data: {
-          barcode_id: updateData.barcode_id,
-          name: updateData.name,
-          price: updateData.price,
-          category: updateData.category,
-          manufacturer: updateData.manufacturer,
-          quantity: parseInt(updateData.quantity)
-        },
-      });
-    } catch (error) {
-      console.error(error)
-      const response: ServerResponse<String> = {
+    let itemExists;
+    try { 
+      itemExists = await this.prisma.items.findUnique({
+        where: {barcode_id: updateData.old_barcode_id}
+      })
+    }
+    catch(e) {
+      const response = {
         error: true,
         body: {
-          message: "Artículo no actualizado",
-          payload: "Ha ocurrido un error al actualizar el artículo.",
+          message: "Error",
+          payload: "Hubo un error validando el artículo a ingresar.",
+        },
+      };
+      return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
+    if (itemExists && itemExists.barcode_id !== updateData.old_barcode_id) {
+      const response = {
+        error: true,
+        body: {
+          message: "Error",
+          payload: "El código de barras ya existe en el sistema.",
         },
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
-
-    const response: ServerResponse<String> = {
-      error: false,
-      body: {
-        message: 'Artículo actualizado',
-        payload: 'El artículo ha sido actualizado satisfactoriamente.',
-      },
-    };
+    else {
+      try {
+        await this.prisma.items.update({
+          where: {
+            barcode_id: updateData.old_barcode_id
+          },
+          data: {
+            barcode_id: updateData.barcode_id,
+            name: updateData.name,
+            price: updateData.price,
+            category: updateData.category,
+            manufacturer: updateData.manufacturer,
+            quantity: parseInt(updateData.quantity)
+          },
+        });
+      } catch (error) {
+        console.error(error)
+        const response: ServerResponse<String> = {
+          error: true,
+          body: {
+            message: "Artículo no actualizado",
+            payload: "Ha ocurrido un error al actualizar el artículo.",
+          },
+        };
+        return res.status(HttpStatus.BAD_REQUEST).json(response);
+      }
+  
+      const response: ServerResponse<String> = {
+        error: false,
+        body: {
+          message: 'Artículo actualizado',
+          payload: 'El artículo ha sido actualizado satisfactoriamente.',
+        },
+      };
+      
+      return res.status(HttpStatus.OK).json(response);
+    }
     
-    return res.status(HttpStatus.OK).json(response);
   }
 
   remove(id: number) {
