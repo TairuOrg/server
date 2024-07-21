@@ -126,6 +126,7 @@ export class ItemsService {
       });
     } 
     catch (error) {
+      console.log("error inserting: ", error)
       return {
         successful: false,
         message: "Ocurrio un error al crear el articulo",
