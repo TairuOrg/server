@@ -225,6 +225,9 @@ export class ItemsService {
       };
       return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
+    console.log(itemExists,"pap");
+    console.log("itemExists", itemExists.barcode_id);
+    console.log('updateData', updateData.old_barcode_id);
     if (itemExists && itemExists.barcode_id !== updateData.old_barcode_id) {
       const response = {
         error: true,
