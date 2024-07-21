@@ -78,25 +78,29 @@ export class EntryService {
           Item.item_id = creation.item.id;
         }
 
-        console.log("entry id", EntryId);
-        console.log("item id", Item.item_id);
-        console.log("quantity", Item.add_quantity);
-        await this.prisma.entries_items.create({
-          data: {
-            entry_id: EntryId,
-            item_id: Item.item_id,
-            quantity: Item.add_quantity,
-          }
-        });
-
         const entryItem = await this.prisma.items.findUnique({
           where: {
             barcode_id: Item.barcode_id
           },
           select: {
-            quantity: true
+            quantity: true,
+            id: true
           }
         });
+
+        console.log("entry id", EntryId);
+        console.log("item id", Item.item_id);
+        console.log("item id ahora si", entryItem.id);
+        console.log("quantity", Item.add_quantity);
+        await this.prisma.entries_items.create({
+          data: {
+            entry_id: EntryId,
+            item_id: entryItem.id,
+            quantity: Item.add_quantity,
+          }
+        });
+
+
 
         await this.prisma.items.update({
           where: {
