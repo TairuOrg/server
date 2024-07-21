@@ -113,6 +113,13 @@ export class ItemsService {
       return validationData;
     }
     let Item;
+    console.log("insertData", insertData)
+    console.log("barcode_id", insertData.barcode_id)
+    console.log("name", insertData.name)
+    console.log("price", insertData.price)
+    console.log("category", insertData.category)
+    console.log("manufacturer", insertData.manufacturer)
+    console.log("quantity", insertData.quantity)
     try {
       Item = await this.prisma.items.create({
         data: {
