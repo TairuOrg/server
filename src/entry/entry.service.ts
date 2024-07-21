@@ -78,6 +78,9 @@ export class EntryService {
           Item.item_id = creation.item.id;
         }
 
+        console.log("entry id", EntryId);
+        console.log("item id", Item.item_id);
+        console.log("quantity", Item.add_quantity);
         await this.prisma.entries_items.create({
           data: {
             entry_id: EntryId,

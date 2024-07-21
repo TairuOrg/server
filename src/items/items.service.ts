@@ -50,7 +50,7 @@ export class ItemsService {
       };
     }
 
-    if (validateData.barcode_id.length <= 7 || validateData.barcode_id.length >= 14 || !/\S/.test(validateData.barcode_id)) {
+    if (validateData.barcode_id.length < 4 || validateData.barcode_id.length > 14 || !/\S/.test(validateData.barcode_id)) {
       return {
         successful: false,
         message: "El código de barras del artículo es inválido.",
