@@ -212,7 +212,7 @@ export class ItemsService {
     let itemExists;
     try { 
       itemExists = await this.prisma.items.findUnique({
-        where: {barcode_id: updateData.old_barcode_id}
+        where: {barcode_id: updateData.barcode_id}
       })
     }
     catch(e) {
