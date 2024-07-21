@@ -104,7 +104,7 @@ export class EntryService {
 
         await this.prisma.items.update({
           where: {
-            id: Item.item_id
+            id: entryItem.id
           },
           data: {
             quantity: entryItem.quantity + Item.add_quantity
