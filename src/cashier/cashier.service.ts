@@ -138,13 +138,14 @@ export class CashierService {
           },
         };
         console.log("1 ",response)
+        
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       } else {
         const deletedCashier = await this.prisma.user.update({
           where: { personal_id: personal_id.personal_id },
           // set the phone_number to be the personal_id to avoid null constraint (which is not allowed because it's a unique field) and void string would cause a unique constraint violation as well when trying to delete another cashier and setting the phone number to a void string.
           // Being set to the personal_id is a workaround to avoid the unique constraint violation
-          data: { is_deleted: true, phone_number: `${personal_id}` }, // doesn't accept null, this is a workaround
+          data: { is_deleted: true, phone_number: personal_id.personal_id	 }, // doesn't accept null, this is a workaround
         });
         // Return the JSON representation of the data object
         const response: ServerResponse<String> = {
