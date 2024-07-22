@@ -96,6 +96,7 @@ export class CashierService {
   }
 
   async deleteCashier(personal_id: UserId, res: Response): Promise<Response> {
+    console.log("what is going on, ", personal_id)
     try {
       // Find the user with the given personal_id
 
@@ -123,6 +124,7 @@ export class CashierService {
             },
           },
         };
+        console.log("0 ",response)
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       }
 
@@ -135,6 +137,7 @@ export class CashierService {
             payload: "El cajero ya se encuentra eliminado."
           },
         };
+        console.log("1 ",response)
         return res.status(HttpStatus.BAD_REQUEST).json(response);
       } else {
         const deletedCashier = await this.prisma.user.update({
@@ -151,6 +154,7 @@ export class CashierService {
             payload: "El cajero ha sido eliminado satisfactoriamente."
           },
         };
+        console.log("2 ",response)
         return res.status(HttpStatus.OK).json(response);
       }
     } catch (error) {
@@ -163,6 +167,7 @@ export class CashierService {
           payload: "Ocurrió un error al eliminar el cajero."
         },
       };
+      console.log("3 ",response)
       return res.status(HttpStatus.BAD_REQUEST).json(response);
     }
   }
