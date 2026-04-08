@@ -13,7 +13,6 @@ export class ExchangeService {
     amount: number,
   ): Promise<ServerResponse<ConvertExchange>> {
     const exchangeRate = await this.fetchExchangeRate();
-    console.log("wtffff",parseFloat((exchangeRate.dolar * amount).toFixed(2)));
     return {
       error: false,
       body: {
@@ -27,21 +26,28 @@ export class ExchangeService {
   }
 
   private async fetchExchangeRate(): Promise<ExchangeRate> {
-    const result = await fetch('https://www.bcv.org.ve/');
-    const staticHTML = await result.text();
-    const $ = cheerio.load(staticHTML);
+    const response = await fetch('https://ve.dolarapi.com/v1/cotizaciones');
 
-    let [currencyExchangeUSD, currencyExchangeEUR] = [
-      parseFloat(parseFloat($('#dolar').find('strong').first().text().replace(',', '.')).toFixed(2)),
-      parseFloat(parseFloat($('#euro').find('strong').first().text().replace(',', '.')).toFixed(2)),
-    ];
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    console.log('currencyExchangeUSD:', currencyExchangeUSD);
-    console.log('currencyExchangeEUR:', currencyExchangeEUR);
+    const result = await response.json();
 
+    let dolarAPI: number = 0;
+    let euroAPI: number = 0;
+    result.map((item) => {
+      if (item.moneda === 'USD' && item.fuente === 'oficial') {
+        dolarAPI = item.promedio;
+      }
+      if (item.moneda === 'EUR' && item.fuente === 'oficial') {
+        euroAPI = item.promedio;
+      }
+    });
+    
     return {
-      dolar: currencyExchangeUSD,
-      euro: currencyExchangeEUR,
+      dolar: dolarAPI,
+      euro: euroAPI,
     };
   }
 }
